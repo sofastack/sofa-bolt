@@ -33,6 +33,7 @@ SOFA-Bolt的基础功能包括:
 ## 用法1
 将SOFA-Bolt用作一个远程通信框架,使用者可以不关心通信协议的定义细节,直接复用我们的RPC特征的通信协议。然后简单的实现客户端与服务端的初始化和启动逻辑,同时注册一个用户请求处理器,即可完成远程调用。
 同时,我们的其他基础功能像连接管理,心跳等特性,都默认可以使用。
+* 简单的客户端与服务端通信[示例demo](https://github.com/alipay/sofa-bolt/tree/master/src/test/java/com/alipay/remoting/demo)
 
 ## 用法2
 将SOFA-Bolt用作一个协议框架,使用者可以复用基础的通信模型,协议包含的接口定义等基础功能。然后根据自己的私有协议需求,定义一整套Command类型,Command处理器。
