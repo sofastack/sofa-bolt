@@ -39,7 +39,7 @@ bolt名字取自迪士尼动画，闪电狗，定位是一个基于netty最佳�
 ## 用法1
 将SOFABolt用作一个远程通信框架,使用者可以不关心通信协议的定义细节,直接复用我们的RPC特征的通信协议。然后简单的实现客户端与服务端的初始化和启动逻辑,同时注册一个用户请求处理器,即可完成远程调用。如下图所示:
 同时,我们的其他基础功能像连接管理,心跳等特性,都默认可以使用。
-* ![intro](./.åmiddleware-common/invoke_type.png)
+* ![invoke_type](./.middleware-common/invoke_type.png)
 * 简单的客户端与服务端通信[示例demo](https://github.com/alipay/sofa-bolt/tree/master/src/test/java/com/alipay/remoting/demo)
 
 ## 用法2
