@@ -60,7 +60,7 @@
     <properties>
         <cobertura.maven.plugin>2.6</cobertura.maven.plugin>
         <coveralls.maven.plugin>3.2.1</coveralls.maven.plugin>
-        <hessian.version>3.2.4.alipay</hessian.version>
+        <hessian.version>3.3.0</hessian.version>
         <java.version>1.6</java.version>
         <license.maven.plugin>3.0</license.maven.plugin>
         <maven.assembly.plugin>3.0.0</maven.assembly.plugin>
@@ -99,7 +99,7 @@
 
         <!-- provided scope -->
         <dependency>
-            <groupId>hessian</groupId>
+            <groupId>com.alipay.sofa</groupId>
             <artifactId>hessian</artifactId>
             <version>${hessian.version}</version>
             <scope>provided</scope>

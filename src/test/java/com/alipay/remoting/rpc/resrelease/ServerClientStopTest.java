@@ -62,7 +62,7 @@ public class ServerClientStopTest {
 
     @Before
     public void init() {
-        server = new BoltServer(port, true);
+        server = new BoltServer(port, true, true);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);
@@ -84,7 +84,7 @@ public class ServerClientStopTest {
             logger.error("get connection exception!", e);
         }
         server.stop();
-        Thread.sleep(5000);
+        Thread.sleep(3000);
         Assert.assertTrue(serverConnectProcessor.isConnected());
         Assert.assertEquals(8, serverConnectProcessor.getConnectTimes());
         Assert.assertTrue(serverDisConnectProcessor.isDisConnected());
