@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<!-- Log4j 2.x config -->
+<Configuration status="OFF">
+    <properties>
+        <property name="LOG_HOME">${sys:logging.path}/bolt</property>
+        <Property name="LOG_LEVEL">${sys:com.alipay.remoting.client.log.level}</Property>
+        <Property name="LOG_ENCODE">${sys:com.alipay.remoting.client.log.encode}</Property>
+    </properties>
+
+    <!-- appenders -->
+    <Appenders>
+        <RollingRandomAccessFile name="CommonDefaultAppender"
+                                 immediateFlush="false"
+                                 fileName="${LOG_HOME}/common-default.log"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/common-default.log.%d{yyyy-MM-dd}">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="ConnectionEventAppender"
+                                 immediateFlush="false"
+                                 fileName="${LOG_HOME}/connection-event.log"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/connection-event.log.%d{yyyy-MM-dd}">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="RpcRemotingAppender"
+                                 immediateFlush="false"
+                                 fileName="${LOG_HOME}/remoting-rpc.log"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/remoting-rpc.log.%d{yyyy-MM-dd}">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="TrAdapterRemotingAppender"
+                                 immediateFlush="false"
+                                 fileName="${LOG_HOME}/remoting-tr-adapter.log"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/remoting-tr-adapter.log.%d{yyyy-MM-dd}">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="MsgRemotingAppender"
+                                 immediateFlush="false"
+                                 fileName="${LOG_HOME}/remoting-msg.log"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/remoting-msg.log.%d{yyyy-MM-dd}">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="HttpRemotingAppender"
+                                 immediateFlush="false"
+                                 fileName="${LOG_HOME}/remoting-http.log"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/remoting-http.log.%d{yyyy-MM-dd}">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="ERROR-APPENDER"
+                                 immediateFlush="false"
+                                 fileName="${LOG_HOME}/common-error.log"
+                                 append="true"
+                                 filePattern="${LOG_HOME}/common-error.log.%d{yyyy-MM-dd}">
+            <!-- only print error log -->
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingRandomAccessFile>
+
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="${LOG_ENCODE}">
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+            </PatternLayout>
+        </Console>
+
+    </Appenders>
+
+    <!-- loggers -->
+    <Loggers>
+        <AsyncLogger name="CommonDefault" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="CommonDefaultAppender"/>
+            <appender-ref ref="ERROR-APPENDER"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="ConnectionEvent" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="ConnectionEventAppender"/>
+            <appender-ref ref="ERROR-APPENDER"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="RpcRemoting" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="RpcRemotingAppender"/>
+            <appender-ref ref="ERROR-APPENDER"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="TrAdapterRemoting" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="TrAdapterRemotingAppender"/>
+            <appender-ref ref="ERROR-APPENDER"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="MsgRemoting" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="MsgRemotingAppender"/>
+            <appender-ref ref="ERROR-APPENDER"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="HttpRemoting" level="${LOG_LEVEL}" additivity="false">
+            <appender-ref ref="HttpRemotingAppender"/>
+            <appender-ref ref="ERROR-APPENDER"/>
+        </AsyncLogger>
+    </Loggers>
+</Configuration>

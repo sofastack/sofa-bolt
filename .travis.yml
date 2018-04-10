@@ -1,0 +1,28 @@
+#.travis.yml
+language: java
+
+addons:
+  apt:
+    packages:
+      - openjdk-6-jdk
+
+jdk:
+  - openjdk6
+
+before_install:
+  - echo "Downloading Maven 3.2.5"
+   && wget https://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.zip
+   && unzip -qq apache-maven-3.2.5-bin.zip
+   && export M2_HOME=$PWD/apache-maven-3.2.5
+   && export PATH=$M2_HOME/bin:$PATH
+   && mvn -version
+
+install:
+  - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+
+script:
+  - sh ./middleware-common/check_format.sh
+  - mvn cobertura:cobertura
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

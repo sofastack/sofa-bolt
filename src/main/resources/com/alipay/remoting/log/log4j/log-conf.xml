@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- Log4j 1.x config -->
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!-- appender -->
+    <appender name="CommonDefaultAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/bolt/common-default.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.remoting.client.log.encode}"/>
+        <param name="threshold" value="${com.alipay.remoting.client.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="ConnectionEventAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/bolt/connection-event.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.remoting.client.log.encode}"/>
+        <param name="threshold" value="${com.alipay.remoting.client.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="RpcRemotingAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/bolt/remoting-rpc.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.remoting.client.log.encode}"/>
+        <param name="threshold" value="${com.alipay.remoting.client.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="TrAdapterRemotingAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/bolt/remoting-tr-adapter.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.remoting.client.log.encode}"/>
+        <param name="threshold" value="${com.alipay.remoting.client.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="MsgRemotingAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/bolt/remoting-msg.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.remoting.client.log.encode}"/>
+        <param name="threshold" value="${com.alipay.remoting.client.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="HttpRemotingAppender" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/bolt/remoting-http.log"/>
+        <param name="append" value="true"/>
+        <param name="encoding" value="${com.alipay.remoting.client.log.encode}"/>
+        <param name="threshold" value="${com.alipay.remoting.client.log.level}"/>
+        <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="INFO"/>
+            <param name="LevelMax" value="WARN"/>
+        </filter>
+    </appender>
+
+    <appender name="ERROR-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
+        <param name="file" value="${logging.path}/bolt/common-error.log"/>
+        <param name="append" value="true"/>
+        <param name="threshold" value="error"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="STDOUT-APPENDER" class="org.apache.log4j.ConsoleAppender">
+        <param name="encoding" value="${com.alipay.remoting.client.log.encode}"/>
+        <param name="target" value="System.out"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%d %-5p [%C{1}#%L] [%t] %m%n"/>
+        </layout>
+    </appender>
+
+    <!-- logger -->
+    <logger name="CommonDefault" additivity="false">
+        <level value="${com.alipay.remoting.client.log.level}"/>
+        <appender-ref ref="CommonDefaultAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="ConnectionEvent" additivity="false">
+        <level value="${com.alipay.remoting.client.log.level}"/>
+        <appender-ref ref="ConnectionEventAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="RpcRemoting" additivity="false">
+        <level value="${com.alipay.remoting.client.log.level}"/>
+        <appender-ref ref="RpcRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="TrAdapterRemoting" additivity="false">
+        <level value="${com.alipay.remoting.client.log.level}"/>
+        <appender-ref ref="TrAdapterRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="MsgRemoting" additivity="false">
+        <level value="${com.alipay.remoting.client.log.level}"/>
+        <appender-ref ref="MsgRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="HttpRemoting" additivity="false">
+        <level value="${com.alipay.remoting.client.log.level}"/>
+        <appender-ref ref="HttpRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+</log4j:configuration>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<!-- Logback config -->
+<configuration>
+    <property scope="local" name="LOG_HOME" value="${logging.path}/bolt"/>
+    <property scope="local" name="LOG_LEVEL" value="${com.alipay.remoting.client.log.level}"/>
+    <property scope="local" name="LOG_ENCODE" value="${com.alipay.remoting.client.log.encode}"/>
+
+    <!-- appenders -->
+    <appender name="CommonDefaultAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filters>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+            </filter>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>${LOG_LEVEL}</level>
+                <onMatch>ACCEPT</onMatch>
+            </filter>
+        </filters>
+        <file>${LOG_HOME}/common-default.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/common-default.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="ConnectionEventAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filters>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+            </filter>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>${LOG_LEVEL}</level>
+                <onMatch>ACCEPT</onMatch>
+            </filter>
+        </filters>
+        <file>${LOG_HOME}/connection-event.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/connection-event.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="RpcRemotingAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filters>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+            </filter>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>${LOG_LEVEL}</level>
+                <onMatch>ACCEPT</onMatch>
+            </filter>
+        </filters>
+        <file>${LOG_HOME}/remoting-rpc.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/remoting-rpc.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="TrAdapterRemotingAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filters>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+            </filter>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>${LOG_LEVEL}</level>
+                <onMatch>ACCEPT</onMatch>
+            </filter>
+        </filters>
+        <file>${LOG_HOME}/remoting-tr-adapter.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/remoting-tr-adapter.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="MsgRemotingAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filters>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+            </filter>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>${LOG_LEVEL}</level>
+                <onMatch>ACCEPT</onMatch>
+            </filter>
+        </filters>
+        <file>${LOG_HOME}/remoting-msg.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/remoting-msg.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="HttpRemotingAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filters>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+            </filter>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>${LOG_LEVEL}</level>
+                <onMatch>ACCEPT</onMatch>
+            </filter>
+        </filters>
+        <file>${LOG_HOME}/remoting-http.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/remoting-http.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <file>${LOG_HOME}/common-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_HOME}/common-error.log.%d{yyyy-MM-dd}</FileNamePattern>
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d %-5p [%C{0}#%L] [%t] %m%n</pattern>
+            <charset>${LOG_ENCODE}</charset>
+        </encoder>
+    </appender>
+
+    <!-- loggers -->
+    <logger name="CommonDefault" level="${LOG_LEVEL}" additivity="false">
+        <appender-ref ref="CommonDefaultAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="ConnectionEvent" level="${LOG_LEVEL}" additivity="false">
+        <appender-ref ref="ConnectionEventAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="RpcRemoting" level="${LOG_LEVEL}" additivity="false">
+        <appender-ref ref="RpcRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="TrAdapterRemoting" level="${LOG_LEVEL}" additivity="false">
+        <appender-ref ref="TrAdapterRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="MsgRemoting" level="${LOG_LEVEL}" additivity="false">
+        <appender-ref ref="MsgRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+
+    <logger name="HttpRemoting" level="${LOG_LEVEL}" additivity="false">
+        <appender-ref ref="HttpRemotingAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </logger>
+</configuration>
