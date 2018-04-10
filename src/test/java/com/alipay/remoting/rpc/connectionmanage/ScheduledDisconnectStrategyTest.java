@@ -72,13 +72,6 @@ public class ScheduledDisconnectStrategyTest {
 
     @After
     public void stop() {
-        try {
-            server.stop();
-            client.shutdown();
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            logger.error("Stop server failed!", e);
-        }
     }
 
     @Test
@@ -94,7 +87,7 @@ public class ScheduledDisconnectStrategyTest {
             client.getConnection(url, 1000);
         }
 
-        Thread.sleep(2100);
+        Thread.sleep(2150);
         Assert.assertTrue(1 <= clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(9, clientConnectProcessor.getConnectTimes());
         Thread.sleep(200);
@@ -162,7 +155,7 @@ public class ScheduledDisconnectStrategyTest {
         Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
         connection.removeInvokeFuture(1);
         /** Monitor task sleep 500ms*/
-        Thread.sleep(200);
+        Thread.sleep(100);
         Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
         Thread.sleep(500);
         Assert.assertTrue(0 <= clientDisConnectProcessor.getDisConnectTimes());
@@ -188,7 +181,7 @@ public class ScheduledDisconnectStrategyTest {
         Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
         connection.removeInvokeFuture(1);
         /** Monitor task sleep 500ms*/
-        Thread.sleep(200);
+        Thread.sleep(100);
         Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
         Thread.sleep(500);
         Assert.assertTrue(0 <= clientDisConnectProcessor.getDisConnectTimes());
@@ -259,7 +252,7 @@ public class ScheduledDisconnectStrategyTest {
             System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
         }
         GlobalSwitch.reinit();
-        server = new BoltServer(port);
+        server = new BoltServer(port, false, true);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);

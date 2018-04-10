@@ -66,6 +66,9 @@ public class ConnectionPool implements Scannable {
      */
     public void add(Connection connection) {
         markAccess();
+        if (null == connection) {
+            return;
+        }
         boolean res = this.conns.addIfAbsent(connection);
         if (res) {
             connection.increaseRef();
