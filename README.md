@@ -15,8 +15,9 @@ bolt名字取自迪士尼动画，闪电狗，定位是一个基于netty最佳�
 目前已经运用在了蚂蚁中间件的微服务([SOFARPC](https://github.com/alipay/sofa-rpc))，消息中心，分布式事务，分布式开关，配置中心等众多产品上。
 
 # 2. 功能介绍
-* ![intro](./.middleware-common/intro.png)
-SOFABolt的基础功能包括:
+![intro](./.middleware-common/intro.png)
+
+## SOFABolt的基础功能包括
 * 基础通信功能(remoting-core)
     * 网络IO与线程模型
     * 连接管理(无锁建连,定时断链,自动重连)
