@@ -21,7 +21,7 @@ install:
   - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 
 script:
-  - sh ./middleware-common/check_format.sh
+  - sh ./.middleware-common/check_format.sh
   - mvn cobertura:cobertura
 
 after_success:
