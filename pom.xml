@@ -26,8 +26,8 @@
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>A high-throughput and high-performance netty based remoting framework open sourced by Ant Financial.</description>
-    <url>https://github.com/sofastack/sofa-bolt</url>
+    <description>a light weight, easy to use and high performance remoting framework based on netty.</description>
+    <url>https://github.com/alipay/sofa-bolt</url>
 
     <licenses>
         <license>
