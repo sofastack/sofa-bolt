@@ -91,6 +91,9 @@ public class ConnectionPool implements Scannable {
      * @param connection
      */
     public void removeAndTryClose(Connection connection) {
+        if (null == connection) {
+            return;
+        }
         boolean res = this.conns.remove(connection);
         if (res) {
             connection.decreaseRef();
