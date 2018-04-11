@@ -42,7 +42,7 @@ Bolt 名字取自迪士尼动画-闪电狗，是一个基于 Netty 最佳实践�
 
 ![invoke_type](.middleware-common/invoke_types.png)
 
-* 简单的客户端与服务端通信[示例 Demo](https://github.com/alipay/sofa-bolt/tree/master/src/test/java/com/alipay/remoting/demo)
+* 示例 Demo 请参考我们的 [用户手册](https://github.com/alipay/sofa-bolt/wiki/SOFA-Bolt-Handbook#14-%E5%9F%BA%E7%A1%80%E9%80%9A%E4%BF%A1%E6%A8%A1%E5%9E%8B)
 
 ## 用法2
 将 SOFABolt 用作一个协议框架，使用者可以复用基础的通信模型、协议包含的接口定义等基础功能。然后根据自己设计的私有协议自定义 Command 类型、Command 处理器、编解码处理器等。如下图所示，RPC 和消息的 Command 定义结构：
@@ -58,5 +58,5 @@ Bolt 名字取自迪士尼动画-闪电狗，是一个基于 Netty 最佳实践�
 
 # 6. 有用的链接
 * [ISSUES](https://github.com/alipay/sofa-bolt/issues)
-* [文档手册](https://github.com/alipay/sofa-bolt/wiki/SOFA-Bolt-Handbook)
+* [用户手册](https://github.com/alipay/sofa-bolt/wiki/SOFA-Bolt-Handbook)
 * [中文介绍文章: 蚂蚁通信框架实践](http://mp.weixin.qq.com/s/JRsbK1Un2av9GKmJ8DK7IQ)
