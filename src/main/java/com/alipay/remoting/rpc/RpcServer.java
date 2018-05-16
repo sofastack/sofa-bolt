@@ -69,7 +69,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * Server for Rpc.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
  */
@@ -180,7 +180,16 @@ public class RpcServer extends RemotingServer {
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
         }
-        initRpcRemoting(null);
+        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+            this.connectionEventHandler = new RpcConnectionEventHandler(globalSwitch);
+            this.connectionManager = new DefaultConnectionManager(new RandomSelectStrategy());
+            this.connectionEventHandler.setConnectionManager(this.connectionManager);
+            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
+        } else {
+            this.connectionEventHandler = new ConnectionEventHandler(globalSwitch);
+            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
+        }
+        initRpcRemoting();
         this.bootstrap = new ServerBootstrap();
         this.bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
@@ -283,24 +292,10 @@ public class RpcServer extends RemotingServer {
 
     /**
      * init rpc remoting
-     * @param rpcRemoting
      */
-    protected void initRpcRemoting(RpcRemoting rpcRemoting) {
-        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
-            this.connectionEventHandler = new RpcConnectionEventHandler(globalSwitch);
-            this.connectionManager = new DefaultConnectionManager(new RandomSelectStrategy());
-            this.connectionEventHandler.setConnectionManager(this.connectionManager);
-            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
-        } else {
-            this.connectionEventHandler = new ConnectionEventHandler(globalSwitch);
-            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
-        }
-        if (null != rpcRemoting) {
-            this.rpcRemoting = rpcRemoting;
-        } else {
-            this.rpcRemoting = new RpcServerRemoting(new RpcCommandFactory(), this.addressParser,
-                this.connectionManager);
-        }
+    protected void initRpcRemoting() {
+        this.rpcRemoting = new RpcServerRemoting(new RpcCommandFactory(), this.addressParser,
+            this.connectionManager);
     }
 
     /**
@@ -825,7 +820,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * check whether a client address connected
-     * 
+     *
      * @param remoteAddr
      * @return
      */
@@ -836,7 +831,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * check whether a {@link Url} connected
-     *  
+     *
      * @param url
      * @return
      */
@@ -883,7 +878,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * Getter method for property <tt>addressParser</tt>.
-     * 
+     *
      * @return property value of addressParser
      */
     public RemotingAddressParser getAddressParser() {
@@ -892,7 +887,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * Setter method for property <tt>addressParser</tt>.
-     * 
+     *
      * @param addressParser value to be assigned to property addressParser
      */
     public void setAddressParser(RemotingAddressParser addressParser) {
