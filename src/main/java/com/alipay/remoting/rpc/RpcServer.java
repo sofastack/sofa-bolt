@@ -49,12 +49,13 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
 import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
-import com.alipay.remoting.util.GlobalSwitch;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -78,7 +79,6 @@ public class RpcServer extends RemotingServer {
     /** logger */
     private static final Logger                         logger                  = BoltLoggerFactory
                                                                                     .getLogger("RpcRemoting");
-
     /** server bootstrap */
     private ServerBootstrap                             bootstrap;
 
@@ -191,10 +191,13 @@ public class RpcServer extends RemotingServer {
         // set write buffer water mark
         initWriteBufferWaterMark();
 
-        boolean pooledBuffer = SystemProperties.netty_buffer_pooled();
-        if (pooledBuffer) {
+        // init byte buf allocator
+        if (SystemProperties.netty_buffer_pooled()) {
             this.bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+        } else {
+            this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
         final boolean idleSwitch = SystemProperties.tcp_idle_switch();
