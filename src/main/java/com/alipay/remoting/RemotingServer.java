@@ -75,8 +75,9 @@ public abstract class RemotingServer {
                 return false;
             }
         } else {
-            logger.error("ERROR: The server has already started!");
-            return false;
+            String errMsg = "ERROR: The server has already started!";
+            logger.error(errMsg);
+            throw new IllegalStateException(errMsg);
         }
     }
 
@@ -95,8 +96,9 @@ public abstract class RemotingServer {
                 return false;
             }
         } else {
-            logger.error("ERROR: The server has already started!");
-            return false;
+            String errMsg = "ERROR: The server has already started!";
+            logger.error(errMsg);
+            throw new IllegalStateException(errMsg);
         }
     }
 
