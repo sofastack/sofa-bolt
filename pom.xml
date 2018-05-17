@@ -262,6 +262,9 @@
                         <exclude>**/AbstractBatchDecoder.java</exclude>
                     </excludes>
                     <strictCheck>true</strictCheck>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
                 </configuration>
             </plugin>
 
