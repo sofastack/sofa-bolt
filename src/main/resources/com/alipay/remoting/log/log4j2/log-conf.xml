@@ -167,5 +167,10 @@
             <appender-ref ref="HttpRemotingAppender"/>
             <appender-ref ref="ERROR-APPENDER"/>
         </AsyncLogger>
+
+        <root level="${LOG_LEVEL}">
+            <appender-ref ref="CommonDefaultAppender"/>
+            <appender-ref ref="ERROR-APPENDER"/>
+        </root>
     </Loggers>
 </Configuration>
