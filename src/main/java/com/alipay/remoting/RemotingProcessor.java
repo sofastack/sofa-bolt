@@ -34,8 +34,8 @@ public interface RemotingProcessor<T extends RemotingCommand> {
      * @param defaultExecutor
      * @throws Exception
      */
-    public void process(RemotingContext ctx, T msg,
-                        ExecutorService defaultExecutor) throws Exception;
+    public void process(RemotingContext ctx, T msg, ExecutorService defaultExecutor)
+                                                                                    throws Exception;
 
     /**
      * Get the executor.

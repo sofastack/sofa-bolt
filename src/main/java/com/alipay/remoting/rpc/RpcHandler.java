@@ -46,8 +46,7 @@ public class RpcHandler extends ChannelInboundHandlerAdapter {
         this.userProcessors = userProcessors;
     }
 
-    public RpcHandler(boolean serverSide,
-                      ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
+    public RpcHandler(boolean serverSide, ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
         this.serverSide = serverSide;
         this.userProcessors = userProcessors;
     }

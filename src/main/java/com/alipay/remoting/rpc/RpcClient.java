@@ -37,7 +37,7 @@ public class RpcClient {
 
     /** logger */
     private static final Logger       logger                   = BoltLoggerFactory
-        .getLogger("RpcRemoting");
+                                                                   .getLogger("RpcRemoting");
     /** rpc remoting */
     protected RpcRemoting             rpcRemoting;
     /** global switch */
@@ -46,7 +46,7 @@ public class RpcClient {
     private ConnectionFactory         connctionFactory         = new RpcConnectionFactory();
     /** connection event handler */
     private ConnectionEventHandler    connectionEventHandler   = new RpcConnectionEventHandler(
-        globalSwitch);
+                                                                   globalSwitch);
     /** reconnect manager */
     private ReconnectManager          reconnectManager;
     /** connection event listener */
@@ -55,11 +55,14 @@ public class RpcClient {
     private RemotingAddressParser     addressParser;
     /** connection select strategy */
     private ConnectionSelectStrategy  connectionSelectStrategy = new RandomSelectStrategy(
-        globalSwitch);
+                                                                   globalSwitch);
     /** connection manager */
     private DefaultConnectionManager  connectionManager        = new DefaultConnectionManager(
-        connectionSelectStrategy, connctionFactory, connectionEventHandler, connectionEventListener,
-        globalSwitch);
+                                                                   connectionSelectStrategy,
+                                                                   connctionFactory,
+                                                                   connectionEventHandler,
+                                                                   connectionEventListener,
+                                                                   globalSwitch);
     /** task scanner */
     private RpcTaskScanner            taskScanner              = new RpcTaskScanner();
 
@@ -145,7 +148,7 @@ public class RpcClient {
      * @throws InterruptedException
      */
     public void oneway(final String addr, final Object request) throws RemotingException,
-                                                                InterruptedException {
+                                                               InterruptedException {
         this.rpcRemoting.oneway(addr, request, null);
     }
 
@@ -158,9 +161,9 @@ public class RpcClient {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public void oneway(final String addr, final Object request,
-                       final InvokeContext invokeContext) throws RemotingException,
-                                                          InterruptedException {
+    public void oneway(final String addr, final Object request, final InvokeContext invokeContext)
+                                                                                                  throws RemotingException,
+                                                                                                  InterruptedException {
         this.rpcRemoting.oneway(addr, request, invokeContext);
     }
 
@@ -185,7 +188,7 @@ public class RpcClient {
      * @throws InterruptedException
      */
     public void oneway(final Url url, final Object request) throws RemotingException,
-                                                            InterruptedException {
+                                                           InterruptedException {
         this.rpcRemoting.oneway(url, request, null);
     }
 
@@ -198,9 +201,9 @@ public class RpcClient {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public void oneway(final Url url, final Object request,
-                       final InvokeContext invokeContext) throws RemotingException,
-                                                          InterruptedException {
+    public void oneway(final Url url, final Object request, final InvokeContext invokeContext)
+                                                                                              throws RemotingException,
+                                                                                              InterruptedException {
         this.rpcRemoting.oneway(url, request, invokeContext);
     }
 
@@ -253,9 +256,9 @@ public class RpcClient {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public Object invokeSync(final String addr, final Object request,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+    public Object invokeSync(final String addr, final Object request, final int timeoutMillis)
+                                                                                              throws RemotingException,
+                                                                                              InterruptedException {
         return this.rpcRemoting.invokeSync(addr, request, null, timeoutMillis);
     }
 
@@ -271,9 +274,9 @@ public class RpcClient {
      * @throws InterruptedException
      */
     public Object invokeSync(final String addr, final Object request,
-                             final InvokeContext invokeContext,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+                             final InvokeContext invokeContext, final int timeoutMillis)
+                                                                                        throws RemotingException,
+                                                                                        InterruptedException {
         return this.rpcRemoting.invokeSync(addr, request, invokeContext, timeoutMillis);
     }
 
@@ -299,9 +302,9 @@ public class RpcClient {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public Object invokeSync(final Url url, final Object request,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+    public Object invokeSync(final Url url, final Object request, final int timeoutMillis)
+                                                                                          throws RemotingException,
+                                                                                          InterruptedException {
         return this.invokeSync(url, request, null, timeoutMillis);
     }
 
@@ -316,9 +319,10 @@ public class RpcClient {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public Object invokeSync(final Url url, final Object request, final InvokeContext invokeContext,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+    public Object invokeSync(final Url url, final Object request,
+                             final InvokeContext invokeContext, final int timeoutMillis)
+                                                                                        throws RemotingException,
+                                                                                        InterruptedException {
         return this.rpcRemoting.invokeSync(url, request, invokeContext, timeoutMillis);
     }
 
@@ -335,9 +339,9 @@ public class RpcClient {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public Object invokeSync(final Connection conn, final Object request,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+    public Object invokeSync(final Connection conn, final Object request, final int timeoutMillis)
+                                                                                                  throws RemotingException,
+                                                                                                  InterruptedException {
         return this.rpcRemoting.invokeSync(conn, request, null, timeoutMillis);
     }
 
@@ -353,9 +357,9 @@ public class RpcClient {
      * @throws InterruptedException
      */
     public Object invokeSync(final Connection conn, final Object request,
-                             final InvokeContext invokeContext,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+                             final InvokeContext invokeContext, final int timeoutMillis)
+                                                                                        throws RemotingException,
+                                                                                        InterruptedException {
         return this.rpcRemoting.invokeSync(conn, request, invokeContext, timeoutMillis);
     }
 
@@ -384,7 +388,7 @@ public class RpcClient {
      */
     public RpcResponseFuture invokeWithFuture(final String addr, final Object request,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         return this.rpcRemoting.invokeWithFuture(addr, request, null, timeoutMillis);
     }
 
@@ -402,7 +406,7 @@ public class RpcClient {
     public RpcResponseFuture invokeWithFuture(final String addr, final Object request,
                                               final InvokeContext invokeContext,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         return this.rpcRemoting.invokeWithFuture(addr, request, invokeContext, timeoutMillis);
     }
 
@@ -431,7 +435,7 @@ public class RpcClient {
      */
     public RpcResponseFuture invokeWithFuture(final Url url, final Object request,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         return this.rpcRemoting.invokeWithFuture(url, request, null, timeoutMillis);
     }
 
@@ -449,7 +453,7 @@ public class RpcClient {
     public RpcResponseFuture invokeWithFuture(final Url url, final Object request,
                                               final InvokeContext invokeContext,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         return this.rpcRemoting.invokeWithFuture(url, request, invokeContext, timeoutMillis);
     }
 
@@ -482,8 +486,8 @@ public class RpcClient {
      * @throws RemotingException
      */
     public RpcResponseFuture invokeWithFuture(final Connection conn, final Object request,
-                                              final InvokeContext invokeContext,
-                                              int timeoutMillis) throws RemotingException {
+                                              final InvokeContext invokeContext, int timeoutMillis)
+                                                                                                   throws RemotingException {
         return this.rpcRemoting.invokeWithFuture(conn, request, invokeContext, timeoutMillis);
     }
 
@@ -511,9 +515,9 @@ public class RpcClient {
      * @throws InterruptedException
      */
     public void invokeWithCallback(final String addr, final Object request,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         this.rpcRemoting.invokeWithCallback(addr, request, null, invokeCallback, timeoutMillis);
     }
 
@@ -530,9 +534,9 @@ public class RpcClient {
      */
     public void invokeWithCallback(final String addr, final Object request,
                                    final InvokeContext invokeContext,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         this.rpcRemoting.invokeWithCallback(addr, request, invokeContext, invokeCallback,
             timeoutMillis);
     }
@@ -561,9 +565,9 @@ public class RpcClient {
      * @throws InterruptedException
      */
     public void invokeWithCallback(final Url url, final Object request,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         this.rpcRemoting.invokeWithCallback(url, request, null, invokeCallback, timeoutMillis);
     }
 
@@ -580,9 +584,9 @@ public class RpcClient {
      */
     public void invokeWithCallback(final Url url, final Object request,
                                    final InvokeContext invokeContext,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         this.rpcRemoting.invokeWithCallback(url, request, invokeContext, invokeCallback,
             timeoutMillis);
     }
@@ -601,8 +605,8 @@ public class RpcClient {
      * @throws RemotingException
      */
     public void invokeWithCallback(final Connection conn, final Object request,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException {
         this.rpcRemoting.invokeWithCallback(conn, request, null, invokeCallback, timeoutMillis);
     }
 
@@ -618,8 +622,8 @@ public class RpcClient {
      */
     public void invokeWithCallback(final Connection conn, final Object request,
                                    final InvokeContext invokeContext,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException {
         this.rpcRemoting.invokeWithCallback(conn, request, invokeContext, invokeCallback,
             timeoutMillis);
     }
@@ -659,8 +663,8 @@ public class RpcClient {
      * @return
      * @throws RemotingException
      */
-    public Connection createStandaloneConnection(String ip, int port,
-                                                 int connectTimeout) throws RemotingException {
+    public Connection createStandaloneConnection(String ip, int port, int connectTimeout)
+                                                                                         throws RemotingException {
         return this.connectionManager.create(ip, port, connectTimeout);
     }
 
@@ -679,8 +683,8 @@ public class RpcClient {
      * @return
      * @throws RemotingException
      */
-    public Connection createStandaloneConnection(String addr,
-                                                 int connectTimeout) throws RemotingException {
+    public Connection createStandaloneConnection(String addr, int connectTimeout)
+                                                                                 throws RemotingException {
         return this.connectionManager.create(addr, connectTimeout);
     }
 
@@ -715,7 +719,7 @@ public class RpcClient {
      * @throws RemotingException
      */
     public Connection getConnection(String addr, int connectTimeout) throws RemotingException,
-                                                                     InterruptedException {
+                                                                    InterruptedException {
         Url url = this.addressParser.parse(addr);
         return this.getConnection(url, connectTimeout);
     }
@@ -736,7 +740,7 @@ public class RpcClient {
      * @throws RemotingException
      */
     public Connection getConnection(Url url, int connectTimeout) throws RemotingException,
-                                                                 InterruptedException {
+                                                                InterruptedException {
         url.setConnectTimeout(connectTimeout);
         return this.connectionManager.getAndCreateIfAbsent(url);
     }

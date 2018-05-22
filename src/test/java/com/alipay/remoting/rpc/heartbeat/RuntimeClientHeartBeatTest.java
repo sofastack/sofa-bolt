@@ -39,7 +39,7 @@ import com.alipay.remoting.rpc.protocol.RpcProtocol;
  */
 public class RuntimeClientHeartBeatTest {
     static Logger             logger                    = LoggerFactory
-        .getLogger(RuntimeClientHeartBeatTest.class);
+                                                            .getLogger(RuntimeClientHeartBeatTest.class);
 
     BoltServer                server;
     RpcClient                 client;

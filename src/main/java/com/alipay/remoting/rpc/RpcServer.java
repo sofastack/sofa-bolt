@@ -53,11 +53,14 @@ public class RpcServer extends RemotingServer {
 
     /** logger */
     private static final Logger                         logger                  = BoltLoggerFactory
-        .getLogger("RpcRemoting");
+                                                                                    .getLogger("RpcRemoting");
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
     private final static NioEventLoopGroup              workerGroup             = new NioEventLoopGroup(
-        Runtime.getRuntime().availableProcessors() * 2,
-        new NamedThreadFactory("Rpc-netty-server-worker"));
+                                                                                    Runtime
+                                                                                        .getRuntime()
+                                                                                        .availableProcessors() * 2,
+                                                                                    new NamedThreadFactory(
+                                                                                        "Rpc-netty-server-worker"));
 
     static {
         workerGroup.setIoRatio(SystemProperties.netty_io_ratio());
@@ -65,7 +68,9 @@ public class RpcServer extends RemotingServer {
 
     /** boss event loop group*/
     private final EventLoopGroup                        bossGroup               = new NioEventLoopGroup(
-        1, new NamedThreadFactory("Rpc-netty-server-boss"));
+                                                                                    1,
+                                                                                    new NamedThreadFactory(
+                                                                                        "Rpc-netty-server-boss"));
     /** rpc remoting */
     protected RpcRemoting                               rpcRemoting;
     /** server bootstrap */
@@ -80,7 +85,7 @@ public class RpcServer extends RemotingServer {
     private ConnectionEventListener                     connectionEventListener = new ConnectionEventListener();
     /** user processors of rpc server */
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors          = new ConcurrentHashMap<String, UserProcessor<?>>(
-        4);
+                                                                                    4);
     /** address parser to get custom args */
     private RemotingAddressParser                       addressParser;
     /** connection manager */
@@ -167,13 +172,15 @@ public class RpcServer extends RemotingServer {
 
             protected void initChannel(SocketChannel channel) throws Exception {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast("decoder",
-                    new RpcProtocolDecoder(RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
-                pipeline.addLast("encoder", new ProtocolCodeBasedEncoder(
-                    ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
+                pipeline.addLast("decoder", new RpcProtocolDecoder(
+                    RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
+                pipeline.addLast(
+                    "encoder",
+                    new ProtocolCodeBasedEncoder(ProtocolCode
+                        .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
                 if (idleSwitch) {
-                    pipeline.addLast("idleStateHandler",
-                        new IdleStateHandler(0, 0, idleTime, TimeUnit.MILLISECONDS));
+                    pipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTime,
+                        TimeUnit.MILLISECONDS));
                     pipeline.addLast("serverIdleHandler", serverIdleHandler);
                 }
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
@@ -267,8 +274,7 @@ public class RpcServer extends RemotingServer {
      * @see com.alipay.remoting.RemotingServer#registerProcessor(byte, com.alipay.remoting.CommandCode, com.alipay.remoting.RemotingProcessor)
      */
     @Override
-    public void registerProcessor(byte protocolCode, CommandCode cmd,
-                                  RemotingProcessor<?> processor) {
+    public void registerProcessor(byte protocolCode, CommandCode cmd, RemotingProcessor<?> processor) {
         ProtocolManager.getProtocol(ProtocolCode.fromBytes(protocolCode)).getCommandHandler()
             .registerProcessor(cmd, processor);
     }
@@ -304,7 +310,8 @@ public class RpcServer extends RemotingServer {
         UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
             processor);
         if (preProcessor != null) {
-            String errMsg = "Processor with interest key [" + processor.interest()
+            String errMsg = "Processor with interest key ["
+                            + processor.interest()
                             + "] has already been registered to rpc server, can not register again!";
             throw new RuntimeException(errMsg);
         }
@@ -326,7 +333,7 @@ public class RpcServer extends RemotingServer {
      * @throws InterruptedException
      */
     public void oneway(final String addr, final Object request) throws RemotingException,
-                                                                InterruptedException {
+                                                               InterruptedException {
         check();
         this.rpcRemoting.oneway(addr, request, null);
     }
@@ -340,9 +347,9 @@ public class RpcServer extends RemotingServer {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public void oneway(final String addr, final Object request,
-                       final InvokeContext invokeContext) throws RemotingException,
-                                                          InterruptedException {
+    public void oneway(final String addr, final Object request, final InvokeContext invokeContext)
+                                                                                                  throws RemotingException,
+                                                                                                  InterruptedException {
         check();
         this.rpcRemoting.oneway(addr, request, invokeContext);
     }
@@ -362,7 +369,7 @@ public class RpcServer extends RemotingServer {
      * @throws InterruptedException
      */
     public void oneway(final Url url, final Object request) throws RemotingException,
-                                                            InterruptedException {
+                                                           InterruptedException {
         check();
         this.rpcRemoting.oneway(url, request, null);
     }
@@ -376,9 +383,9 @@ public class RpcServer extends RemotingServer {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public void oneway(final Url url, final Object request,
-                       final InvokeContext invokeContext) throws RemotingException,
-                                                          InterruptedException {
+    public void oneway(final Url url, final Object request, final InvokeContext invokeContext)
+                                                                                              throws RemotingException,
+                                                                                              InterruptedException {
         check();
         this.rpcRemoting.oneway(url, request, invokeContext);
     }
@@ -427,9 +434,9 @@ public class RpcServer extends RemotingServer {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public Object invokeSync(final String addr, final Object request,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+    public Object invokeSync(final String addr, final Object request, final int timeoutMillis)
+                                                                                              throws RemotingException,
+                                                                                              InterruptedException {
         check();
         return this.rpcRemoting.invokeSync(addr, request, null, timeoutMillis);
     }
@@ -446,9 +453,9 @@ public class RpcServer extends RemotingServer {
      * @throws InterruptedException
      */
     public Object invokeSync(final String addr, final Object request,
-                             final InvokeContext invokeContext,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+                             final InvokeContext invokeContext, final int timeoutMillis)
+                                                                                        throws RemotingException,
+                                                                                        InterruptedException {
         check();
         return this.rpcRemoting.invokeSync(addr, request, invokeContext, timeoutMillis);
     }
@@ -470,7 +477,7 @@ public class RpcServer extends RemotingServer {
      * @throws InterruptedException
      */
     public Object invokeSync(Url url, Object request, int timeoutMillis) throws RemotingException,
-                                                                         InterruptedException {
+                                                                        InterruptedException {
         check();
         return this.rpcRemoting.invokeSync(url, request, null, timeoutMillis);
     }
@@ -486,9 +493,10 @@ public class RpcServer extends RemotingServer {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public Object invokeSync(final Url url, final Object request, final InvokeContext invokeContext,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+    public Object invokeSync(final Url url, final Object request,
+                             final InvokeContext invokeContext, final int timeoutMillis)
+                                                                                        throws RemotingException,
+                                                                                        InterruptedException {
         check();
         return this.rpcRemoting.invokeSync(url, request, invokeContext, timeoutMillis);
     }
@@ -506,9 +514,9 @@ public class RpcServer extends RemotingServer {
      * @throws RemotingException
      * @throws InterruptedException
      */
-    public Object invokeSync(final Connection conn, final Object request,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+    public Object invokeSync(final Connection conn, final Object request, final int timeoutMillis)
+                                                                                                  throws RemotingException,
+                                                                                                  InterruptedException {
         return this.rpcRemoting.invokeSync(conn, request, null, timeoutMillis);
     }
 
@@ -524,9 +532,9 @@ public class RpcServer extends RemotingServer {
      * @throws InterruptedException
      */
     public Object invokeSync(final Connection conn, final Object request,
-                             final InvokeContext invokeContext,
-                             final int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+                             final InvokeContext invokeContext, final int timeoutMillis)
+                                                                                        throws RemotingException,
+                                                                                        InterruptedException {
         return this.rpcRemoting.invokeSync(conn, request, invokeContext, timeoutMillis);
     }
 
@@ -550,7 +558,7 @@ public class RpcServer extends RemotingServer {
      */
     public RpcResponseFuture invokeWithFuture(final String addr, final Object request,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         check();
         return this.rpcRemoting.invokeWithFuture(addr, request, null, timeoutMillis);
     }
@@ -569,7 +577,7 @@ public class RpcServer extends RemotingServer {
     public RpcResponseFuture invokeWithFuture(final String addr, final Object request,
                                               final InvokeContext invokeContext,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         check();
         return this.rpcRemoting.invokeWithFuture(addr, request, invokeContext, timeoutMillis);
     }
@@ -593,7 +601,7 @@ public class RpcServer extends RemotingServer {
      */
     public RpcResponseFuture invokeWithFuture(final Url url, final Object request,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         check();
         return this.rpcRemoting.invokeWithFuture(url, request, null, timeoutMillis);
     }
@@ -612,7 +620,7 @@ public class RpcServer extends RemotingServer {
     public RpcResponseFuture invokeWithFuture(final Url url, final Object request,
                                               final InvokeContext invokeContext,
                                               final int timeoutMillis) throws RemotingException,
-                                                                       InterruptedException {
+                                                                      InterruptedException {
         check();
         return this.rpcRemoting.invokeWithFuture(url, request, invokeContext, timeoutMillis);
     }
@@ -672,9 +680,9 @@ public class RpcServer extends RemotingServer {
      * @throws InterruptedException
      */
     public void invokeWithCallback(final String addr, final Object request,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         check();
         this.rpcRemoting.invokeWithCallback(addr, request, null, invokeCallback, timeoutMillis);
     }
@@ -692,9 +700,9 @@ public class RpcServer extends RemotingServer {
      */
     public void invokeWithCallback(final String addr, final Object request,
                                    final InvokeContext invokeContext,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         check();
         this.rpcRemoting.invokeWithCallback(addr, request, invokeContext, invokeCallback,
             timeoutMillis);
@@ -718,9 +726,9 @@ public class RpcServer extends RemotingServer {
      * @throws InterruptedException
      */
     public void invokeWithCallback(final Url url, final Object request,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         check();
         this.rpcRemoting.invokeWithCallback(url, request, null, invokeCallback, timeoutMillis);
     }
@@ -738,9 +746,9 @@ public class RpcServer extends RemotingServer {
      */
     public void invokeWithCallback(final Url url, final Object request,
                                    final InvokeContext invokeContext,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException,
-                                                            InterruptedException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         check();
         this.rpcRemoting.invokeWithCallback(url, request, invokeContext, invokeCallback,
             timeoutMillis);
@@ -760,8 +768,8 @@ public class RpcServer extends RemotingServer {
      * @throws RemotingException
      */
     public void invokeWithCallback(final Connection conn, final Object request,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException {
         this.rpcRemoting.invokeWithCallback(conn, request, null, invokeCallback, timeoutMillis);
     }
 
@@ -776,8 +784,8 @@ public class RpcServer extends RemotingServer {
      */
     public void invokeWithCallback(final Connection conn, final Object request,
                                    final InvokeContext invokeContext,
-                                   final InvokeCallback invokeCallback,
-                                   final int timeoutMillis) throws RemotingException {
+                                   final InvokeCallback invokeCallback, final int timeoutMillis)
+                                                                                                throws RemotingException {
         this.rpcRemoting.invokeWithCallback(conn, request, invokeContext, invokeCallback,
             timeoutMillis);
     }
@@ -824,16 +832,18 @@ public class RpcServer extends RemotingServer {
         int lowWaterMark = SystemProperties.netty_buffer_low_watermark();
         int highWaterMark = SystemProperties.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {
-            throw new IllegalArgumentException(String.format(
-                "[server side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
-                highWaterMark, lowWaterMark));
+            throw new IllegalArgumentException(
+                String
+                    .format(
+                        "[server side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
+                        highWaterMark, lowWaterMark));
         } else {
             logger.warn(
                 "[server side] bolt netty low water mark is {} bytes, high water mark is {} bytes",
                 lowWaterMark, highWaterMark);
         }
-        this.bootstrap.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK,
-            new WriteBufferWaterMark(lowWaterMark, highWaterMark));
+        this.bootstrap.childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(
+            lowWaterMark, highWaterMark));
     }
 
     // ~~~ getter and setter

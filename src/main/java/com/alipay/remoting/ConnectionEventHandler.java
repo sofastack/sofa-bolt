@@ -71,10 +71,10 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress,
                         SocketAddress localAddress, ChannelPromise promise) throws Exception {
         if (logger.isInfoEnabled()) {
-            final String local = localAddress == null ? null
-                : RemotingUtil.parseSocketAddressToString(localAddress);
-            final String remote = remoteAddress == null ? "UNKNOWN"
-                : RemotingUtil.parseSocketAddressToString(remoteAddress);
+            final String local = localAddress == null ? null : RemotingUtil
+                .parseSocketAddressToString(localAddress);
+            final String remote = remoteAddress == null ? "UNKNOWN" : RemotingUtil
+                .parseSocketAddressToString(remoteAddress);
             if (local == null) {
                 if (logger.isInfoEnabled()) {
                     logger.info("Try connect to {}", remote);
@@ -115,8 +115,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
      */
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        infoLog("Connection channel registered: {}",
-            RemotingUtil.parseRemoteAddress(ctx.channel()));
+        infoLog("Connection channel registered: {}", RemotingUtil.parseRemoteAddress(ctx.channel()));
         super.channelRegistered(ctx);
     }
 
@@ -163,8 +162,8 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                         this.onEvent(connection, connection.getUrl().getOriginUrl(),
                             ConnectionEventType.CONNECT);
                     } else {
-                        logger.warn(
-                            "channel null when handle user triggered event in ConnectionEventHandler!");
+                        logger
+                            .warn("channel null when handle user triggered event in ConnectionEventHandler!");
                     }
                     break;
                 default:
@@ -179,9 +178,10 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         final String remoteAddress = RemotingUtil.parseRemoteAddress(ctx.channel());
         final String localAddress = RemotingUtil.parseLocalAddress(ctx.channel());
-        logger.warn(
-            "ExceptionCaught in connection: local[{}], remote[{}], close the connection! Cause[{}:{}]",
-            localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
+        logger
+            .warn(
+                "ExceptionCaught in connection: local[{}], remote[{}], close the connection! Cause[{}:{}]",
+                localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
         ctx.channel().close();
     }
 
@@ -277,8 +277,8 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     public class ConnectionEventExecutor {
         Logger          logger   = BoltLoggerFactory.getLogger("CommonDefault");
         ExecutorService executor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS,
-            new LinkedBlockingQueue<Runnable>(10000),
-            new NamedThreadFactory("Bolt-conn-event-executor", true));
+                                     new LinkedBlockingQueue<Runnable>(10000),
+                                     new NamedThreadFactory("Bolt-conn-event-executor", true));
 
         /**
          * Process event.

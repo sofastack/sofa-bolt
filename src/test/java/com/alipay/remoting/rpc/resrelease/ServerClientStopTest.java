@@ -36,7 +36,7 @@ import com.alipay.remoting.rpc.common.*;
  */
 public class ServerClientStopTest {
     static Logger             logger                    = LoggerFactory
-        .getLogger(BasicUsageTest.class);
+                                                            .getLogger(BasicUsageTest.class);
 
     BoltServer                server;
     RpcClient                 client;

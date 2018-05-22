@@ -47,8 +47,8 @@ public class NormalRequestBodyCustomSerializer extends DefaultCustomSerializer {
      * @see CustomSerializer#serializeContent(RequestCommand, InvokeContext)
      */
     @Override
-    public <T extends RequestCommand> boolean serializeContent(T req,
-                                                               InvokeContext invokeContext) throws SerializationException {
+    public <T extends RequestCommand> boolean serializeContent(T req, InvokeContext invokeContext)
+                                                                                                  throws SerializationException {
         serialFlag.set(true);
         RpcRequestCommand rpcReq = (RpcRequestCommand) req;
         RequestBody bd = (RequestBody) rpcReq.getRequestObject();
@@ -72,7 +72,8 @@ public class NormalRequestBodyCustomSerializer extends DefaultCustomSerializer {
      * @see CustomSerializer#deserializeContent(RequestCommand)
      */
     @Override
-    public <T extends RequestCommand> boolean deserializeContent(T req) throws DeserializationException {
+    public <T extends RequestCommand> boolean deserializeContent(T req)
+                                                                       throws DeserializationException {
         deserialFlag.set(true);
         RpcRequestCommand rpcReq = (RpcRequestCommand) req;
         byte[] content = rpcReq.getContent();

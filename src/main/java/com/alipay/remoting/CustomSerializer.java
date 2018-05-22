@@ -37,8 +37,8 @@ public interface CustomSerializer {
      * @return
      * @throws CodecException
      */
-    public <T extends RequestCommand> boolean serializeHeader(T request,
-                                                              InvokeContext invokeContext) throws SerializationException;
+    public <T extends RequestCommand> boolean serializeHeader(T request, InvokeContext invokeContext)
+                                                                                                     throws SerializationException;
 
     /**
      * Serialize the header of ResponseCommand.
@@ -47,7 +47,8 @@ public interface CustomSerializer {
      * @return
      * @throws CodecException
      */
-    public <T extends ResponseCommand> boolean serializeHeader(T response) throws SerializationException;
+    public <T extends ResponseCommand> boolean serializeHeader(T response)
+                                                                          throws SerializationException;
 
     /**
      * Deserialize the header of RequestCommand.
@@ -56,7 +57,8 @@ public interface CustomSerializer {
      * @return
      * @throws CodecException
      */
-    public <T extends RequestCommand> boolean deserializeHeader(T request) throws DeserializationException;
+    public <T extends RequestCommand> boolean deserializeHeader(T request)
+                                                                          throws DeserializationException;
 
     /**
      * Deserialize the header of ResponseCommand.
@@ -67,7 +69,8 @@ public interface CustomSerializer {
      * @throws CodecException
      */
     public <T extends ResponseCommand> boolean deserializeHeader(T response,
-                                                                 InvokeContext invokeContext) throws DeserializationException;
+                                                                 InvokeContext invokeContext)
+                                                                                             throws DeserializationException;
 
     /**
      * Serialize the content of RequestCommand.
@@ -78,7 +81,8 @@ public interface CustomSerializer {
      * @throws CodecException
      */
     public <T extends RequestCommand> boolean serializeContent(T request,
-                                                               InvokeContext invokeContext) throws SerializationException;
+                                                               InvokeContext invokeContext)
+                                                                                           throws SerializationException;
 
     /**
      * Serialize the content of ResponseCommand.
@@ -87,7 +91,8 @@ public interface CustomSerializer {
      * @return
      * @throws CodecException
      */
-    public <T extends ResponseCommand> boolean serializeContent(T response) throws SerializationException;
+    public <T extends ResponseCommand> boolean serializeContent(T response)
+                                                                           throws SerializationException;
 
     /**
      * Deserialize the content of RequestCommand.
@@ -96,7 +101,8 @@ public interface CustomSerializer {
      * @return
      * @throws CodecException
      */
-    public <T extends RequestCommand> boolean deserializeContent(T request) throws DeserializationException;
+    public <T extends RequestCommand> boolean deserializeContent(T request)
+                                                                           throws DeserializationException;
 
     /**
      * Deserialize the content of ResponseCommand.
@@ -107,5 +113,6 @@ public interface CustomSerializer {
      * @throws CodecException
      */
     public <T extends ResponseCommand> boolean deserializeContent(T response,
-                                                                  InvokeContext invokeContext) throws DeserializationException;
+                                                                  InvokeContext invokeContext)
+                                                                                              throws DeserializationException;
 }

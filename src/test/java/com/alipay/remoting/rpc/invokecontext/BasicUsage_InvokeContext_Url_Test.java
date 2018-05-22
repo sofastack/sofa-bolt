@@ -46,7 +46,7 @@ import com.alipay.remoting.util.TraceLogUtil;
  */
 public class BasicUsage_InvokeContext_Url_Test {
     static Logger             logger                    = LoggerFactory
-        .getLogger(BasicUsage_InvokeContext_Url_Test.class);
+                                                            .getLogger(BasicUsage_InvokeContext_Url_Test.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -252,8 +252,8 @@ public class BasicUsage_InvokeContext_Url_Test {
             logger.warn("CLIENT_CONN_CREATETIME:"
                         + invokeContext.get(InvokeContext.CLIENT_CONN_CREATETIME));
 
-            TraceLogUtil.printConnectionTraceLog(logger, "0af4232214701387943901253",
-                invokeContext);
+            TraceLogUtil
+                .printConnectionTraceLog(logger, "0af4232214701387943901253", invokeContext);
         }
 
         Assert.assertTrue(serverConnectProcessor.isConnected());

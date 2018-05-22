@@ -40,8 +40,9 @@ public class RpcClientRemoting extends RpcRemoting {
      * @see com.alipay.remoting.rpc.RpcRemoting#oneway(com.alipay.remoting.Url, java.lang.Object, InvokeContext)
      */
     @Override
-    public void oneway(Url url, Object request,
-                       InvokeContext invokeContext) throws RemotingException, InterruptedException {
+    public void oneway(Url url, Object request, InvokeContext invokeContext)
+                                                                            throws RemotingException,
+                                                                            InterruptedException {
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         this.oneway(conn, request, invokeContext);
@@ -51,8 +52,9 @@ public class RpcClientRemoting extends RpcRemoting {
      * @see com.alipay.remoting.rpc.RpcRemoting#invokeSync(com.alipay.remoting.Url, java.lang.Object, InvokeContext, int)
      */
     @Override
-    public Object invokeSync(Url url, Object request, InvokeContext invokeContext,
-                             int timeoutMillis) throws RemotingException, InterruptedException {
+    public Object invokeSync(Url url, Object request, InvokeContext invokeContext, int timeoutMillis)
+                                                                                                     throws RemotingException,
+                                                                                                     InterruptedException {
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         return this.invokeSync(conn, request, invokeContext, timeoutMillis);
@@ -64,7 +66,7 @@ public class RpcClientRemoting extends RpcRemoting {
     @Override
     public RpcResponseFuture invokeWithFuture(Url url, Object request, InvokeContext invokeContext,
                                               int timeoutMillis) throws RemotingException,
-                                                                 InterruptedException {
+                                                                InterruptedException {
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         return this.invokeWithFuture(conn, request, invokeContext, timeoutMillis);
@@ -75,9 +77,9 @@ public class RpcClientRemoting extends RpcRemoting {
      */
     @Override
     public void invokeWithCallback(Url url, Object request, InvokeContext invokeContext,
-                                   InvokeCallback invokeCallback,
-                                   int timeoutMillis) throws RemotingException,
-                                                      InterruptedException {
+                                   InvokeCallback invokeCallback, int timeoutMillis)
+                                                                                    throws RemotingException,
+                                                                                    InterruptedException {
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         this.invokeWithCallback(conn, request, invokeContext, invokeCallback, timeoutMillis);
@@ -110,9 +112,9 @@ public class RpcClientRemoting extends RpcRemoting {
      * @return
      * @throws RemotingException
      */
-    protected Connection getConnectionAndInitInvokeContext(Url url,
-                                                           InvokeContext invokeContext) throws RemotingException,
-                                                                                        InterruptedException {
+    protected Connection getConnectionAndInitInvokeContext(Url url, InvokeContext invokeContext)
+                                                                                                throws RemotingException,
+                                                                                                InterruptedException {
         long start = System.currentTimeMillis();
         Connection conn = null;
         try {

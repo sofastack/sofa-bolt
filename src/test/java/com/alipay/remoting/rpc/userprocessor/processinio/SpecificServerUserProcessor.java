@@ -42,7 +42,7 @@ public class SpecificServerUserProcessor extends SyncUserProcessor<RequestBody> 
 
     /** logger */
     private static final Logger logger        = LoggerFactory
-        .getLogger(SpecificServerUserProcessor.class);
+                                                  .getLogger(SpecificServerUserProcessor.class);
 
     /** delay milliseconds */
     private long                delayMs;
@@ -133,7 +133,7 @@ public class SpecificServerUserProcessor extends SyncUserProcessor<RequestBody> 
 
     public int getInvokeTimesEachCallType(RequestBody.InvokeType type) {
         return new int[] { this.onewayTimes.get(), this.syncTimes.get(), this.futureTimes.get(),
-                           this.callbackTimes.get() }[type.ordinal()];
+                this.callbackTimes.get() }[type.ordinal()];
     }
 
     public String getRemoteAddr() throws InterruptedException {

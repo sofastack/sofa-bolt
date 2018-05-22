@@ -40,7 +40,7 @@ public class AsyncExceptionUserProcessor extends AsyncUserProcessor<RequestBody>
 
     /** logger */
     private static final Logger logger      = LoggerFactory
-        .getLogger(AsyncExceptionUserProcessor.class);
+                                                .getLogger(AsyncExceptionUserProcessor.class);
 
     /** delay milliseconds */
     private long                delayMs;
@@ -50,7 +50,8 @@ public class AsyncExceptionUserProcessor extends AsyncUserProcessor<RequestBody>
 
     /** executor */
     private ThreadPoolExecutor  executor    = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-        new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
+                                                new ArrayBlockingQueue<Runnable>(4),
+                                                new NamedThreadFactory("Request-process-pool"));
 
     private AtomicInteger       invokeTimes = new AtomicInteger();
 

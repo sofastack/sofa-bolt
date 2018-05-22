@@ -45,8 +45,8 @@ public class TimerHolder {
     }
 
     private static class DefaultInstance {
-        static final Timer INSTANCE = new HashedWheelTimer(
-            new NamedThreadFactory("DefaultTimer" + defaultTickDuration), defaultTickDuration,
-            TimeUnit.MILLISECONDS);
+        static final Timer INSTANCE = new HashedWheelTimer(new NamedThreadFactory(
+                                        "DefaultTimer" + defaultTickDuration), defaultTickDuration,
+                                        TimeUnit.MILLISECONDS);
     }
 }

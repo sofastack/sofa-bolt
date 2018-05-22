@@ -38,7 +38,7 @@ import com.alipay.remoting.util.RunStateRecordedFutureTask;
  */
 public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
     private static final Logger     logger                 = BoltLoggerFactory
-        .getLogger("CommonDefault");
+                                                               .getLogger("CommonDefault");
 
     /** the connections threshold of each {@link Url#uniqueKey} */
     private static final int        CONNECTION_THRESHOLD   = SystemProperties.conn_threshold();
@@ -103,8 +103,8 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
                     List<Connection> serviceOffConnections = filteredConnectons
                         .get(Configs.CONN_SERVICE_STATUS_OFF);
                     if (serviceOnConnections.size() > CONNECTION_THRESHOLD) {
-                        Connection freshSelectConnect = serviceOnConnections
-                            .get(random.nextInt(serviceOnConnections.size()));
+                        Connection freshSelectConnect = serviceOnConnections.get(random
+                            .nextInt(serviceOnConnections.size()));
                         freshSelectConnect.setAttribute(Configs.CONN_SERVICE_STATUS,
                             Configs.CONN_SERVICE_STATUS_OFF);
 
@@ -119,9 +119,10 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
                             closeFreshSelectConnections(lastSelectConnect, serviceOffConnections);
                         }
                         if (logger.isInfoEnabled()) {
-                            logger.info(
-                                "the size of serviceOnConnections [{}] reached CONNECTION_THRESHOLD [{}].",
-                                serviceOnConnections.size(), CONNECTION_THRESHOLD);
+                            logger
+                                .info(
+                                    "the size of serviceOnConnections [{}] reached CONNECTION_THRESHOLD [{}].",
+                                    serviceOnConnections.size(), CONNECTION_THRESHOLD);
                         }
                     }
 
@@ -145,7 +146,8 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
      * @throws InterruptedException
      */
     private void closeFreshSelectConnections(Connection lastSelectConnect,
-                                             List<Connection> serviceOffConnections) throws InterruptedException {
+                                             List<Connection> serviceOffConnections)
+                                                                                    throws InterruptedException {
         if (null != lastSelectConnect) {
             if (lastSelectConnect.isInvokeFutureMapFinish()) {
                 serviceOffConnections.add(lastSelectConnect);

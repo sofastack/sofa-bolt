@@ -32,8 +32,9 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @version $Id: ReconnectManager.java, v 0.1 Mar 11, 2016 5:20:50 PM yunliang.shi Exp $
  */
 public class ReconnectManager {
-    private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
-    protected final List<Url/* url */>               canceled               = new CopyOnWriteArrayList<Url>();
+    private static final Logger                      logger                 = BoltLoggerFactory
+                                                                                .getLogger("CommonDefault");
+    protected final List<Url/* url */>              canceled               = new CopyOnWriteArrayList<Url>();
     private final LinkedBlockingQueue<ReconnectTask> tasks                  = new LinkedBlockingQueue<ReconnectTask>();
     private final Thread                             healConnectionThreads;
     private volatile boolean                         started                = false;
@@ -48,8 +49,7 @@ public class ReconnectManager {
         this.started = true;
     }
 
-    private void doReconnectTask(ReconnectTask task) throws InterruptedException,
-                                                     RemotingException {
+    private void doReconnectTask(ReconnectTask task) throws InterruptedException, RemotingException {
         connectionManager.createConnectionAndHealIfNeed(task.url);
     }
 

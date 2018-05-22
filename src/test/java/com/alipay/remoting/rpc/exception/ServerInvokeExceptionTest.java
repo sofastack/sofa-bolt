@@ -37,7 +37,7 @@ import com.alipay.remoting.rpc.common.*;
  */
 public class ServerInvokeExceptionTest {
     static Logger             logger                    = LoggerFactory
-        .getLogger(ServerInvokeExceptionTest.class);
+                                                            .getLogger(ServerInvokeExceptionTest.class);
 
     BoltServer                server;
     RpcClient                 client;

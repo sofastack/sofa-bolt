@@ -140,8 +140,8 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                 public void run(Timeout timeout) throws Exception {
                     InvokeFuture future = conn.removeInvokeFuture(heartbeatId);
                     if (future != null) {
-                        future.putResponse(
-                            commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
+                        future.putResponse(commandFactory.createTimeoutResponse(conn
+                            .getRemoteAddress()));
                         future.tryAsyncExecuteInvokeCallbackAbnormally();
                     }
                 }

@@ -38,7 +38,7 @@ import com.alipay.remoting.rpc.common.*;
  */
 public class WaterMarkTest {
     static Logger             logger                    = LoggerFactory
-        .getLogger(WaterMarkTest.class);
+                                                            .getLogger(WaterMarkTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -50,7 +50,7 @@ public class WaterMarkTest {
     int                       invokeTimes               = 5;
 
     SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(0, 20, 20,
-        60, 100);
+                                                            60, 100);
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
@@ -134,8 +134,8 @@ public class WaterMarkTest {
                         Assert.assertNotNull(remoteAddr);
                         RequestBody req = new RequestBody(1, 1024);
                         for (int i = 0; i < invokeTimes; i++) {
-                            String clientres = (String) server.getRpcServer().invokeSync(remoteAddr,
-                                req, 1000);
+                            String clientres = (String) server.getRpcServer().invokeSync(
+                                remoteAddr, req, 1000);
                             Assert.assertEquals(clientres, RequestBody.DEFAULT_CLIENT_RETURN_STR);
                         }
                     } catch (InterruptedException e) {

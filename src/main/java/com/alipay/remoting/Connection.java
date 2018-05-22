@@ -46,38 +46,38 @@ import io.netty.util.AttributeKey;
 public class Connection {
 
     /** Attribute key for connection */
-    public static final AttributeKey<Connection>                                CONNECTION       = AttributeKey
-        .valueOf("connection");
+    public static final AttributeKey<Connection>                                  CONNECTION       = AttributeKey
+                                                                                                       .valueOf("connection");
     /** Attribute key for heartbeat count */
-    public static final AttributeKey<Integer>                                   HEARTBEAT_COUNT  = AttributeKey
-        .valueOf("heartbeatCount");
+    public static final AttributeKey<Integer>                                     HEARTBEAT_COUNT  = AttributeKey
+                                                                                                       .valueOf("heartbeatCount");
     /** Attribute key for heartbeat switch for each connection */
-    public static final AttributeKey<Boolean>                                   HEARTBEAT_SWITCH = AttributeKey
-        .valueOf("heartbeatSwitch");
+    public static final AttributeKey<Boolean>                                     HEARTBEAT_SWITCH = AttributeKey
+                                                                                                       .valueOf("heartbeatSwitch");
     /** Attribute key for protocol */
-    public static final AttributeKey<ProtocolCode>                              PROTOCOL         = AttributeKey
-        .valueOf("protocol");
+    public static final AttributeKey<ProtocolCode>                                PROTOCOL         = AttributeKey
+                                                                                                       .valueOf("protocol");
     /** Attribute key for version */
-    public static final AttributeKey<Byte>                                      VERSION          = AttributeKey
-        .valueOf("version");
-    private static final Logger                                                 logger           = BoltLoggerFactory
-        .getLogger("CommonDefault");
+    public static final AttributeKey<Byte>                                        VERSION          = AttributeKey
+                                                                                                       .valueOf("version");
+    private static final Logger                                                   logger           = BoltLoggerFactory
+                                                                                                       .getLogger("CommonDefault");
     /** no reference of the current connection */
-    private static final int                                                    NO_REFERENCE     = 0;
-    private final ConcurrentHashMap<Integer, InvokeFuture>                      invokeFutureMap  = new ConcurrentHashMap<Integer, InvokeFuture>(
-        4);
+    private static final int                                                      NO_REFERENCE     = 0;
+    private final ConcurrentHashMap<Integer, InvokeFuture>                        invokeFutureMap  = new ConcurrentHashMap<Integer, InvokeFuture>(
+                                                                                                       4);
     private final ConcurrentHashMap<Integer/* id */, String/* poolKey */>       id2PoolKey       = new ConcurrentHashMap<Integer, String>(
-        256);
+                                                                                                       256);
     private final ConcurrentHashMap<String/* attr key*/, Object /*attr value*/> attributes       = new ConcurrentHashMap<String, Object>();
     /** the reference count used for this connection. If equals 2, it means this connection has been referenced 2 times */
-    private final AtomicInteger                                                 referenceCount   = new AtomicInteger();
-    private Channel                                                             channel;
-    private ProtocolCode                                                        protocolCode;
-    private byte                                                                version          = RpcProtocolV2.PROTOCOL_VERSION_1;
-    private Url                                                                 url;
-    private Set<String>                                                         poolKeys         = new ConcurrentHashSet<String>();
-    private AtomicBoolean                                                       closed           = new AtomicBoolean(
-        false);
+    private final AtomicInteger                                                   referenceCount   = new AtomicInteger();
+    private Channel                                                               channel;
+    private ProtocolCode                                                          protocolCode;
+    private byte                                                                  version          = RpcProtocolV2.PROTOCOL_VERSION_1;
+    private Url                                                                   url;
+    private Set<String>                                                           poolKeys         = new ConcurrentHashSet<String>();
+    private AtomicBoolean                                                         closed           = new AtomicBoolean(
+                                                                                                       false);
 
     /**
      * Constructor
@@ -292,10 +292,11 @@ public class Connection {
                         @Override
                         public void operationComplete(ChannelFuture future) throws Exception {
                             if (logger.isInfoEnabled()) {
-                                logger.info(
-                                    "Close the connection to remote address={}, result={}, cause={}",
-                                    RemotingUtil.parseRemoteAddress(Connection.this.getChannel()),
-                                    future.isSuccess(), future.cause());
+                                logger
+                                    .info(
+                                        "Close the connection to remote address={}, result={}, cause={}",
+                                        RemotingUtil.parseRemoteAddress(Connection.this
+                                            .getChannel()), future.isSuccess(), future.cause());
                             }
                         }
 

@@ -57,7 +57,7 @@ public abstract class BaseRemoting {
      */
     protected RemotingCommand invokeSync(final Connection conn, final RemotingCommand request,
                                          final int timeoutMillis) throws RemotingException,
-                                                                  InterruptedException {
+                                                                 InterruptedException {
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
         conn.addInvokeFuture(future);
         try {
@@ -67,8 +67,8 @@ public abstract class BaseRemoting {
                 public void operationComplete(ChannelFuture f) throws Exception {
                     if (!f.isSuccess()) {
                         conn.removeInvokeFuture(request.getId());
-                        future.putResponse(commandFactory
-                            .createSendFailedResponse(conn.getRemoteAddress(), f.cause()));
+                        future.putResponse(commandFactory.createSendFailedResponse(
+                            conn.getRemoteAddress(), f.cause()));
                         logger.error("Invoke send failed, id={}", request.getId(), f.cause());
                     }
                 }
@@ -77,8 +77,8 @@ public abstract class BaseRemoting {
         } catch (Exception e) {
             conn.removeInvokeFuture(request.getId());
             if (future != null) {
-                future.putResponse(
-                    commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
+                future.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(),
+                    e));
             }
             logger.error("Exception caught when sending invocation, id={}", request.getId(), e);
         }
@@ -103,8 +103,7 @@ public abstract class BaseRemoting {
      * @throws InterruptedException
      */
     protected void invokeWithCallback(final Connection conn, final RemotingCommand request,
-                                      final InvokeCallback invokeCallback,
-                                      final int timeoutMillis) {
+                                      final InvokeCallback invokeCallback, final int timeoutMillis) {
         final InvokeFuture future = createInvokeFuture(conn, request, request.getInvokeContext(),
             invokeCallback);
         conn.addInvokeFuture(future);
@@ -116,8 +115,8 @@ public abstract class BaseRemoting {
                 public void run(Timeout timeout) throws Exception {
                     InvokeFuture future = conn.removeInvokeFuture(request.getId());
                     if (future != null) {
-                        future.putResponse(
-                            commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
+                        future.putResponse(commandFactory.createTimeoutResponse(conn
+                            .getRemoteAddress()));
                         future.tryAsyncExecuteInvokeCallbackAbnormally();
                     }
                 }
@@ -132,8 +131,8 @@ public abstract class BaseRemoting {
                         InvokeFuture f = conn.removeInvokeFuture(request.getId());
                         if (f != null) {
                             f.cancelTimeout();
-                            f.putResponse(commandFactory
-                                .createSendFailedResponse(conn.getRemoteAddress(), cf.cause()));
+                            f.putResponse(commandFactory.createSendFailedResponse(
+                                conn.getRemoteAddress(), cf.cause()));
                             f.tryAsyncExecuteInvokeCallbackAbnormally();
                         }
                         logger.error("Invoke send failed. The address is {}",
@@ -174,8 +173,8 @@ public abstract class BaseRemoting {
                 public void run(Timeout timeout) throws Exception {
                     InvokeFuture future = conn.removeInvokeFuture(request.getId());
                     if (future != null) {
-                        future.putResponse(
-                            commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
+                        future.putResponse(commandFactory.createTimeoutResponse(conn
+                            .getRemoteAddress()));
                     }
                 }
 
@@ -190,8 +189,8 @@ public abstract class BaseRemoting {
                         InvokeFuture f = conn.removeInvokeFuture(request.getId());
                         if (f != null) {
                             f.cancelTimeout();
-                            f.putResponse(commandFactory
-                                .createSendFailedResponse(conn.getRemoteAddress(), cf.cause()));
+                            f.putResponse(commandFactory.createSendFailedResponse(
+                                conn.getRemoteAddress(), cf.cause()));
                         }
                         logger.error("Invoke send failed. The address is {}",
                             RemotingUtil.parseRemoteAddress(conn.getChannel()), cf.cause());

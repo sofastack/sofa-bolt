@@ -39,8 +39,8 @@ public class CustomHeaderSerializer extends DefaultCustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#serializeHeader(com.alipay.remoting.rpc.RequestCommand, InvokeContext)
      */
     @Override
-    public <T extends RequestCommand> boolean serializeHeader(T request,
-                                                              InvokeContext invokeContext) throws SerializationException {
+    public <T extends RequestCommand> boolean serializeHeader(T request, InvokeContext invokeContext)
+                                                                                                     throws SerializationException {
         if (request instanceof RpcRequestCommand) {
             RpcRequestCommand requestCommand = (RpcRequestCommand) request;
             try {
@@ -57,7 +57,8 @@ public class CustomHeaderSerializer extends DefaultCustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#deserializeHeader(com.alipay.remoting.rpc.RequestCommand)
      */
     @Override
-    public <T extends RequestCommand> boolean deserializeHeader(T request) throws DeserializationException {
+    public <T extends RequestCommand> boolean deserializeHeader(T request)
+                                                                          throws DeserializationException {
         if (request instanceof RpcRequestCommand) {
             RpcRequestCommand requestCommand = (RpcRequestCommand) request;
             byte[] header = requestCommand.getHeader();
@@ -75,7 +76,8 @@ public class CustomHeaderSerializer extends DefaultCustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#serializeHeader(com.alipay.remoting.rpc.ResponseCommand)
      */
     @Override
-    public <T extends ResponseCommand> boolean serializeHeader(T response) throws SerializationException {
+    public <T extends ResponseCommand> boolean serializeHeader(T response)
+                                                                          throws SerializationException {
         if (response instanceof RpcResponseCommand) {
             RpcResponseCommand responseCommand = (RpcResponseCommand) response;
             try {
@@ -93,7 +95,8 @@ public class CustomHeaderSerializer extends DefaultCustomSerializer {
      */
     @Override
     public <T extends ResponseCommand> boolean deserializeHeader(T response,
-                                                                 InvokeContext invokeContext) throws DeserializationException {
+                                                                 InvokeContext invokeContext)
+                                                                                             throws DeserializationException {
         if (response instanceof RpcResponseCommand) {
             RpcResponseCommand responseCommand = (RpcResponseCommand) response;
             byte[] header = responseCommand.getHeader();

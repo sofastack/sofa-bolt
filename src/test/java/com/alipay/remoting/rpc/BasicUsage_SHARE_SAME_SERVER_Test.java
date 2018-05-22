@@ -44,7 +44,7 @@ import com.alipay.remoting.rpc.common.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BasicUsage_SHARE_SAME_SERVER_Test {
     static Logger                    logger                    = LoggerFactory
-        .getLogger(BasicUsage_SHARE_SAME_SERVER_Test.class);
+                                                                   .getLogger(BasicUsage_SHARE_SAME_SERVER_Test.class);
     static BoltServer                server;
     static int                       port                      = PortScan.select();
     static String                    ip                        = "127.0.0.1";

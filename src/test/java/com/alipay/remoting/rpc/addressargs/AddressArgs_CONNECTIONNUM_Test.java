@@ -46,7 +46,7 @@ import com.alipay.remoting.rpc.common.*;
  */
 public class AddressArgs_CONNECTIONNUM_Test {
     static Logger             logger                    = LoggerFactory
-        .getLogger(AddressArgs_CONNECTIONNUM_Test.class);
+                                                            .getLogger(AddressArgs_CONNECTIONNUM_Test.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -128,10 +128,10 @@ public class AddressArgs_CONNECTIONNUM_Test {
 
                 client.closeConnection(addr);
                 Thread.sleep(200);// must wait, to wait event finish
-                Assert.assertEquals(expectConnTimes,
-                    serverDisConnectProcessor.getDisConnectTimes());
-                Assert.assertEquals(expectConnTimes,
-                    clientDisConnectProcessor.getDisConnectTimes());
+                Assert
+                    .assertEquals(expectConnTimes, serverDisConnectProcessor.getDisConnectTimes());
+                Assert
+                    .assertEquals(expectConnTimes, clientDisConnectProcessor.getDisConnectTimes());
             } else {
                 Thread.sleep(200);// must wait, to wait event finish
                 Assert.assertTrue(serverConnectProcessor.getConnectTimes() >= expectConnTimes);
@@ -163,7 +163,7 @@ public class AddressArgs_CONNECTIONNUM_Test {
      * @throws InterruptedException
      */
     private Object doInvoke(RequestBody.InvokeType type, String url) throws RemotingException,
-                                                                     InterruptedException {
+                                                                    InterruptedException {
         RequestBody b1 = new RequestBody(1, "hello world");
         Object obj = null;
         if (type.equals(RequestBody.InvokeType.ONEWAY)) {

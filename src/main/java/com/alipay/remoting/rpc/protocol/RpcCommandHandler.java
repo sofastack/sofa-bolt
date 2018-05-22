@@ -152,9 +152,10 @@ public class RpcCommandHandler implements CommandHandler {
                             public void operationComplete(ChannelFuture future) throws Exception {
                                 if (future.isSuccess()) {
                                     if (logger.isInfoEnabled()) {
-                                        logger.info(
-                                            "Write back exception response done, requestId={}, status={}",
-                                            id, response.getResponseStatus());
+                                        logger
+                                            .info(
+                                                "Write back exception response done, requestId={}, status={}",
+                                                id, response.getResponseStatus());
                                     }
                                 } else {
                                     logger.error(

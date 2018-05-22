@@ -81,8 +81,8 @@ public class RpcRequestCommand extends RequestCommand {
             try {
                 this.setRequestClass(new String(this.getClazz(), Configs.DEFAULT_CHARSET));
             } catch (UnsupportedEncodingException e) {
-                throw new DeserializationException(
-                    "Unsupported charset: " + Configs.DEFAULT_CHARSET, e);
+                throw new DeserializationException("Unsupported charset: "
+                                                   + Configs.DEFAULT_CHARSET, e);
             }
         }
     }

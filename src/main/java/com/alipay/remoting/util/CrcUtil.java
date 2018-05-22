@@ -26,11 +26,11 @@ import java.util.zip.CRC32;
 public class CrcUtil {
 
     private static final ThreadLocal<CRC32> CRC_32_THREAD_LOCAL = new ThreadLocal<CRC32>() {
-        @Override
-        protected CRC32 initialValue() {
-            return new CRC32();
-        }
-    };
+                                                                    @Override
+                                                                    protected CRC32 initialValue() {
+                                                                        return new CRC32();
+                                                                    }
+                                                                };
 
     /**
      * Compute CRC32 code for byte[].

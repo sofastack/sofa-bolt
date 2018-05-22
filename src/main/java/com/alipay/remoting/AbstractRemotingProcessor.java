@@ -30,8 +30,8 @@ import com.alipay.remoting.util.RemotingUtil;
  * @version $Id: RemotingProcessor.java, v 0.1 2015-9-6 PM2:50:51 tao Exp $
  * @param <T>
  */
-public abstract class AbstractRemotingProcessor<T extends RemotingCommand>
-                                               implements RemotingProcessor<T> {
+public abstract class AbstractRemotingProcessor<T extends RemotingCommand> implements
+                                                                           RemotingProcessor<T> {
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
     private ExecutorService     executor;
     private CommandFactory      commandFactory;
@@ -85,8 +85,8 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand>
      * @throws Exception
      */
     @Override
-    public void process(RemotingContext ctx, T msg,
-                        ExecutorService defaultExecutor) throws Exception {
+    public void process(RemotingContext ctx, T msg, ExecutorService defaultExecutor)
+                                                                                    throws Exception {
         ProcessTask task = new ProcessTask(ctx, msg);
         if (this.getExecutor() != null) {
             this.getExecutor().execute(task);
@@ -146,13 +146,13 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand>
                 AbstractRemotingProcessor.this.doProcess(ctx, msg);
             } catch (Throwable e) {
                 //protect the thread running this task
-                String remotingAddress = RemotingUtil
-                    .parseRemoteAddress(ctx.getChannelContext().channel());
-                logger.error(
-                    "Exception caught when process rpc request command in AbstractRemotingProcessor, Id="
-                             + msg.getId() + "! Invoke source address is [" + remotingAddress
-                             + "].",
-                    e);
+                String remotingAddress = RemotingUtil.parseRemoteAddress(ctx.getChannelContext()
+                    .channel());
+                logger
+                    .error(
+                        "Exception caught when process rpc request command in AbstractRemotingProcessor, Id="
+                                + msg.getId() + "! Invoke source address is [" + remotingAddress
+                                + "].", e);
             }
         }
 

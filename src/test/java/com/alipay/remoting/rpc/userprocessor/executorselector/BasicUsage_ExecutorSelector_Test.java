@@ -50,7 +50,7 @@ import com.alipay.remoting.util.RemotingUtil;
  */
 public class BasicUsage_ExecutorSelector_Test {
     static Logger                  logger                    = LoggerFactory
-        .getLogger(BasicUsage_ExecutorSelector_Test.class);
+                                                                 .getLogger(BasicUsage_ExecutorSelector_Test.class);
 
     BoltServer                     server;
     RpcClient                      client;
@@ -69,9 +69,9 @@ public class BasicUsage_ExecutorSelector_Test {
     DISCONNECTEventProcessor       serverDisConnectProcessor = new DISCONNECTEventProcessor();
 
     UserProcessor.ExecutorSelector selector0                 = new DefaultExecutorSelector(
-        EXECUTOR0);
+                                                                 EXECUTOR0);
     UserProcessor.ExecutorSelector selector1                 = new DefaultExecutorSelector(
-        EXECUTOR1);
+                                                                 EXECUTOR1);
 
     @BeforeClass
     public static void classInit() {

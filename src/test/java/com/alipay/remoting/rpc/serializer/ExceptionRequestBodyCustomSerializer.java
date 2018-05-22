@@ -60,8 +60,8 @@ public class ExceptionRequestBodyCustomSerializer extends DefaultCustomSerialize
      * @see CustomSerializer#serializeContent(RequestCommand, InvokeContext)
      */
     @Override
-    public <T extends RequestCommand> boolean serializeContent(T req,
-                                                               InvokeContext invokeContext) throws SerializationException {
+    public <T extends RequestCommand> boolean serializeContent(T req, InvokeContext invokeContext)
+                                                                                                  throws SerializationException {
         serialFlag.set(true);
         if (serialRuntimeException) {
             throw new RuntimeException(
@@ -78,7 +78,8 @@ public class ExceptionRequestBodyCustomSerializer extends DefaultCustomSerialize
      * @see CustomSerializer#deserializeContent(RequestCommand)
      */
     @Override
-    public <T extends RequestCommand> boolean deserializeContent(T req) throws DeserializationException {
+    public <T extends RequestCommand> boolean deserializeContent(T req)
+                                                                       throws DeserializationException {
         deserialFlag.set(true);
         if (deserialRuntimeException) {
             throw new RuntimeException(

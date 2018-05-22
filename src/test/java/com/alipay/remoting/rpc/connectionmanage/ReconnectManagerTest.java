@@ -37,7 +37,7 @@ import com.alipay.remoting.util.GlobalSwitch;
  */
 public class ReconnectManagerTest {
     static Logger                 logger                    = LoggerFactory
-        .getLogger(ReconnectManagerTest.class);
+                                                                .getLogger(ReconnectManagerTest.class);
 
     BoltServer                    server;
     RpcClient                     client;

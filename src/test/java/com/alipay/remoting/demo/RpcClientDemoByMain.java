@@ -36,7 +36,7 @@ import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
  */
 public class RpcClientDemoByMain {
     static Logger             logger                    = LoggerFactory
-        .getLogger(BasicUsageDemoByJunit.class);
+                                                            .getLogger(BasicUsageDemoByJunit.class);
 
     static RpcClient          client;
 

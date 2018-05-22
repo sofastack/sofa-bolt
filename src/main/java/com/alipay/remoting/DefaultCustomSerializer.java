@@ -34,8 +34,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#serializeHeader(com.alipay.remoting.rpc.RequestCommand, InvokeContext)
      */
     @Override
-    public <T extends RequestCommand> boolean serializeHeader(T request,
-                                                              InvokeContext invokeContext) throws SerializationException {
+    public <T extends RequestCommand> boolean serializeHeader(T request, InvokeContext invokeContext)
+                                                                                                     throws SerializationException {
         return false;
     }
 
@@ -43,7 +43,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#serializeHeader(com.alipay.remoting.rpc.ResponseCommand)
      */
     @Override
-    public <T extends ResponseCommand> boolean serializeHeader(T response) throws SerializationException {
+    public <T extends ResponseCommand> boolean serializeHeader(T response)
+                                                                          throws SerializationException {
         return false;
     }
 
@@ -51,7 +52,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#deserializeHeader(com.alipay.remoting.rpc.RequestCommand)
      */
     @Override
-    public <T extends RequestCommand> boolean deserializeHeader(T request) throws DeserializationException {
+    public <T extends RequestCommand> boolean deserializeHeader(T request)
+                                                                          throws DeserializationException {
         return false;
     }
 
@@ -60,7 +62,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      */
     @Override
     public <T extends ResponseCommand> boolean deserializeHeader(T response,
-                                                                 InvokeContext invokeContext) throws DeserializationException {
+                                                                 InvokeContext invokeContext)
+                                                                                             throws DeserializationException {
         return false;
     }
 
@@ -69,7 +72,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      */
     @Override
     public <T extends RequestCommand> boolean serializeContent(T request,
-                                                               InvokeContext invokeContext) throws SerializationException {
+                                                               InvokeContext invokeContext)
+                                                                                           throws SerializationException {
         return false;
     }
 
@@ -77,7 +81,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#serializeContent(com.alipay.remoting.rpc.ResponseCommand)
      */
     @Override
-    public <T extends ResponseCommand> boolean serializeContent(T response) throws SerializationException {
+    public <T extends ResponseCommand> boolean serializeContent(T response)
+                                                                           throws SerializationException {
         return false;
     }
 
@@ -85,7 +90,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      * @see com.alipay.remoting.CustomSerializer#deserializeContent(com.alipay.remoting.rpc.RequestCommand)
      */
     @Override
-    public <T extends RequestCommand> boolean deserializeContent(T request) throws DeserializationException {
+    public <T extends RequestCommand> boolean deserializeContent(T request)
+                                                                           throws DeserializationException {
         return false;
     }
 
@@ -94,7 +100,8 @@ public class DefaultCustomSerializer implements CustomSerializer {
      */
     @Override
     public <T extends ResponseCommand> boolean deserializeContent(T response,
-                                                                  InvokeContext invokeContext) throws DeserializationException {
+                                                                  InvokeContext invokeContext)
+                                                                                              throws DeserializationException {
         return false;
     }
 

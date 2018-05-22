@@ -109,6 +109,6 @@ public class RequestBody implements Serializable {
     }
 
     static public enum InvokeType {
-                                   ONEWAY, SYNC, FUTURE, CALLBACK;
+        ONEWAY, SYNC, FUTURE, CALLBACK;
     }
 }

@@ -25,7 +25,7 @@ import com.alipay.remoting.CommandCode;
  */
 public enum RpcCommandCode implements CommandCode {
 
-                                                   RPC_REQUEST((short) 1), RPC_RESPONSE((short) 2);
+    RPC_REQUEST((short) 1), RPC_RESPONSE((short) 2);
 
     private short value;
 

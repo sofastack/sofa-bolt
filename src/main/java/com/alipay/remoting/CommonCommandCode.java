@@ -24,7 +24,7 @@ package com.alipay.remoting;
  */
 public enum CommonCommandCode implements CommandCode {
 
-                                                      HEARTBEAT(CommandCode.HEARTBEAT_VALUE);
+    HEARTBEAT(CommandCode.HEARTBEAT_VALUE);
 
     private short value;
 

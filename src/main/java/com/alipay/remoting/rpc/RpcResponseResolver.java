@@ -42,8 +42,8 @@ public class RpcResponseResolver {
      * @return
      * @throws RemotingException 
      */
-    public static Object resolveResponseObject(ResponseCommand responseCommand,
-                                               String addr) throws RemotingException {
+    public static Object resolveResponseObject(ResponseCommand responseCommand, String addr)
+                                                                                            throws RemotingException {
 
         preProcess(responseCommand, addr);
 
@@ -68,8 +68,8 @@ public class RpcResponseResolver {
      * @param addr
      * @throws RemotingException 
      */
-    private static void preProcess(ResponseCommand responseCommand,
-                                   String addr) throws RemotingException {
+    private static void preProcess(ResponseCommand responseCommand, String addr)
+                                                                                throws RemotingException {
 
         RemotingException e = null;
         String msg = null;

@@ -73,9 +73,10 @@ public class RpcResponseProcessor extends AbstractRemotingProcessor<RemotingComm
                         cmd.getId(), e);
                 }
             } else {
-                logger.warn("Cannot find InvokeFuture, maybe already timeout, id={}, from={} ",
-                    cmd.getId(),
-                    RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
+                logger
+                    .warn("Cannot find InvokeFuture, maybe already timeout, id={}, from={} ",
+                        cmd.getId(),
+                        RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
             }
         } finally {
             if (null != oldClassLoader) {

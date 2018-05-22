@@ -37,11 +37,12 @@ public class PreHandleUserProcessor extends SyncUserProcessor<RequestBody> {
 
     /** logger */
     private static final Logger logger      = LoggerFactory
-        .getLogger(SimpleServerUserProcessor.class);
+                                                .getLogger(SimpleServerUserProcessor.class);
 
     /** executor */
     private ThreadPoolExecutor  executor    = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-        new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
+                                                new ArrayBlockingQueue<Runnable>(4),
+                                                new NamedThreadFactory("Request-process-pool"));
 
     private AtomicInteger       invokeTimes = new AtomicInteger();
 

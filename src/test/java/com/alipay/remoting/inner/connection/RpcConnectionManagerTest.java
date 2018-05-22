@@ -42,7 +42,7 @@ import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
  */
 public class RpcConnectionManagerTest {
     private final static Logger      logger                   = LoggerFactory
-        .getLogger(RpcConnectionManagerTest.class);
+                                                                  .getLogger(RpcConnectionManagerTest.class);
     CONNECTEventProcessor            serverConnectProcessor   = new CONNECTEventProcessor();
     private DefaultConnectionManager cm;
     private ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy();
@@ -322,7 +322,7 @@ public class RpcConnectionManagerTest {
 
     @Test
     public void testConnectionCloseAndConnectionManagerRemove() throws RemotingException,
-                                                                InterruptedException {
+                                                               InterruptedException {
         final Url addr = new Url(ip, port);
 
         this.addressParser.initUrlArgs(addr);

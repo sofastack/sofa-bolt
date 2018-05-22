@@ -38,7 +38,7 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
 
     /** logger */
     private static final Logger logger        = LoggerFactory
-        .getLogger(AsyncServerUserProcessor.class);
+                                                  .getLogger(AsyncServerUserProcessor.class);
 
     /** delay milliseconds */
     private long                delayMs;
@@ -74,8 +74,8 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
         this.asyncExecutor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(4),
-            new NamedThreadFactory("Another-aysnc-process-pool"));
+            new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory(
+                "Another-aysnc-process-pool"));
     }
 
     public AsyncServerUserProcessor(boolean isException, boolean isNull) {
@@ -97,8 +97,8 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
                                     int workQueue) {
         this(delay);
         this.executor = new ThreadPoolExecutor(core, max, keepaliveSeconds, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(workQueue),
-            new NamedThreadFactory("Request-process-pool"));
+            new ArrayBlockingQueue<Runnable>(workQueue), new NamedThreadFactory(
+                "Request-process-pool"));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
 
     public int getInvokeTimesEachCallType(RequestBody.InvokeType type) {
         return new int[] { this.onewayTimes.get(), this.syncTimes.get(), this.futureTimes.get(),
-                           this.callbackTimes.get() }[type.ordinal()];
+                this.callbackTimes.get() }[type.ordinal()];
     }
 
     public String getRemoteAddr() throws InterruptedException {

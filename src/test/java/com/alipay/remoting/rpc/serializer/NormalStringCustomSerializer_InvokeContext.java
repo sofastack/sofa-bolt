@@ -47,7 +47,8 @@ public class NormalStringCustomSerializer_InvokeContext extends DefaultCustomSer
      * @see CustomSerializer#serializeContent(ResponseCommand)
      */
     @Override
-    public <T extends ResponseCommand> boolean serializeContent(T response) throws SerializationException {
+    public <T extends ResponseCommand> boolean serializeContent(T response)
+                                                                           throws SerializationException {
         serialFlag.set(true);
         RpcResponseCommand rpcResp = (RpcResponseCommand) response;
         String str = (String) rpcResp.getResponseObject();
@@ -65,7 +66,8 @@ public class NormalStringCustomSerializer_InvokeContext extends DefaultCustomSer
      */
     @Override
     public <T extends ResponseCommand> boolean deserializeContent(T response,
-                                                                  InvokeContext invokeContext) throws DeserializationException {
+                                                                  InvokeContext invokeContext)
+                                                                                              throws DeserializationException {
         deserialFlag.set(true);
         RpcResponseCommand rpcResp = (RpcResponseCommand) response;
 

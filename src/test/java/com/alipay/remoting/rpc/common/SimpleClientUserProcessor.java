@@ -41,7 +41,7 @@ public class SimpleClientUserProcessor extends SyncUserProcessor<RequestBody> {
 
     /** logger */
     private static final Logger logger         = LoggerFactory
-        .getLogger(SimpleClientUserProcessor.class);
+                                                   .getLogger(SimpleClientUserProcessor.class);
 
     /** delay milliseconds */
     private long                delayMs;
@@ -81,8 +81,8 @@ public class SimpleClientUserProcessor extends SyncUserProcessor<RequestBody> {
                                      int workQueue) {
         this(delay);
         this.executor = new ThreadPoolExecutor(core, max, keepaliveSeconds, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(workQueue),
-            new NamedThreadFactory("Request-process-pool"));
+            new ArrayBlockingQueue<Runnable>(workQueue), new NamedThreadFactory(
+                "Request-process-pool"));
     }
 
     // ~~~ override methods
@@ -137,7 +137,7 @@ public class SimpleClientUserProcessor extends SyncUserProcessor<RequestBody> {
 
     public int getInvokeTimesEachCallType(RequestBody.InvokeType type) {
         return new int[] { this.onewayTimes.get(), this.syncTimes.get(), this.futureTimes.get(),
-                           this.callbackTimes.get() }[type.ordinal()];
+                this.callbackTimes.get() }[type.ordinal()];
     }
 
     // ~~~ private methods

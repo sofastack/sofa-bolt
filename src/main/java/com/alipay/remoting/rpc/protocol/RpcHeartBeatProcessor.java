@@ -76,10 +76,11 @@ public class RpcHeartBeatProcessor extends AbstractRemotingProcessor {
                         RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()), e);
                 }
             } else {
-                logger.warn(
-                    "Cannot find heartbeat InvokeFuture, maybe already timeout. Id={}, From {}",
-                    msg.getId(),
-                    RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
+                logger
+                    .warn(
+                        "Cannot find heartbeat InvokeFuture, maybe already timeout. Id={}, From {}",
+                        msg.getId(),
+                        RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
             }
         } else {
             throw new RuntimeException("Cannot process command: " + msg.getClass().getName());

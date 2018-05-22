@@ -58,11 +58,11 @@ public class ExceptionStringCustomSerializer extends DefaultCustomSerializer {
      * @see CustomSerializer#serializeContent(ResponseCommand)
      */
     @Override
-    public <T extends ResponseCommand> boolean serializeContent(T response) throws SerializationException {
+    public <T extends ResponseCommand> boolean serializeContent(T response)
+                                                                           throws SerializationException {
         serialFlag.set(true);
         if (serialRuntimeException) {
-            throw new RuntimeException(
-                "serialRuntimeException in ExceptionStringCustomSerializer!");
+            throw new RuntimeException("serialRuntimeException in ExceptionStringCustomSerializer!");
         } else if (serialException) {
             throw new SerializationException("serialException in ExceptionStringCustomSerializer!");
         } else {
@@ -75,7 +75,8 @@ public class ExceptionStringCustomSerializer extends DefaultCustomSerializer {
      */
     @Override
     public <T extends ResponseCommand> boolean deserializeContent(T response,
-                                                                  InvokeContext invokeContext) throws DeserializationException {
+                                                                  InvokeContext invokeContext)
+                                                                                              throws DeserializationException {
         deserialFlag.set(true);
         if (deserialRuntimeException) {
             throw new RuntimeException(

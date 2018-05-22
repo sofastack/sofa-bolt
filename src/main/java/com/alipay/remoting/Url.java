@@ -34,31 +34,31 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 public class Url {
     /** logger */
     private static final Logger                                 logger      = LoggerFactory
-        .getLogger("RpcRemoting");
+                                                                                .getLogger("RpcRemoting");
     /** Use {@link SoftReference} to cache parsed urls. Key is the original url. */
     public static ConcurrentHashMap<String, SoftReference<Url>> parsedUrls  = new ConcurrentHashMap<String, SoftReference<Url>>();
     /** for unit test only, indicate this object have already been GCed */
     public static volatile boolean                              isCollected = false;
     /** origin url */
-    private String     originUrl;
+    private String                                              originUrl;
     /** ip, can be number format or hostname format*/
-    private String     ip;
+    private String                                              ip;
     /** port, should be integer between (0, 65535]*/
-    private int        port;
+    private int                                                 port;
     /** unique key of this url */
-    private String     uniqueKey;
+    private String                                              uniqueKey;
     /** URL args: timeout value when do connect */
-    private int        connectTimeout;
+    private int                                                 connectTimeout;
     /** URL args: protocol */
-    private byte       protocol;
+    private byte                                                protocol;
     /** URL args: version */
-    private byte       version = RpcProtocolV2.PROTOCOL_VERSION_1;
+    private byte                                                version     = RpcProtocolV2.PROTOCOL_VERSION_1;
     /** URL agrs: connection number */
-    private int        connNum;
+    private int                                                 connNum;
     /** URL agrs: whether need warm up connection */
-    private boolean    connWarmup;
+    private boolean                                             connWarmup;
     /** URL agrs: all parsed args of each originUrl */
-    private Properties properties;
+    private Properties                                          properties;
 
     /**
      * Constructor with originUrl
@@ -200,8 +200,8 @@ public class Url {
 
     public void setConnNum(int connNum) {
         if (connNum <= 0 || connNum > Configs.MAX_CONN_NUM_PER_URL) {
-            throw new IllegalArgumentException(
-                "Illegal value of connection number [" + connNum + "], must be an integer between ["
+            throw new IllegalArgumentException("Illegal value of connection number [" + connNum
+                                               + "], must be an integer between ["
                                                + Configs.DEFAULT_CONN_NUM_PER_URL + ", "
                                                + Configs.MAX_CONN_NUM_PER_URL + "].");
         }

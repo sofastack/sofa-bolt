@@ -46,16 +46,19 @@ public class RpcConnectionFactory implements ConnectionFactory {
 
     /** logger */
     private static final Logger                         logger         = BoltLoggerFactory
-        .getLogger("RpcRemoting");
+                                                                           .getLogger("RpcRemoting");
 
     private static final EventLoopGroup                 workerGroup    = new NioEventLoopGroup(
-        Runtime.getRuntime().availableProcessors() + 1,
-        new NamedThreadFactory("Rpc-netty-client-worker"));
+                                                                           Runtime
+                                                                               .getRuntime()
+                                                                               .availableProcessors() + 1,
+                                                                           new NamedThreadFactory(
+                                                                               "Rpc-netty-client-worker"));
 
     private Bootstrap                                   bootstrap;
 
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors = new ConcurrentHashMap<String, UserProcessor<?>>(
-        4);
+                                                                           4);
 
     /**
      * @see com.alipay.remoting.ConnectionFactory#init(ConnectionEventHandler)
@@ -86,13 +89,15 @@ public class RpcConnectionFactory implements ConnectionFactory {
 
             protected void initChannel(SocketChannel channel) throws Exception {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast("decoder",
-                    new RpcProtocolDecoder(RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
-                pipeline.addLast("encoder", new ProtocolCodeBasedEncoder(
-                    ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
+                pipeline.addLast("decoder", new RpcProtocolDecoder(
+                    RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
+                pipeline.addLast(
+                    "encoder",
+                    new ProtocolCodeBasedEncoder(ProtocolCode
+                        .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
                 if (idleSwitch) {
-                    pipeline.addLast("idleStateHandler",
-                        new IdleStateHandler(idleTime, idleTime, 0, TimeUnit.MILLISECONDS));
+                    pipeline.addLast("idleStateHandler", new IdleStateHandler(idleTime, idleTime,
+                        0, TimeUnit.MILLISECONDS));
                     pipeline.addLast("heartbeatHandler", heartbeatHandler);
                 }
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
@@ -119,8 +124,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
      * @see com.alipay.remoting.ConnectionFactory#createConnection(java.lang.String, int, int)
      */
     @Override
-    public Connection createConnection(String targetIP, int targetPort,
-                                       int connectTimeout) throws Exception {
+    public Connection createConnection(String targetIP, int targetPort, int connectTimeout)
+                                                                                           throws Exception {
         ChannelFuture future = doCreateConnection(targetIP, targetPort, connectTimeout);
         Connection conn = new Connection(future.channel(),
             ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
@@ -137,8 +142,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
                                        int connectTimeout) throws Exception {
         ChannelFuture future = doCreateConnection(targetIP, targetPort, connectTimeout);
         Connection conn = new Connection(future.channel(),
-            ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version,
-            new Url(targetIP, targetPort));
+            ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
+                targetPort));
         future.channel().pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         return conn;
     }
@@ -150,8 +155,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
      * @return
      * @throws Exception
      */
-    protected ChannelFuture doCreateConnection(String targetIP, int targetPort,
-                                               int connectTimeout) throws Exception {
+    protected ChannelFuture doCreateConnection(String targetIP, int targetPort, int connectTimeout)
+                                                                                                   throws Exception {
         // prevent unreasonable value, at least 1000
         connectTimeout = Math.max(connectTimeout, 1000);
         String addr = targetIP + ":" + targetPort;
@@ -191,7 +196,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
         UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
             processor);
         if (preProcessor != null) {
-            String errMsg = "Processor with interest key [" + processor.interest()
+            String errMsg = "Processor with interest key ["
+                            + processor.interest()
                             + "] has already been registered to rpc client, can not register again!";
             throw new RuntimeException(errMsg);
         }
@@ -212,15 +218,17 @@ public class RpcConnectionFactory implements ConnectionFactory {
         int lowWaterMark = SystemProperties.netty_buffer_low_watermark();
         int highWaterMark = SystemProperties.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {
-            throw new IllegalArgumentException(String.format(
-                "[client side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
-                highWaterMark, lowWaterMark));
+            throw new IllegalArgumentException(
+                String
+                    .format(
+                        "[client side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
+                        highWaterMark, lowWaterMark));
         } else {
             logger.warn(
                 "[client side] bolt netty low water mark is {} bytes, high water mark is {} bytes",
                 lowWaterMark, highWaterMark);
         }
-        this.bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK,
-            new WriteBufferWaterMark(lowWaterMark, highWaterMark));
+        this.bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(
+            lowWaterMark, highWaterMark));
     }
 }

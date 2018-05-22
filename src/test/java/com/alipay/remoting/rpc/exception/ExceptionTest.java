@@ -55,8 +55,8 @@ public class ExceptionTest {
     public void init() {
         server = new BoltServer(port);
         server.start();
-        server.addConnectionEventProcessor(ConnectionEventType.CONNECT,
-            new CONNECTEventProcessor());
+        server
+            .addConnectionEventProcessor(ConnectionEventType.CONNECT, new CONNECTEventProcessor());
         client = new RpcClient();
         client.init();
     }

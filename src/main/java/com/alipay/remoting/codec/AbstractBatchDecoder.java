@@ -61,10 +61,9 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
                                                                                   ByteBuf cumulation,
                                                                                   ByteBuf in) {
                                                               ByteBuf buffer;
-                                                              if (cumulation
-                                                                  .writerIndex() > cumulation
-                                                                      .maxCapacity()
-                                                                                   - in.readableBytes()
+                                                              if (cumulation.writerIndex() > cumulation
+                                                                  .maxCapacity()
+                                                                                             - in.readableBytes()
                                                                   || cumulation.refCnt() > 1) {
                                                                   // Expand cumulation (by replace it) when either there is not more room in the buffer
                                                                   // or if the refCnt is greater then 1 which may happen when the user use slice().retain() or
@@ -117,14 +116,15 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
                                                                           .readableBytes();
                                                                       composite = alloc
                                                                           .compositeBuffer();
-                                                                      composite
-                                                                          .addComponent(cumulation)
-                                                                          .writerIndex(readable);
+                                                                      composite.addComponent(
+                                                                          cumulation).writerIndex(
+                                                                          readable);
                                                                   }
-                                                                  composite.addComponent(in)
+                                                                  composite
+                                                                      .addComponent(in)
                                                                       .writerIndex(
-                                                                          composite
-                                                                              .writerIndex() + in.readableBytes());
+                                                                          composite.writerIndex()
+                                                                                  + in.readableBytes());
                                                                   buffer = composite;
                                                               }
                                                               return buffer;
@@ -387,8 +387,9 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
                 }
 
                 if (oldInputLength == in.readableBytes()) {
-                    throw new DecoderException(StringUtil.simpleClassName(
-                        getClass()) + ".decode() did not read anything but decoded a message.");
+                    throw new DecoderException(
+                        StringUtil.simpleClassName(getClass())
+                                + ".decode() did not read anything but decoded a message.");
                 }
 
                 if (isSingleDecode()) {
@@ -409,8 +410,8 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * By default this will just call {@link #decode(ChannelHandlerContext, ByteBuf, List)} but sub-classes may
      * override this for some special cleanup operation.
      */
-    protected void decodeLast(ChannelHandlerContext ctx, ByteBuf in,
-                              List<Object> out) throws Exception {
+    protected void decodeLast(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+                                                                                      throws Exception {
         decode(ctx, in, out);
     }
 
@@ -424,8 +425,8 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * @param out           the {@link List} to which decoded messages should be added
      * @throws Exception    is thrown if an error accour
      */
-    protected abstract void decode(ChannelHandlerContext ctx, ByteBuf in,
-                                   List<Object> out) throws Exception;
+    protected abstract void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+                                                                                           throws Exception;
 
     /**
      * Cumulate {@link ByteBuf}s.

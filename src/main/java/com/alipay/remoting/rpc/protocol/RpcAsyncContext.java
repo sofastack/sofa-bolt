@@ -58,8 +58,8 @@ public class RpcAsyncContext implements AsyncContext {
     @Override
     public void sendResponse(Object responseObject) {
         if (isResponseSentAlready.compareAndSet(false, true)) {
-            processor.sendResponseIfNecessary(this.ctx, cmd.getType(),
-                processor.getCommandFactory().createResponse(responseObject, this.cmd));
+            processor.sendResponseIfNecessary(this.ctx, cmd.getType(), processor
+                .getCommandFactory().createResponse(responseObject, this.cmd));
         } else {
             throw new IllegalStateException("Should not send rpc response repeatedly!");
         }

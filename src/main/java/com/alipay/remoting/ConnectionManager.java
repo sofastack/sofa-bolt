@@ -142,7 +142,7 @@ public interface ConnectionManager extends Scannable {
      * @throws RemotingException
      */
     public void createConnectionAndHealIfNeed(Url url) throws InterruptedException,
-                                                       RemotingException;
+                                                      RemotingException;
 
     // ~~~ create operation
 

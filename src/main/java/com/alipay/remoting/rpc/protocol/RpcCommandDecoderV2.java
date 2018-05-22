@@ -45,9 +45,8 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
     private int                 lessLen;
 
     {
-        lessLen = RpcProtocolV2.getResponseHeaderLength() < RpcProtocolV2.getRequestHeaderLength()
-            ? RpcProtocolV2.getResponseHeaderLength()
-            : RpcProtocolV2.getRequestHeaderLength();
+        lessLen = RpcProtocolV2.getResponseHeaderLength() < RpcProtocolV2.getRequestHeaderLength() ? RpcProtocolV2
+            .getResponseHeaderLength() : RpcProtocolV2.getRequestHeaderLength();
     }
 
     /**
@@ -102,18 +101,17 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
 
                             // decide the at-least bytes length for each version
                             int lengthAtLeastForV1 = classLen + headerLen + contentLen;
-                            boolean crcSwitchOn = ProtocolSwitch
-                                .isOn(ProtocolSwitch.CRC_SWITCH_INDEX, protocolSwitchValue);
+                            boolean crcSwitchOn = ProtocolSwitch.isOn(
+                                ProtocolSwitch.CRC_SWITCH_INDEX, protocolSwitchValue);
                             int lengthAtLeastForV2 = classLen + headerLen + contentLen;
                             if (crcSwitchOn) {
                                 lengthAtLeastForV2 += 4;// crc int
                             }
 
                             // continue read
-                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1
-                                 && in.readableBytes() >= lengthAtLeastForV1)
-                                || (version == RpcProtocolV2.PROTOCOL_VERSION_2
-                                    && in.readableBytes() >= lengthAtLeastForV2)) {
+                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1 && in.readableBytes() >= lengthAtLeastForV1)
+                                || (version == RpcProtocolV2.PROTOCOL_VERSION_2 && in
+                                    .readableBytes() >= lengthAtLeastForV2)) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
                                     in.readBytes(clazz);
@@ -173,18 +171,17 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
 
                             // decide the at-least bytes length for each version
                             int lengthAtLeastForV1 = classLen + headerLen + contentLen;
-                            boolean crcSwitchOn = ProtocolSwitch
-                                .isOn(ProtocolSwitch.CRC_SWITCH_INDEX, protocolSwitchValue);
+                            boolean crcSwitchOn = ProtocolSwitch.isOn(
+                                ProtocolSwitch.CRC_SWITCH_INDEX, protocolSwitchValue);
                             int lengthAtLeastForV2 = classLen + headerLen + contentLen;
                             if (crcSwitchOn) {
                                 lengthAtLeastForV2 += 4;// crc int
                             }
 
                             // continue read
-                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1
-                                 && in.readableBytes() >= lengthAtLeastForV1)
-                                || (version == RpcProtocolV2.PROTOCOL_VERSION_2
-                                    && in.readableBytes() >= lengthAtLeastForV2)) {
+                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1 && in.readableBytes() >= lengthAtLeastForV1)
+                                || (version == RpcProtocolV2.PROTOCOL_VERSION_2 && in
+                                    .readableBytes() >= lengthAtLeastForV2)) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
                                     in.readBytes(clazz);
@@ -220,8 +217,8 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             command.setHeader(header);
                             command.setContent(content);
                             command.setResponseTimeMillis(System.currentTimeMillis());
-                            command
-                                .setResponseHost((InetSocketAddress) ctx.channel().remoteAddress());
+                            command.setResponseHost((InetSocketAddress) ctx.channel()
+                                .remoteAddress());
 
                             out.add(command);
                         } else {

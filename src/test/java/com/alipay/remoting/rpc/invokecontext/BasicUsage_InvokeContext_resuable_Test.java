@@ -49,7 +49,7 @@ import com.alipay.remoting.util.TraceLogUtil;
 public class BasicUsage_InvokeContext_resuable_Test {
     private static final String TESTKEY                   = "test";
     static Logger               logger                    = LoggerFactory
-        .getLogger(BasicUsage_InvokeContext_resuable_Test.class);
+                                                              .getLogger(BasicUsage_InvokeContext_resuable_Test.class);
     BoltServer                  server;
     RpcClient                   client;
     int                         port                      = PortScan.select();
@@ -258,8 +258,8 @@ public class BasicUsage_InvokeContext_resuable_Test {
                         + invokeContext.get(InvokeContext.CLIENT_CONN_CREATETIME));
 
             Assert.assertEquals(invokeContext.get(TESTKEY), "TESTVALUE");
-            TraceLogUtil.printConnectionTraceLog(logger, "0af4232214701387943901253",
-                invokeContext);
+            TraceLogUtil
+                .printConnectionTraceLog(logger, "0af4232214701387943901253", invokeContext);
         }
 
         Assert.assertTrue(serverConnectProcessor.isConnected());

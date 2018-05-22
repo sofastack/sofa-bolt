@@ -44,7 +44,7 @@ import com.alipay.remoting.serialization.SerializerManager;
  */
 public class ClassCustomSerializerTest {
     Logger                    logger                    = LoggerFactory
-        .getLogger(ClassCustomSerializerTest.class);
+                                                            .getLogger(ClassCustomSerializerTest.class);
     BoltServer                server;
     RpcClient                 client;
 
@@ -241,8 +241,8 @@ public class ClassCustomSerializerTest {
     @Test
     public void testResponseSerialException() throws Exception {
         NormalRequestBodyCustomSerializer s1 = new NormalRequestBodyCustomSerializer();
-        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(true, false, false,
-            false);
+        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(true, false,
+            false, false);
         CustomSerializerManager.registerCustomSerializer(RequestBody.class.getName(), s1);
         CustomSerializerManager.registerCustomSerializer(String.class.getName(), s2);
 
@@ -271,8 +271,8 @@ public class ClassCustomSerializerTest {
     @Test
     public void testResponseSerialRuntimeException() throws Exception {
         NormalRequestBodyCustomSerializer s1 = new NormalRequestBodyCustomSerializer();
-        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, true, false,
-            false);
+        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, true,
+            false, false);
         CustomSerializerManager.registerCustomSerializer(RequestBody.class.getName(), s1);
         CustomSerializerManager.registerCustomSerializer(String.class.getName(), s2);
 
@@ -301,8 +301,8 @@ public class ClassCustomSerializerTest {
     @Test
     public void testResponseDeserialzeException() throws Exception {
         NormalRequestBodyCustomSerializer s1 = new NormalRequestBodyCustomSerializer();
-        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, false, true,
-            false);
+        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, false,
+            true, false);
         CustomSerializerManager.registerCustomSerializer(RequestBody.class.getName(), s1);
         CustomSerializerManager.registerCustomSerializer(String.class.getName(), s2);
 

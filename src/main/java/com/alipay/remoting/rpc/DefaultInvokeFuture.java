@@ -38,7 +38,7 @@ import io.netty.util.Timeout;
 public class DefaultInvokeFuture implements InvokeFuture {
 
     private static final Logger      logger                  = BoltLoggerFactory
-        .getLogger("RpcRemoting");
+                                                                 .getLogger("RpcRemoting");
     private final CountDownLatch     countDownLatch          = new CountDownLatch(1);
     private final AtomicBoolean      executeCallbackOnlyOnce = new AtomicBoolean(false);
     private int                      invokeId;
@@ -66,8 +66,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
      * @param protocol
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
-                               InvokeCallback callback, byte protocol,
-                               CommandFactory commandFactory) {
+                               InvokeCallback callback, byte protocol, CommandFactory commandFactory) {
         this.invokeId = invokeId;
         this.callbackListener = callbackListener;
         this.callback = callback;

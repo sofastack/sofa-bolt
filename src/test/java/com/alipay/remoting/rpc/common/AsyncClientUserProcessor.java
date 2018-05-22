@@ -41,7 +41,7 @@ public class AsyncClientUserProcessor extends AsyncUserProcessor<RequestBody> {
 
     /** logger */
     private static final Logger logger      = LoggerFactory
-        .getLogger(AsyncClientUserProcessor.class);
+                                                .getLogger(AsyncClientUserProcessor.class);
 
     /** delay milliseconds */
     private long                delayMs;
@@ -70,8 +70,8 @@ public class AsyncClientUserProcessor extends AsyncUserProcessor<RequestBody> {
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
         this.asyncExecutor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(4),
-            new NamedThreadFactory("Another-aysnc-process-pool"));
+            new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory(
+                "Another-aysnc-process-pool"));
     }
 
     public AsyncClientUserProcessor(boolean isException, boolean isNull) {
@@ -93,8 +93,8 @@ public class AsyncClientUserProcessor extends AsyncUserProcessor<RequestBody> {
                                     int workQueue) {
         this(delay);
         this.executor = new ThreadPoolExecutor(core, max, keepaliveSeconds, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(workQueue),
-            new NamedThreadFactory("Request-process-pool"));
+            new ArrayBlockingQueue<Runnable>(workQueue), new NamedThreadFactory(
+                "Request-process-pool"));
     }
 
     @Override

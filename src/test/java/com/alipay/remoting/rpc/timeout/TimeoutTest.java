@@ -46,7 +46,7 @@ import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
 public class TimeoutTest {
 
     static Logger             logger                    = LoggerFactory
-        .getLogger(BasicUsageTest.class);
+                                                            .getLogger(BasicUsageTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -58,8 +58,7 @@ public class TimeoutTest {
     int                       invokeTimes               = 5;
     int                       timeout                   = 250;
 
-    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(
-        timeout * 2);
+    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(timeout * 2);
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
@@ -139,8 +138,8 @@ public class TimeoutTest {
         } catch (InvokeTimeoutException e) {
             Assert.assertNull(obj);
         } catch (RemotingException e) {
-            logger.error("Other RemotingException but InvokeTimeoutException occurred in future",
-                e);
+            logger
+                .error("Other RemotingException but InvokeTimeoutException occurred in future", e);
             Assert.fail("Should not reach here!");
         } catch (InterruptedException e) {
             logger.error("InterruptedException in sync", e);
@@ -200,8 +199,8 @@ public class TimeoutTest {
             }, timeout);
 
         } catch (RemotingException e) {
-            logger.error("Other RemotingException but InvokeTimeoutException occurred in future",
-                e);
+            logger
+                .error("Other RemotingException but InvokeTimeoutException occurred in future", e);
             Assert.fail("Should not reach here!");
         }
         latch.await();

@@ -43,9 +43,8 @@ public class RpcCommandDecoder implements CommandDecoder {
     private int                 lessLen;
 
     {
-        lessLen = RpcProtocol.getResponseHeaderLength() < RpcProtocol.getRequestHeaderLength()
-            ? RpcProtocol.getResponseHeaderLength()
-            : RpcProtocol.getRequestHeaderLength();
+        lessLen = RpcProtocol.getResponseHeaderLength() < RpcProtocol.getRequestHeaderLength() ? RpcProtocol
+            .getResponseHeaderLength() : RpcProtocol.getRequestHeaderLength();
     }
 
     /**
@@ -177,8 +176,8 @@ public class RpcCommandDecoder implements CommandDecoder {
                             command.setHeader(header);
                             command.setContent(content);
                             command.setResponseTimeMillis(System.currentTimeMillis());
-                            command
-                                .setResponseHost((InetSocketAddress) ctx.channel().remoteAddress());
+                            command.setResponseHost((InetSocketAddress) ctx.channel()
+                                .remoteAddress());
                             out.add(command);
                         } else {
                             in.resetReaderIndex();

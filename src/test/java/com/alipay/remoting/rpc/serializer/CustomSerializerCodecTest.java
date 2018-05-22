@@ -45,7 +45,7 @@ import com.alipay.remoting.util.RemotingUtil;
  */
 public class CustomSerializerCodecTest {
     static Logger             logger                    = LoggerFactory
-        .getLogger(BasicUsage_InvokeContext_Test.class);
+                                                            .getLogger(BasicUsage_InvokeContext_Test.class);
 
     BoltServer                server;
     RpcClient                 client;

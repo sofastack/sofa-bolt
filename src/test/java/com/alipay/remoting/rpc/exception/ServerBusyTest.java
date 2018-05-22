@@ -43,7 +43,7 @@ import com.alipay.remoting.rpc.common.*;
  */
 public class ServerBusyTest {
     static Logger             logger                    = LoggerFactory
-        .getLogger(BasicUsageTest.class);
+                                                            .getLogger(BasicUsageTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -61,7 +61,7 @@ public class ServerBusyTest {
     int                       concurrent                = maxThread + workQueue;
 
     SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(timeout,
-        coreThread, maxThread, 60, workQueue);
+                                                            coreThread, maxThread, 60, workQueue);
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
@@ -157,8 +157,8 @@ public class ServerBusyTest {
         } catch (InvokeServerBusyException e) {
             Assert.assertNull(obj);
         } catch (RemotingException e) {
-            logger.error("Other RemotingException but InvokeServerBusyException occurred in future",
-                e);
+            logger.error(
+                "Other RemotingException but InvokeServerBusyException occurred in future", e);
             Assert.fail("Should not reach here!");
         } catch (InterruptedException e) {
             logger.error("InterruptedException in future", e);

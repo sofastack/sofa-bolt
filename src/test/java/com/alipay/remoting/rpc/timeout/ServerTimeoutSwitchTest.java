@@ -50,7 +50,7 @@ import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
  */
 public class ServerTimeoutSwitchTest {
     static Logger             logger                    = LoggerFactory
-        .getLogger(ServerTimeoutTest.class);
+                                                            .getLogger(ServerTimeoutTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -67,10 +67,12 @@ public class ServerTimeoutSwitchTest {
     int                       workQueue                 = 1;
     int                       concurrent                = maxThread + workQueue;
 
-    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(max_timeout,
-        coreThread, maxThread, 60, workQueue);
-    SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor(max_timeout,
-        coreThread, maxThread, 60, workQueue);
+    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(
+                                                            max_timeout, coreThread, maxThread, 60,
+                                                            workQueue);
+    SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor(
+                                                            max_timeout, coreThread, maxThread, 60,
+                                                            workQueue);
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
     DISCONNECTEventProcessor  clientDisConnectProcessor = new DISCONNECTEventProcessor();

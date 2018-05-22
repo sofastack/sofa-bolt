@@ -40,7 +40,7 @@ import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
 public class ConcurrentCreateConnectionTest {
 
     private final static Logger      logger                   = LoggerFactory
-        .getLogger(RpcConnectionManagerTest.class);
+                                                                  .getLogger(RpcConnectionManagerTest.class);
     CONNECTEventProcessor            serverConnectProcessor   = new CONNECTEventProcessor();
     private DefaultConnectionManager cm;
     private ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy();

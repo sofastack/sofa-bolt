@@ -73,8 +73,8 @@ public class BadServerIpTest {
             server = new RpcServer(1111);
             server.registerUserProcessor(new SyncUserProcessor<RequestBody>() {
                 @Override
-                public Object handleRequest(BizContext bizCtx,
-                                            RequestBody request) throws Exception {
+                public Object handleRequest(BizContext bizCtx, RequestBody request)
+                                                                                   throws Exception {
                     logger.warn("Request received:" + request);
                     return "hello world!";
                 }

@@ -47,7 +47,7 @@ import com.alipay.remoting.util.RemotingUtil;
  */
 public class BasicUsage_ProtocolV2_2_Test {
     static Logger             logger                    = LoggerFactory
-        .getLogger(BasicUsage_ProtocolV2_2_Test.class);
+                                                            .getLogger(BasicUsage_ProtocolV2_2_Test.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -191,8 +191,8 @@ public class BasicUsage_ProtocolV2_2_Test {
                 } else {
                     InvokeContext invokeContext = new InvokeContext();
                     invokeContext.putIfAbsent(InvokeContext.BOLT_CRC_SWITCH, false);
-                    client.invokeWithCallback(addr, req, invokeContext,
-                        new InvokeCallBackImpl(rets, latch), 1000);
+                    client.invokeWithCallback(addr, req, invokeContext, new InvokeCallBackImpl(
+                        rets, latch), 1000);
                 }
             } catch (RemotingException e) {
                 latch.countDown();
