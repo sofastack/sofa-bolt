@@ -28,22 +28,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.Configs;
-import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.CustomSerializerManager;
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeContext;
+import com.alipay.remoting.*;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 import com.alipay.remoting.serialization.SerializerManager;
 
 /**
@@ -54,7 +44,7 @@ import com.alipay.remoting.serialization.SerializerManager;
  */
 public class ClassCustomSerializerTest {
     Logger                    logger                    = LoggerFactory
-                                                            .getLogger(ClassCustomSerializerTest.class);
+        .getLogger(ClassCustomSerializerTest.class);
     BoltServer                server;
     RpcClient                 client;
 
@@ -251,8 +241,8 @@ public class ClassCustomSerializerTest {
     @Test
     public void testResponseSerialException() throws Exception {
         NormalRequestBodyCustomSerializer s1 = new NormalRequestBodyCustomSerializer();
-        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(true, false,
-            false, false);
+        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(true, false, false,
+            false);
         CustomSerializerManager.registerCustomSerializer(RequestBody.class.getName(), s1);
         CustomSerializerManager.registerCustomSerializer(String.class.getName(), s2);
 
@@ -281,8 +271,8 @@ public class ClassCustomSerializerTest {
     @Test
     public void testResponseSerialRuntimeException() throws Exception {
         NormalRequestBodyCustomSerializer s1 = new NormalRequestBodyCustomSerializer();
-        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, true,
-            false, false);
+        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, true, false,
+            false);
         CustomSerializerManager.registerCustomSerializer(RequestBody.class.getName(), s1);
         CustomSerializerManager.registerCustomSerializer(String.class.getName(), s2);
 
@@ -311,8 +301,8 @@ public class ClassCustomSerializerTest {
     @Test
     public void testResponseDeserialzeException() throws Exception {
         NormalRequestBodyCustomSerializer s1 = new NormalRequestBodyCustomSerializer();
-        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, false,
-            true, false);
+        ExceptionStringCustomSerializer s2 = new ExceptionStringCustomSerializer(false, false, true,
+            false);
         CustomSerializerManager.registerCustomSerializer(RequestBody.class.getName(), s1);
         CustomSerializerManager.registerCustomSerializer(String.class.getName(), s2);
 

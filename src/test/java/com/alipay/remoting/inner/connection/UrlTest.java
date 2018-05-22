@@ -36,6 +36,27 @@ import com.alipay.remoting.rpc.RpcAddressParser;
 public class UrlTest {
     private final static Logger logger = LoggerFactory.getLogger(UrlTest.class);
 
+    /**
+     * -server -Xms20m -Xmx20m -Xmn3m -Xss256k -XX:PermSize=20m -XX:MaxPermSize=20m
+     * -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSClassUnloadingEnabled
+     * -XX:+DisableExplicitGC -XX:+UseCMSInitiatingOccupancyOnly
+     * -XX:CMSInitiatingOccupancyFraction=68 -verbose:gc -XX:+PrintGCDetails
+     * -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/Users/tsui/logs/
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
+        //        ConcurrentHashMap<String, SoftReference<String>> parsedUrls = new ConcurrentHashMap<String, SoftReference<String>>();
+        //        int MAX = Integer.valueOf(args[0]);
+        //        for (int i = 0; i < MAX; i++) {
+        //            parsedUrls.put("test" + i, new SoftReference<String>(i + "hehe"));
+        //        }
+        //        Collection<SoftReference<String>> urls = parsedUrls.values();
+        //        for (SoftReference<String> url : urls) {
+        //            System.out.println(url.get());
+        //        }
+    }
+
     @Test
     public void testUrlArgs() {
         Url url = new Url("127.0.0.1", 1111);
@@ -90,26 +111,5 @@ public class UrlTest {
                 break;
             }
         }
-    }
-
-    /**
-     * -server -Xms20m -Xmx20m -Xmn3m -Xss256k -XX:PermSize=20m -XX:MaxPermSize=20m
-     * -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+CMSClassUnloadingEnabled
-     * -XX:+DisableExplicitGC -XX:+UseCMSInitiatingOccupancyOnly
-     * -XX:CMSInitiatingOccupancyFraction=68 -verbose:gc -XX:+PrintGCDetails
-     * -XX:+PrintGCDateStamps -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/Users/tsui/logs/
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        //        ConcurrentHashMap<String, SoftReference<String>> parsedUrls = new ConcurrentHashMap<String, SoftReference<String>>();
-        //        int MAX = Integer.valueOf(args[0]);
-        //        for (int i = 0; i < MAX; i++) {
-        //            parsedUrls.put("test" + i, new SoftReference<String>(i + "hehe"));
-        //        }
-        //        Collection<SoftReference<String>> urls = parsedUrls.values();
-        //        for (SoftReference<String> url : urls) {
-        //            System.out.println(url.get());
-        //        }
     }
 }

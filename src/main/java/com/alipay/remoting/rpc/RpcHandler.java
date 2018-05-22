@@ -18,17 +18,12 @@ package com.alipay.remoting.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.Protocol;
-import com.alipay.remoting.ProtocolCode;
-import com.alipay.remoting.ProtocolManager;
-import com.alipay.remoting.RemotingContext;
+import com.alipay.remoting.*;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelHandler.Sharable;
 
 /**
  * Dispatch messages to corresponding protocol.
@@ -51,7 +46,8 @@ public class RpcHandler extends ChannelInboundHandlerAdapter {
         this.userProcessors = userProcessors;
     }
 
-    public RpcHandler(boolean serverSide, ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
+    public RpcHandler(boolean serverSide,
+                      ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
         this.serverSide = serverSide;
         this.userProcessors = userProcessors;
     }

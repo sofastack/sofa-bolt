@@ -23,6 +23,9 @@ package com.alipay.remoting;
  * @version $Id: SystemProperties.java, v 0.1 2017-08-03 19:21 tsui Exp $
  */
 public class SystemProperties {
+    // ~~~ properties for serializer
+    public static final byte serializer = serializer();
+
     // ~~~ properties for bootstrap
     public static boolean tcp_nodelay() {
         return getBool(Configs.TCP_NODELAY, Configs.TCP_NODELAY_DEFAULT);
@@ -136,9 +139,6 @@ public class SystemProperties {
     public static int retry_detect_period() {
         return getInt(Configs.RETRY_DETECT_PERIOD, Configs.RETRY_DETECT_PERIOD_DEFAULT);
     }
-
-    // ~~~ properties for serializer
-    public static final byte serializer = serializer();
 
     public static byte serializer() {
         return getByte(Configs.SERIALIZER, Configs.SERIALIZER_DEFAULT);

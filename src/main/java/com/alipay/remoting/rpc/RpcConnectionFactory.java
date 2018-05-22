@@ -22,31 +22,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.ConnectionFactory;
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.ProtocolCode;
-import com.alipay.remoting.SystemProperties;
-import com.alipay.remoting.Url;
+import com.alipay.remoting.*;
 import com.alipay.remoting.codec.ProtocolCodeBasedEncoder;
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.rpc.protocol.RpcProtocol;
-import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
-import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
-import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
-import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.rpc.protocol.*;
 import com.alipay.remoting.util.StringUtils;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.WriteBufferWaterMark;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -62,19 +46,16 @@ public class RpcConnectionFactory implements ConnectionFactory {
 
     /** logger */
     private static final Logger                         logger         = BoltLoggerFactory
-                                                                           .getLogger("RpcRemoting");
+        .getLogger("RpcRemoting");
 
     private static final EventLoopGroup                 workerGroup    = new NioEventLoopGroup(
-                                                                           Runtime
-                                                                               .getRuntime()
-                                                                               .availableProcessors() + 1,
-                                                                           new NamedThreadFactory(
-                                                                               "Rpc-netty-client-worker"));
+        Runtime.getRuntime().availableProcessors() + 1,
+        new NamedThreadFactory("Rpc-netty-client-worker"));
 
     private Bootstrap                                   bootstrap;
 
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors = new ConcurrentHashMap<String, UserProcessor<?>>(
-                                                                           4);
+        4);
 
     /**
      * @see com.alipay.remoting.ConnectionFactory#init(ConnectionEventHandler)
@@ -105,15 +86,13 @@ public class RpcConnectionFactory implements ConnectionFactory {
 
             protected void initChannel(SocketChannel channel) throws Exception {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast("decoder", new RpcProtocolDecoder(
-                    RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
-                pipeline.addLast(
-                    "encoder",
-                    new ProtocolCodeBasedEncoder(ProtocolCode
-                        .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
+                pipeline.addLast("decoder",
+                    new RpcProtocolDecoder(RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
+                pipeline.addLast("encoder", new ProtocolCodeBasedEncoder(
+                    ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
                 if (idleSwitch) {
-                    pipeline.addLast("idleStateHandler", new IdleStateHandler(idleTime, idleTime,
-                        0, TimeUnit.MILLISECONDS));
+                    pipeline.addLast("idleStateHandler",
+                        new IdleStateHandler(idleTime, idleTime, 0, TimeUnit.MILLISECONDS));
                     pipeline.addLast("heartbeatHandler", heartbeatHandler);
                 }
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
@@ -140,8 +119,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
      * @see com.alipay.remoting.ConnectionFactory#createConnection(java.lang.String, int, int)
      */
     @Override
-    public Connection createConnection(String targetIP, int targetPort, int connectTimeout)
-                                                                                           throws Exception {
+    public Connection createConnection(String targetIP, int targetPort,
+                                       int connectTimeout) throws Exception {
         ChannelFuture future = doCreateConnection(targetIP, targetPort, connectTimeout);
         Connection conn = new Connection(future.channel(),
             ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
@@ -158,8 +137,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
                                        int connectTimeout) throws Exception {
         ChannelFuture future = doCreateConnection(targetIP, targetPort, connectTimeout);
         Connection conn = new Connection(future.channel(),
-            ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
-                targetPort));
+            ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version,
+            new Url(targetIP, targetPort));
         future.channel().pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         return conn;
     }
@@ -171,8 +150,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
      * @return
      * @throws Exception
      */
-    protected ChannelFuture doCreateConnection(String targetIP, int targetPort, int connectTimeout)
-                                                                                                   throws Exception {
+    protected ChannelFuture doCreateConnection(String targetIP, int targetPort,
+                                               int connectTimeout) throws Exception {
         // prevent unreasonable value, at least 1000
         connectTimeout = Math.max(connectTimeout, 1000);
         String addr = targetIP + ":" + targetPort;
@@ -212,8 +191,7 @@ public class RpcConnectionFactory implements ConnectionFactory {
         UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
             processor);
         if (preProcessor != null) {
-            String errMsg = "Processor with interest key ["
-                            + processor.interest()
+            String errMsg = "Processor with interest key [" + processor.interest()
                             + "] has already been registered to rpc client, can not register again!";
             throw new RuntimeException(errMsg);
         }
@@ -226,17 +204,15 @@ public class RpcConnectionFactory implements ConnectionFactory {
         int lowWaterMark = SystemProperties.netty_buffer_low_watermark();
         int highWaterMark = SystemProperties.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {
-            throw new IllegalArgumentException(
-                String
-                    .format(
-                        "[client side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
-                        highWaterMark, lowWaterMark));
+            throw new IllegalArgumentException(String.format(
+                "[client side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
+                highWaterMark, lowWaterMark));
         } else {
             logger.warn(
                 "[client side] bolt netty low water mark is {} bytes, high water mark is {} bytes",
                 lowWaterMark, highWaterMark);
         }
-        this.bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(
-            lowWaterMark, highWaterMark));
+        this.bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK,
+            new WriteBufferWaterMark(lowWaterMark, highWaterMark));
     }
 }

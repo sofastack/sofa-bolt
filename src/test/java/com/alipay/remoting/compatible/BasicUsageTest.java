@@ -36,13 +36,7 @@ import com.alipay.remoting.ProtocolManager;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.util.RemotingUtil;
 
@@ -56,7 +50,7 @@ import com.alipay.remoting.util.RemotingUtil;
  */
 public class BasicUsageTest {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(BasicUsageTest.class);
+        .getLogger(BasicUsageTest.class);
 
     BoltServer                server;
     RpcClient                 client;

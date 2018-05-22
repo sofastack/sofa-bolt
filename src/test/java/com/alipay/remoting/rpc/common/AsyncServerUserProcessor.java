@@ -16,11 +16,7 @@
  */
 package com.alipay.remoting.rpc.common;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
@@ -42,7 +38,7 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
 
     /** logger */
     private static final Logger logger        = LoggerFactory
-                                                  .getLogger(AsyncServerUserProcessor.class);
+        .getLogger(AsyncServerUserProcessor.class);
 
     /** delay milliseconds */
     private long                delayMs;
@@ -78,8 +74,8 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
         this.asyncExecutor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory(
-                "Another-aysnc-process-pool"));
+            new ArrayBlockingQueue<Runnable>(4),
+            new NamedThreadFactory("Another-aysnc-process-pool"));
     }
 
     public AsyncServerUserProcessor(boolean isException, boolean isNull) {
@@ -101,13 +97,50 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
                                     int workQueue) {
         this(delay);
         this.executor = new ThreadPoolExecutor(core, max, keepaliveSeconds, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<Runnable>(workQueue), new NamedThreadFactory(
-                "Request-process-pool"));
+            new ArrayBlockingQueue<Runnable>(workQueue),
+            new NamedThreadFactory("Request-process-pool"));
     }
 
     @Override
     public void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, RequestBody request) {
         this.asyncExecutor.execute(new InnerTask(bizCtx, asyncCtx, request));
+    }
+
+    private void processTimes(RequestBody req) {
+        this.invokeTimes.incrementAndGet();
+        if (req.getMsg().equals(RequestBody.DEFAULT_ONEWAY_STR)) {
+            this.onewayTimes.incrementAndGet();
+        } else if (req.getMsg().equals(RequestBody.DEFAULT_SYNC_STR)) {
+            this.syncTimes.incrementAndGet();
+        } else if (req.getMsg().equals(RequestBody.DEFAULT_FUTURE_STR)) {
+            this.futureTimes.incrementAndGet();
+        } else if (req.getMsg().equals(RequestBody.DEFAULT_CALLBACK_STR)) {
+            this.callbackTimes.incrementAndGet();
+        }
+    }
+
+    @Override
+    public String interest() {
+        return RequestBody.class.getName();
+    }
+
+    @Override
+    public Executor getExecutor() {
+        return executor;
+    }
+
+    public int getInvokeTimes() {
+        return this.invokeTimes.get();
+    }
+
+    public int getInvokeTimesEachCallType(RequestBody.InvokeType type) {
+        return new int[] { this.onewayTimes.get(), this.syncTimes.get(), this.futureTimes.get(),
+                           this.callbackTimes.get() }[type.ordinal()];
+    }
+
+    public String getRemoteAddr() throws InterruptedException {
+        latch.await(100, TimeUnit.MILLISECONDS);
+        return this.remoteAddr;
     }
 
     class InnerTask implements Runnable {
@@ -145,42 +178,5 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
                 this.asyncCtx.sendResponse(RequestBody.DEFAULT_SERVER_RETURN_STR);
             }
         }
-    }
-
-    private void processTimes(RequestBody req) {
-        this.invokeTimes.incrementAndGet();
-        if (req.getMsg().equals(RequestBody.DEFAULT_ONEWAY_STR)) {
-            this.onewayTimes.incrementAndGet();
-        } else if (req.getMsg().equals(RequestBody.DEFAULT_SYNC_STR)) {
-            this.syncTimes.incrementAndGet();
-        } else if (req.getMsg().equals(RequestBody.DEFAULT_FUTURE_STR)) {
-            this.futureTimes.incrementAndGet();
-        } else if (req.getMsg().equals(RequestBody.DEFAULT_CALLBACK_STR)) {
-            this.callbackTimes.incrementAndGet();
-        }
-    }
-
-    @Override
-    public String interest() {
-        return RequestBody.class.getName();
-    }
-
-    @Override
-    public Executor getExecutor() {
-        return executor;
-    }
-
-    public int getInvokeTimes() {
-        return this.invokeTimes.get();
-    }
-
-    public int getInvokeTimesEachCallType(RequestBody.InvokeType type) {
-        return new int[] { this.onewayTimes.get(), this.syncTimes.get(), this.futureTimes.get(),
-                this.callbackTimes.get() }[type.ordinal()];
-    }
-
-    public String getRemoteAddr() throws InterruptedException {
-        latch.await(100, TimeUnit.MILLISECONDS);
-        return this.remoteAddr;
     }
 }

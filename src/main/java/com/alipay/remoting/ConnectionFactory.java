@@ -50,8 +50,8 @@ public interface ConnectionFactory {
      * @return
      * @throws Exception
      */
-    public Connection createConnection(String targetIP, int targetPort, int connectTimeout)
-                                                                                           throws Exception;
+    public Connection createConnection(String targetIP, int targetPort,
+                                       int connectTimeout) throws Exception;
 
     /**
      * Create a connection according to the IP and port.

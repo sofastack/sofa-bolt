@@ -35,13 +35,7 @@ import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 
 /**
  * Codec Test

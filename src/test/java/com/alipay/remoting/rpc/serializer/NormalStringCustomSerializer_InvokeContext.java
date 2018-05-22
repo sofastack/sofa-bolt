@@ -36,21 +36,18 @@ import com.alipay.remoting.util.StringUtils;
  */
 public class NormalStringCustomSerializer_InvokeContext extends DefaultCustomSerializer {
 
-    private AtomicBoolean      serialFlag        = new AtomicBoolean();
-    private AtomicBoolean      deserialFlag      = new AtomicBoolean();
-
     public static final String UNIVERSAL_RESP    = "UNIVERSAL RESPONSE";
-
     public static final String SERIALTYPE_KEY    = "serial.type";
     public static final String SERIALTYPE1_value = "SERIAL1";
     public static final String SERIALTYPE2_value = "SERIAL2";
+    private AtomicBoolean      serialFlag        = new AtomicBoolean();
+    private AtomicBoolean      deserialFlag      = new AtomicBoolean();
 
     /**
      * @see CustomSerializer#serializeContent(ResponseCommand)
      */
     @Override
-    public <T extends ResponseCommand> boolean serializeContent(T response)
-                                                                           throws SerializationException {
+    public <T extends ResponseCommand> boolean serializeContent(T response) throws SerializationException {
         serialFlag.set(true);
         RpcResponseCommand rpcResp = (RpcResponseCommand) response;
         String str = (String) rpcResp.getResponseObject();
@@ -68,8 +65,7 @@ public class NormalStringCustomSerializer_InvokeContext extends DefaultCustomSer
      */
     @Override
     public <T extends ResponseCommand> boolean deserializeContent(T response,
-                                                                  InvokeContext invokeContext)
-                                                                                              throws DeserializationException {
+                                                                  InvokeContext invokeContext) throws DeserializationException {
         deserialFlag.set(true);
         RpcResponseCommand rpcResp = (RpcResponseCommand) response;
 

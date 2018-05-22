@@ -22,13 +22,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +31,7 @@ import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.exception.RemotingException;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 
 /**
  * basic usage test
@@ -56,20 +44,17 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BasicUsage_SHARE_SAME_SERVER_Test {
     static Logger                    logger                    = LoggerFactory
-                                                                   .getLogger(BasicUsage_SHARE_SAME_SERVER_Test.class);
+        .getLogger(BasicUsage_SHARE_SAME_SERVER_Test.class);
     static BoltServer                server;
-    RpcClient                        client;
-
     static int                       port                      = PortScan.select();
     static String                    ip                        = "127.0.0.1";
     static String                    addr                      = "127.0.0.1:" + port;
-
-    int                              invokeTimes               = 5;
-
     static SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor();
+    static CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
+    RpcClient                        client;
+    int                              invokeTimes               = 5;
     SimpleClientUserProcessor        clientUserProcessor       = new SimpleClientUserProcessor();
     CONNECTEventProcessor            clientConnectProcessor    = new CONNECTEventProcessor();
-    static CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
     DISCONNECTEventProcessor         clientDisConnectProcessor = new DISCONNECTEventProcessor();
     DISCONNECTEventProcessor         serverDisConnectProcessor = new DISCONNECTEventProcessor();
 
@@ -79,6 +64,16 @@ public class BasicUsage_SHARE_SAME_SERVER_Test {
         server.start();
         server.registerUserProcessor(serverUserProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
+    }
+
+    @AfterClass
+    public static void atLast() {
+        try {
+            server.stop();
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            logger.error("Stop server failed!", e);
+        }
     }
 
     @Before
@@ -94,16 +89,6 @@ public class BasicUsage_SHARE_SAME_SERVER_Test {
             Thread.sleep(100);
         } catch (InterruptedException e) {
             logger.error("InterruptedException!", e);
-        }
-    }
-
-    @AfterClass
-    public static void atLast() {
-        try {
-            server.stop();
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            logger.error("Stop server failed!", e);
         }
     }
 

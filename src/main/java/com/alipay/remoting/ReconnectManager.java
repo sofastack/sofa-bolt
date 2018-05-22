@@ -33,20 +33,12 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  */
 public class ReconnectManager {
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
-
-    class ReconnectTask {
-        Url url;
-    }
-
+    protected final List<Url/* url */>               canceled               = new CopyOnWriteArrayList<Url>();
     private final LinkedBlockingQueue<ReconnectTask> tasks                  = new LinkedBlockingQueue<ReconnectTask>();
-
-    protected final List<Url/* url */>              canceled               = new CopyOnWriteArrayList<Url>();
+    private final Thread                             healConnectionThreads;
     private volatile boolean                         started                = false;
 
     private int                                      healConnectionInterval = 1000;
-
-    private final Thread                             healConnectionThreads;
-
     private ConnectionManager                        connectionManager;
 
     public ReconnectManager(ConnectionManager connectionManager) {
@@ -56,7 +48,8 @@ public class ReconnectManager {
         this.started = true;
     }
 
-    private void doReconnectTask(ReconnectTask task) throws InterruptedException, RemotingException {
+    private void doReconnectTask(ReconnectTask task) throws InterruptedException,
+                                                     RemotingException {
         connectionManager.createConnectionAndHealIfNeed(task.url);
     }
 
@@ -74,7 +67,7 @@ public class ReconnectManager {
 
     /**
      * add reconnect task
-     * 
+     *
      * @param url
      */
     public void addReconnectTask(Url url) {
@@ -85,7 +78,7 @@ public class ReconnectManager {
 
     /**
      * Check task whether is valid, if canceled, is not valid
-     * 
+     *
      * @param task
      * @return
      */
@@ -104,6 +97,10 @@ public class ReconnectManager {
         healConnectionThreads.interrupt();
         this.tasks.clear();
         this.canceled.clear();
+    }
+
+    class ReconnectTask {
+        Url url;
     }
 
     /**

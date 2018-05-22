@@ -53,8 +53,8 @@ public class RpcAddressParser implements RemotingAddressParser {
      */
     public Url parse(String url) {
         if (StringUtils.isBlank(url)) {
-            throw new IllegalArgumentException("Illegal format address string [" + url
-                                               + "], should not be blank! ");
+            throw new IllegalArgumentException(
+                "Illegal format address string [" + url + "], should not be blank! ");
         }
         Url parsedUrl = this.tryGet(url);
         if (null != parsedUrl) {
@@ -79,8 +79,8 @@ public class RpcAddressParser implements RemotingAddressParser {
             }
             // must have one COLON
             if (i == size - 1) {
-                throw new IllegalArgumentException("Illegal format address string [" + url
-                                                   + "], must have one COLON[:]! ");
+                throw new IllegalArgumentException(
+                    "Illegal format address string [" + url + "], must have one COLON[:]! ");
             }
         }
 
@@ -115,7 +115,7 @@ public class RpcAddressParser implements RemotingAddressParser {
                             // should not end with EQUAL
                             throw new IllegalArgumentException(
                                 "Illegal format address string [" + url
-                                        + "], should not end with EQUAL[=]! ");
+                                                               + "], should not end with EQUAL[=]! ");
                         }
                         break;
                     }
@@ -131,8 +131,8 @@ public class RpcAddressParser implements RemotingAddressParser {
                         pos = i;
                         if (i == size - 1) {
                             // should not end with AND
-                            throw new IllegalArgumentException("Illegal format address string ["
-                                                               + url
+                            throw new IllegalArgumentException(
+                                "Illegal format address string [" + url
                                                                + "], should not end with AND[&]! ");
                         }
                         break;
@@ -206,8 +206,8 @@ public class RpcAddressParser implements RemotingAddressParser {
             } else {
                 throw new IllegalArgumentException(
                     "Url args illegal value of key [" + RpcConfigs.CONNECT_TIMEOUT_KEY
-                            + "] must be positive integer! The origin url is ["
-                            + url.getOriginUrl() + "]");
+                                                   + "] must be positive integer! The origin url is ["
+                                                   + url.getOriginUrl() + "]");
             }
         }
         url.setConnectTimeout(connTimeout);
@@ -220,8 +220,8 @@ public class RpcAddressParser implements RemotingAddressParser {
             } else {
                 throw new IllegalArgumentException(
                     "Url args illegal value of key [" + RpcConfigs.URL_PROTOCOL
-                            + "] must be positive integer! The origin url is ["
-                            + url.getOriginUrl() + "]");
+                                                   + "] must be positive integer! The origin url is ["
+                                                   + url.getOriginUrl() + "]");
             }
         }
         url.setProtocol(protocol);
@@ -234,8 +234,8 @@ public class RpcAddressParser implements RemotingAddressParser {
             } else {
                 throw new IllegalArgumentException(
                     "Url args illegal value of key [" + RpcConfigs.URL_VERSION
-                            + "] must be positive integer! The origin url is ["
-                            + url.getOriginUrl() + "]");
+                                                   + "] must be positive integer! The origin url is ["
+                                                   + url.getOriginUrl() + "]");
             }
         }
         url.setVersion(version);
@@ -248,8 +248,8 @@ public class RpcAddressParser implements RemotingAddressParser {
             } else {
                 throw new IllegalArgumentException(
                     "Url args illegal value of key [" + RpcConfigs.CONNECTION_NUM_KEY
-                            + "] must be positive integer! The origin url is ["
-                            + url.getOriginUrl() + "]");
+                                                   + "] must be positive integer! The origin url is ["
+                                                   + url.getOriginUrl() + "]");
             }
         }
         url.setConnNum(connNum);

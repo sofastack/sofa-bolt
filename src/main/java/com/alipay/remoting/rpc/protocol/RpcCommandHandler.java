@@ -22,16 +22,7 @@ import java.util.concurrent.RejectedExecutionException;
 
 import org.slf4j.Logger;
 
-import com.alipay.remoting.AbstractRemotingProcessor;
-import com.alipay.remoting.CommandCode;
-import com.alipay.remoting.CommandFactory;
-import com.alipay.remoting.CommandHandler;
-import com.alipay.remoting.CommonCommandCode;
-import com.alipay.remoting.ProcessorManager;
-import com.alipay.remoting.RemotingCommand;
-import com.alipay.remoting.RemotingContext;
-import com.alipay.remoting.RemotingProcessor;
-import com.alipay.remoting.ResponseStatus;
+import com.alipay.remoting.*;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.RequestCommand;
 import com.alipay.remoting.rpc.ResponseCommand;
@@ -161,10 +152,9 @@ public class RpcCommandHandler implements CommandHandler {
                             public void operationComplete(ChannelFuture future) throws Exception {
                                 if (future.isSuccess()) {
                                     if (logger.isInfoEnabled()) {
-                                        logger
-                                            .info(
-                                                "Write back exception response done, requestId={}, status={}",
-                                                id, response.getResponseStatus());
+                                        logger.info(
+                                            "Write back exception response done, requestId={}, status={}",
+                                            id, response.getResponseStatus());
                                     }
                                 } else {
                                     logger.error(

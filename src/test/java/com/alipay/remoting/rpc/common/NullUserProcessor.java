@@ -48,8 +48,7 @@ public class NullUserProcessor extends SyncUserProcessor<RequestBody> {
 
     /** executor */
     private ThreadPoolExecutor  executor    = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-                                                new ArrayBlockingQueue<Runnable>(4),
-                                                new NamedThreadFactory("Request-process-pool"));
+        new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
 
     private AtomicInteger       invokeTimes = new AtomicInteger();
 

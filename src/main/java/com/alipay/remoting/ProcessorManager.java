@@ -16,11 +16,7 @@
  */
 package com.alipay.remoting;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import org.slf4j.Logger;
 
@@ -35,9 +31,9 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  */
 public class ProcessorManager {
     private static final Logger                                  logger         = BoltLoggerFactory
-                                                                                    .getLogger("CommonDefault");
+        .getLogger("CommonDefault");
     private ConcurrentHashMap<CommandCode, RemotingProcessor<?>> cmd2processors = new ConcurrentHashMap<CommandCode, RemotingProcessor<?>>(
-                                                                                    4);
+        4);
 
     private RemotingProcessor<?>                                 defaultProcessor;
 
@@ -45,21 +41,21 @@ public class ProcessorManager {
     private ExecutorService                                      defaultExecutor;
 
     private int                                                  minPoolSize    = SystemProperties
-                                                                                    .default_tp_min_size();
+        .default_tp_min_size();
 
     private int                                                  maxPoolSize    = SystemProperties
-                                                                                    .default_tp_max_size();
+        .default_tp_max_size();
 
     private int                                                  queueSize      = SystemProperties
-                                                                                    .default_tp_queue_size();
+        .default_tp_queue_size();
 
     private long                                                 keepAliveTime  = SystemProperties
-                                                                                    .default_tp_keepalive_time();
+        .default_tp_keepalive_time();
 
     public ProcessorManager() {
         defaultExecutor = new ThreadPoolExecutor(minPoolSize, maxPoolSize, keepAliveTime,
-            TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize), new NamedThreadFactory(
-                "Bolt-default-executor"));
+            TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize),
+            new NamedThreadFactory("Bolt-default-executor"));
     }
 
     /**
@@ -70,11 +66,10 @@ public class ProcessorManager {
      */
     public void registerProcessor(CommandCode cmdCode, RemotingProcessor<?> processor) {
         if (this.cmd2processors.contains(cmdCode)) {
-            logger
-                .warn(
-                    "Processor for cmd={} is already registered, the processor is {}, and changed to {}",
-                    cmdCode, cmd2processors.get(cmdCode).getClass().getName(), processor.getClass()
-                        .getName());
+            logger.warn(
+                "Processor for cmd={} is already registered, the processor is {}, and changed to {}",
+                cmdCode, cmd2processors.get(cmdCode).getClass().getName(),
+                processor.getClass().getName());
         }
         this.cmd2processors.put(cmdCode, processor);
     }

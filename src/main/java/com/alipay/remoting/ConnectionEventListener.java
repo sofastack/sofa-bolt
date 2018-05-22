@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionEventListener {
 
     private ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>> processors = new ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>>(
-                                                                                                  3);
+        3);
 
     /**
      * Dispatch events.

@@ -16,11 +16,7 @@
  */
 package com.alipay.remoting.rpc;
 
-import com.alipay.remoting.CommandCode;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.ProtocolCode;
-import com.alipay.remoting.RemotingCommand;
-import com.alipay.remoting.SystemProperties;
+import com.alipay.remoting.*;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
@@ -201,9 +197,17 @@ public abstract class RpcCommand implements RemotingCommand {
         return cmdCode;
     }
 
+    public void setCmdCode(CommandCode cmdCode) {
+        this.cmdCode = cmdCode;
+    }
+
     @Override
     public InvokeContext getInvokeContext() {
         return invokeContext;
+    }
+
+    public void setInvokeContext(InvokeContext invokeContext) {
+        this.invokeContext = invokeContext;
     }
 
     @Override
@@ -211,12 +215,16 @@ public abstract class RpcCommand implements RemotingCommand {
         return serializer;
     }
 
+    public void setSerializer(byte serializer) {
+        this.serializer = serializer;
+    }
+
     public ProtocolSwitch getProtocolSwitch() {
         return protocolSwitch;
     }
 
-    public void setCmdCode(CommandCode cmdCode) {
-        this.cmdCode = cmdCode;
+    public void setProtocolSwitch(ProtocolSwitch protocolSwitch) {
+        this.protocolSwitch = protocolSwitch;
     }
 
     public byte getVersion() {
@@ -233,14 +241,6 @@ public abstract class RpcCommand implements RemotingCommand {
 
     public void setType(byte type) {
         this.type = type;
-    }
-
-    public void setSerializer(byte serializer) {
-        this.serializer = serializer;
-    }
-
-    public void setProtocolSwitch(ProtocolSwitch protocolSwitch) {
-        this.protocolSwitch = protocolSwitch;
     }
 
     public int getId() {
@@ -294,9 +294,5 @@ public abstract class RpcCommand implements RemotingCommand {
             this.clazz = clazz;
             this.clazzLength = (short) clazz.length;
         }
-    }
-
-    public void setInvokeContext(InvokeContext invokeContext) {
-        this.invokeContext = invokeContext;
     }
 }

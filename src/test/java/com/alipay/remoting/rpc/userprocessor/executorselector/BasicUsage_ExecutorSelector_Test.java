@@ -25,11 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,11 +36,7 @@ import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
+import com.alipay.remoting.rpc.common.*;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.util.RemotingUtil;
 
@@ -58,7 +50,7 @@ import com.alipay.remoting.util.RemotingUtil;
  */
 public class BasicUsage_ExecutorSelector_Test {
     static Logger                  logger                    = LoggerFactory
-                                                                 .getLogger(BasicUsage_ExecutorSelector_Test.class);
+        .getLogger(BasicUsage_ExecutorSelector_Test.class);
 
     BoltServer                     server;
     RpcClient                      client;
@@ -77,9 +69,9 @@ public class BasicUsage_ExecutorSelector_Test {
     DISCONNECTEventProcessor       serverDisConnectProcessor = new DISCONNECTEventProcessor();
 
     UserProcessor.ExecutorSelector selector0                 = new DefaultExecutorSelector(
-                                                                 EXECUTOR0);
+        EXECUTOR0);
     UserProcessor.ExecutorSelector selector1                 = new DefaultExecutorSelector(
-                                                                 EXECUTOR1);
+        EXECUTOR1);
 
     @BeforeClass
     public static void classInit() {

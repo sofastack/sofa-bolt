@@ -28,11 +28,7 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.BizContext;
-import com.alipay.remoting.DefaultBizContext;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.RemotingContext;
+import com.alipay.remoting.*;
 import com.alipay.remoting.rpc.common.RequestBody;
 import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
 import com.alipay.remoting.rpc.protocol.SyncUserProcessor;
@@ -41,12 +37,11 @@ public class PreHandleUserProcessor extends SyncUserProcessor<RequestBody> {
 
     /** logger */
     private static final Logger logger      = LoggerFactory
-                                                .getLogger(SimpleServerUserProcessor.class);
+        .getLogger(SimpleServerUserProcessor.class);
 
     /** executor */
     private ThreadPoolExecutor  executor    = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-                                                new ArrayBlockingQueue<Runnable>(4),
-                                                new NamedThreadFactory("Request-process-pool"));
+        new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
 
     private AtomicInteger       invokeTimes = new AtomicInteger();
 

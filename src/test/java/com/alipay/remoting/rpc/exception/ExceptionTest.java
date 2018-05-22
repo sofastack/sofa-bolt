@@ -33,14 +33,7 @@ import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
-import com.alipay.remoting.rpc.common.AsyncExceptionUserProcessor;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.ExceptionUserProcessor;
-import com.alipay.remoting.rpc.common.NullUserProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 
 /**
  * exception test
@@ -62,8 +55,8 @@ public class ExceptionTest {
     public void init() {
         server = new BoltServer(port);
         server.start();
-        server
-            .addConnectionEventProcessor(ConnectionEventType.CONNECT, new CONNECTEventProcessor());
+        server.addConnectionEventProcessor(ConnectionEventType.CONNECT,
+            new CONNECTEventProcessor());
         client = new RpcClient();
         client.init();
     }

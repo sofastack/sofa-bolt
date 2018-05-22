@@ -27,19 +27,16 @@ import java.util.Random;
  */
 public class RequestBody implements Serializable {
 
-    /** for serialization */
-    private static final long  serialVersionUID          = -1288207208017808618L;
-
     public static final String DEFAULT_CLIENT_STR        = "HELLO WORLD! I'm from client";
     public static final String DEFAULT_SERVER_STR        = "HELLO WORLD! I'm from server";
     public static final String DEFAULT_SERVER_RETURN_STR = "HELLO WORLD! I'm server return";
     public static final String DEFAULT_CLIENT_RETURN_STR = "HELLO WORLD! I'm client return";
-
     public static final String DEFAULT_ONEWAY_STR        = "HELLO WORLD! I'm oneway req";
     public static final String DEFAULT_SYNC_STR          = "HELLO WORLD! I'm sync req";
     public static final String DEFAULT_FUTURE_STR        = "HELLO WORLD! I'm future req";
     public static final String DEFAULT_CALLBACK_STR      = "HELLO WORLD! I'm call back req";
-
+    /** for serialization */
+    private static final long  serialVersionUID          = -1288207208017808618L;
     /** id */
     private int                id;
 
@@ -112,6 +109,6 @@ public class RequestBody implements Serializable {
     }
 
     static public enum InvokeType {
-        ONEWAY, SYNC, FUTURE, CALLBACK;
+                                   ONEWAY, SYNC, FUTURE, CALLBACK;
     }
 }

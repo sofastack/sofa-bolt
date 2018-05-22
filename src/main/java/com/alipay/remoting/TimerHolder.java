@@ -31,22 +31,22 @@ public class TimerHolder {
 
     private final static long defaultTickDuration = 10;
 
-    private static class DefaultInstance {
-        static final Timer INSTANCE = new HashedWheelTimer(new NamedThreadFactory(
-                                        "DefaultTimer" + defaultTickDuration), defaultTickDuration,
-                                        TimeUnit.MILLISECONDS);
-    }
-
     private TimerHolder() {
     }
 
     /**
      * Get a singleton instance of {@link Timer}. <br>
      * The tick duration is {@link #defaultTickDuration}.
-     * 
+     *
      * @return Timer
      */
     public static Timer getTimer() {
         return DefaultInstance.INSTANCE;
+    }
+
+    private static class DefaultInstance {
+        static final Timer INSTANCE = new HashedWheelTimer(
+            new NamedThreadFactory("DefaultTimer" + defaultTickDuration), defaultTickDuration,
+            TimeUnit.MILLISECONDS);
     }
 }

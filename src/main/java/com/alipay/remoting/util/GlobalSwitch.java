@@ -42,15 +42,15 @@ public class GlobalSwitch implements Switch {
     /** system settings */
     private static BitSet   systemSettings                  = new BitSet();
 
-    /** user settings */
-    private BitSet          userSettings                    = new BitSet();
-
     /**
      * init system switch status according to system properties
      */
     static {
         init();
     }
+
+    /** user settings */
+    private BitSet          userSettings                    = new BitSet();
 
     private static void init() {
         if (SystemProperties.conn_reconnect_switch()) {
@@ -68,21 +68,22 @@ public class GlobalSwitch implements Switch {
 
     // ~~~ public methods
 
-    @Override
-    public void turnOn(int switchIndex) {
-        this.userSettings.set(switchIndex);
-    }
-
-    @Override
-    public boolean isOn(int switchIndex) {
-        return systemSettings.get(switchIndex) || this.userSettings.get(switchIndex);
-    }
-
-    // ~~~ test case use only
     /**
      * Reinit system settings. For test case use only
      */
     public static void reinit() {
         init();
+    }
+
+    @Override
+    public void turnOn(int switchIndex) {
+        this.userSettings.set(switchIndex);
+    }
+
+    // ~~~ test case use only
+
+    @Override
+    public boolean isOn(int switchIndex) {
+        return systemSettings.get(switchIndex) || this.userSettings.get(switchIndex);
     }
 }

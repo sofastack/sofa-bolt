@@ -22,18 +22,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.util.GlobalSwitch;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.util.Attribute;
 
 /**
@@ -71,10 +71,10 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress,
                         SocketAddress localAddress, ChannelPromise promise) throws Exception {
         if (logger.isInfoEnabled()) {
-            final String local = localAddress == null ? null : RemotingUtil
-                .parseSocketAddressToString(localAddress);
-            final String remote = remoteAddress == null ? "UNKNOWN" : RemotingUtil
-                .parseSocketAddressToString(remoteAddress);
+            final String local = localAddress == null ? null
+                : RemotingUtil.parseSocketAddressToString(localAddress);
+            final String remote = remoteAddress == null ? "UNKNOWN"
+                : RemotingUtil.parseSocketAddressToString(remoteAddress);
             if (local == null) {
                 if (logger.isInfoEnabled()) {
                     logger.info("Try connect to {}", remote);
@@ -115,7 +115,8 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
      */
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        infoLog("Connection channel registered: {}", RemotingUtil.parseRemoteAddress(ctx.channel()));
+        infoLog("Connection channel registered: {}",
+            RemotingUtil.parseRemoteAddress(ctx.channel()));
         super.channelRegistered(ctx);
     }
 
@@ -162,8 +163,8 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                         this.onEvent(connection, connection.getUrl().getOriginUrl(),
                             ConnectionEventType.CONNECT);
                     } else {
-                        logger
-                            .warn("channel null when handle user triggered event in ConnectionEventHandler!");
+                        logger.warn(
+                            "channel null when handle user triggered event in ConnectionEventHandler!");
                     }
                     break;
                 default:
@@ -178,10 +179,9 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         final String remoteAddress = RemotingUtil.parseRemoteAddress(ctx.channel());
         final String localAddress = RemotingUtil.parseLocalAddress(ctx.channel());
-        logger
-            .warn(
-                "ExceptionCaught in connection: local[{}], remote[{}], close the connection! Cause[{}:{}]",
-                localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
+        logger.warn(
+            "ExceptionCaught in connection: local[{}], remote[{}], close the connection! Cause[{}:{}]",
+            localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
         ctx.channel().close();
     }
 
@@ -254,32 +254,6 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     }
 
     /**
-     * Dispatch connection event.
-     * 
-     * @author jiangping
-     * @version $Id: ConnectionEventExecutor.java, v 0.1 Mar 4, 2016 9:20:15 PM tao Exp $
-     */
-    public class ConnectionEventExecutor {
-        Logger          logger   = BoltLoggerFactory.getLogger("CommonDefault");
-        ExecutorService executor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS,
-                                     new LinkedBlockingQueue<Runnable>(10000),
-                                     new NamedThreadFactory("Bolt-conn-event-executor"));
-
-        /**
-         * Process event.
-         * 
-         * @param event
-         */
-        public void onEvent(Runnable event) {
-            try {
-                executor.execute(event);
-            } catch (Throwable t) {
-                logger.error("Exception caught when execute connection event!", t);
-            }
-        }
-    }
-
-    /**
      * print info log
      * @param format
      * @param addr
@@ -290,6 +264,32 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                 logger.info(format, addr);
             } else {
                 logger.info(format, "UNKNOWN-ADDR");
+            }
+        }
+    }
+
+    /**
+     * Dispatch connection event.
+     *
+     * @author jiangping
+     * @version $Id: ConnectionEventExecutor.java, v 0.1 Mar 4, 2016 9:20:15 PM tao Exp $
+     */
+    public class ConnectionEventExecutor {
+        Logger          logger   = BoltLoggerFactory.getLogger("CommonDefault");
+        ExecutorService executor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS,
+            new LinkedBlockingQueue<Runnable>(10000),
+            new NamedThreadFactory("Bolt-conn-event-executor"));
+
+        /**
+         * Process event.
+         *
+         * @param event
+         */
+        public void onEvent(Runnable event) {
+            try {
+                executor.execute(event);
+            } catch (Throwable t) {
+                logger.error("Exception caught when execute connection event!", t);
             }
         }
     }

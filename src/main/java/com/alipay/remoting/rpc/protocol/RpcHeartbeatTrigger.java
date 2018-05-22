@@ -20,14 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
-import com.alipay.remoting.CommandFactory;
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.HeartbeatTrigger;
-import com.alipay.remoting.InvokeCallbackListener;
-import com.alipay.remoting.InvokeFuture;
-import com.alipay.remoting.ResponseStatus;
-import com.alipay.remoting.SystemProperties;
-import com.alipay.remoting.TimerHolder;
+import com.alipay.remoting.*;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.DefaultInvokeFuture;
 import com.alipay.remoting.rpc.HeartbeatCommand;
@@ -47,11 +40,9 @@ import io.netty.util.TimerTask;
  * @version $Id: RpcHeartbeatTrigger.java, v 0.1 2015-9-29 PM3:17:45 tao Exp $
  */
 public class RpcHeartbeatTrigger implements HeartbeatTrigger {
-    private static final Logger logger                 = BoltLoggerFactory.getLogger("RpcRemoting");
-
     /** max trigger times */
     public static final Integer maxCount               = SystemProperties.tcp_idle_maxtimes();
-
+    private static final Logger logger                 = BoltLoggerFactory.getLogger("RpcRemoting");
     private static final long   heartbeatTimeoutMillis = 1000;
 
     private CommandFactory      commandFactory;
@@ -149,8 +140,8 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                 public void run(Timeout timeout) throws Exception {
                     InvokeFuture future = conn.removeInvokeFuture(heartbeatId);
                     if (future != null) {
-                        future.putResponse(commandFactory.createTimeoutResponse(conn
-                            .getRemoteAddress()));
+                        future.putResponse(
+                            commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
                         future.tryAsyncExecuteInvokeCallbackAbnormally();
                     }
                 }

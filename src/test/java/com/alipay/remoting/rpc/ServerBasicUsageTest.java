@@ -32,13 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.exception.RemotingException;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 
 /**
  * Basic usage test of Rpc Server invoke apis
@@ -48,7 +42,7 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
  */
 public class ServerBasicUsageTest {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(BasicUsageTest.class);
+        .getLogger(BasicUsageTest.class);
 
     BoltServer                server;
     RpcClient                 client;

@@ -18,11 +18,7 @@ package com.alipay.remoting.rpc.protocol;
 
 import org.slf4j.Logger;
 
-import com.alipay.remoting.AbstractRemotingProcessor;
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.InvokeFuture;
-import com.alipay.remoting.RemotingCommand;
-import com.alipay.remoting.RemotingContext;
+import com.alipay.remoting.*;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.HeartbeatAckCommand;
 import com.alipay.remoting.rpc.HeartbeatCommand;
@@ -80,11 +76,10 @@ public class RpcHeartBeatProcessor extends AbstractRemotingProcessor {
                         RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()), e);
                 }
             } else {
-                logger
-                    .warn(
-                        "Cannot find heartbeat InvokeFuture, maybe already timeout. Id={}, From {}",
-                        msg.getId(),
-                        RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
+                logger.warn(
+                    "Cannot find heartbeat InvokeFuture, maybe already timeout. Id={}, From {}",
+                    msg.getId(),
+                    RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
             }
         } else {
             throw new RuntimeException("Cannot process command: " + msg.getClass().getName());

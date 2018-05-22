@@ -36,13 +36,7 @@ import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
 import com.alipay.remoting.rpc.RpcServer;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
 
 /**
@@ -56,7 +50,7 @@ import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
  */
 public class ServerTimeoutTest {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(ServerTimeoutTest.class);
+        .getLogger(ServerTimeoutTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -73,12 +67,10 @@ public class ServerTimeoutTest {
     int                       workQueue                 = 1;
     int                       concurrent                = maxThread + workQueue;
 
-    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(
-                                                            max_timeout, coreThread, maxThread, 60,
-                                                            workQueue);
-    SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor(
-                                                            max_timeout, coreThread, maxThread, 60,
-                                                            workQueue);
+    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(max_timeout,
+        coreThread, maxThread, 60, workQueue);
+    SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor(max_timeout,
+        coreThread, maxThread, 60, workQueue);
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
     DISCONNECTEventProcessor  clientDisConnectProcessor = new DISCONNECTEventProcessor();

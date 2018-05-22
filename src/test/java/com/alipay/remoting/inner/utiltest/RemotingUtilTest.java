@@ -54,15 +54,12 @@ import io.netty.channel.Channel;
  */
 public class RemotingUtilTest {
 
-    Logger                      logger   = LoggerFactory.getLogger(RemotingUtilTest.class);
-
-    Server                      server;
-    RpcClient                   client;
-
     private static final int    port     = 1111;
     private static final String localip  = "127.0.0.1";
-
     private static final Url    connAddr = new Url(localip, port);
+    Logger                      logger   = LoggerFactory.getLogger(RemotingUtilTest.class);
+    Server                      server;
+    RpcClient                   client;
     RpcAddressParser            parser   = new RpcAddressParser();
 
     @Before
@@ -215,12 +212,12 @@ public class RemotingUtilTest {
             server = new RpcServer(port);
             server.registerUserProcessor(new SyncUserProcessor<RequestBody>() {
                 ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
-                                                new ArrayBlockingQueue<Runnable>(4),
-                                                new NamedThreadFactory("Request-process-pool"));
+                    new ArrayBlockingQueue<Runnable>(4),
+                    new NamedThreadFactory("Request-process-pool"));
 
                 @Override
-                public Object handleRequest(BizContext bizCtx, RequestBody request)
-                                                                                   throws Exception {
+                public Object handleRequest(BizContext bizCtx,
+                                            RequestBody request) throws Exception {
                     logger.warn("Request received:" + request);
                     return "Hello world!";
                 }

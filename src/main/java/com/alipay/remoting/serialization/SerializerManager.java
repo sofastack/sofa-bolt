@@ -28,8 +28,8 @@ package com.alipay.remoting.serialization;
  */
 public class SerializerManager {
 
-    private static Serializer[] serializers = new Serializer[5];
     public static final byte    Hessian2    = 1;
+    private static Serializer[] serializers = new Serializer[5];
     //public static final byte    Json        = 2;
 
     static {

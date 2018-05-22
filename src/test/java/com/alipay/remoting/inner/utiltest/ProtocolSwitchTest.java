@@ -18,12 +18,7 @@ package com.alipay.remoting.inner.utiltest;
 
 import java.util.BitSet;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import com.alipay.remoting.util.ProtocolSwitch;
 
@@ -38,16 +33,16 @@ public class ProtocolSwitchTest {
     public static void initClass() {
     }
 
+    @AfterClass
+    public static void afterClass() {
+    }
+
     @Before
     public void init() {
     }
 
     @After
     public void stop() {
-    }
-
-    @AfterClass
-    public static void afterClass() {
     }
 
     @Test

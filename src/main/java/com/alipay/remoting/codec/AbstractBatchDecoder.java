@@ -61,9 +61,10 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
                                                                                   ByteBuf cumulation,
                                                                                   ByteBuf in) {
                                                               ByteBuf buffer;
-                                                              if (cumulation.writerIndex() > cumulation
-                                                                  .maxCapacity()
-                                                                                             - in.readableBytes()
+                                                              if (cumulation
+                                                                  .writerIndex() > cumulation
+                                                                      .maxCapacity()
+                                                                                   - in.readableBytes()
                                                                   || cumulation.refCnt() > 1) {
                                                                   // Expand cumulation (by replace it) when either there is not more room in the buffer
                                                                   // or if the refCnt is greater then 1 which may happen when the user use slice().retain() or
@@ -116,15 +117,14 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
                                                                           .readableBytes();
                                                                       composite = alloc
                                                                           .compositeBuffer();
-                                                                      composite.addComponent(
-                                                                          cumulation).writerIndex(
-                                                                          readable);
+                                                                      composite
+                                                                          .addComponent(cumulation)
+                                                                          .writerIndex(readable);
                                                                   }
-                                                                  composite
-                                                                      .addComponent(in)
+                                                                  composite.addComponent(in)
                                                                       .writerIndex(
-                                                                          composite.writerIndex()
-                                                                                  + in.readableBytes());
+                                                                          composite
+                                                                              .writerIndex() + in.readableBytes());
                                                                   buffer = composite;
                                                               }
                                                               return buffer;
@@ -139,14 +139,12 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
     private int                   discardAfterReads   = 16;
     private int                   numReads;
 
-    /**
-     * If set then only one message is decoded on each {@link #channelRead(ChannelHandlerContext, Object)}
-     * call. This may be useful if you need to do some protocol upgrade and want to make sure nothing is mixed up.
-     *
-     * Default is {@code false} as this has performance impacts.
-     */
-    public void setSingleDecode(boolean singleDecode) {
-        this.singleDecode = singleDecode;
+    static ByteBuf expandCumulation(ByteBufAllocator alloc, ByteBuf cumulation, int readable) {
+        ByteBuf oldCumulation = cumulation;
+        cumulation = alloc.buffer(oldCumulation.readableBytes() + readable);
+        cumulation.writeBytes(oldCumulation);
+        oldCumulation.release();
+        return cumulation;
     }
 
     /**
@@ -157,6 +155,16 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      */
     public boolean isSingleDecode() {
         return singleDecode;
+    }
+
+    /**
+     * If set then only one message is decoded on each {@link #channelRead(ChannelHandlerContext, Object)}
+     * call. This may be useful if you need to do some protocol upgrade and want to make sure nothing is mixed up.
+     *
+     * Default is {@code false} as this has performance impacts.
+     */
+    public void setSingleDecode(boolean singleDecode) {
+        this.singleDecode = singleDecode;
     }
 
     /**
@@ -379,9 +387,8 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
                 }
 
                 if (oldInputLength == in.readableBytes()) {
-                    throw new DecoderException(
-                        StringUtil.simpleClassName(getClass())
-                                + ".decode() did not read anything but decoded a message.");
+                    throw new DecoderException(StringUtil.simpleClassName(
+                        getClass()) + ".decode() did not read anything but decoded a message.");
                 }
 
                 if (isSingleDecode()) {
@@ -402,29 +409,9 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * By default this will just call {@link #decode(ChannelHandlerContext, ByteBuf, List)} but sub-classes may
      * override this for some special cleanup operation.
      */
-    protected void decodeLast(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
-                                                                                      throws Exception {
+    protected void decodeLast(ChannelHandlerContext ctx, ByteBuf in,
+                              List<Object> out) throws Exception {
         decode(ctx, in, out);
-    }
-
-    static ByteBuf expandCumulation(ByteBufAllocator alloc, ByteBuf cumulation, int readable) {
-        ByteBuf oldCumulation = cumulation;
-        cumulation = alloc.buffer(oldCumulation.readableBytes() + readable);
-        cumulation.writeBytes(oldCumulation);
-        oldCumulation.release();
-        return cumulation;
-    }
-
-    /**
-     * Cumulate {@link ByteBuf}s.
-     */
-    public interface Cumulator {
-        /**
-         * Cumulate the given {@link ByteBuf}s and return the {@link ByteBuf} that holds the cumulated bytes.
-         * The implementation is responsible to correctly handle the life-cycle of the given {@link ByteBuf}s and so
-         * call {@link ByteBuf#release()} if a {@link ByteBuf} is fully consumed.
-         */
-        ByteBuf cumulate(ByteBufAllocator alloc, ByteBuf cumulation, ByteBuf in);
     }
 
     /**
@@ -437,6 +424,18 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * @param out           the {@link List} to which decoded messages should be added
      * @throws Exception    is thrown if an error accour
      */
-    protected abstract void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
-                                                                                           throws Exception;
+    protected abstract void decode(ChannelHandlerContext ctx, ByteBuf in,
+                                   List<Object> out) throws Exception;
+
+    /**
+     * Cumulate {@link ByteBuf}s.
+     */
+    public interface Cumulator {
+        /**
+         * Cumulate the given {@link ByteBuf}s and return the {@link ByteBuf} that holds the cumulated bytes.
+         * The implementation is responsible to correctly handle the life-cycle of the given {@link ByteBuf}s and so
+         * call {@link ByteBuf#release()} if a {@link ByteBuf} is fully consumed.
+         */
+        ByteBuf cumulate(ByteBufAllocator alloc, ByteBuf cumulation, ByteBuf in);
+    }
 }

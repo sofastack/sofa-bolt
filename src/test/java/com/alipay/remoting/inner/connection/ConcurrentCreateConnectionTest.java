@@ -23,16 +23,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.ConnectionEventListener;
-import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.ConnectionFactory;
-import com.alipay.remoting.ConnectionSelectStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
-import com.alipay.remoting.RandomSelectStrategy;
-import com.alipay.remoting.RemotingAddressParser;
-import com.alipay.remoting.Url;
+import com.alipay.remoting.*;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
 import com.alipay.remoting.rpc.RpcConnectionEventHandler;
@@ -49,21 +40,17 @@ import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
 public class ConcurrentCreateConnectionTest {
 
     private final static Logger      logger                   = LoggerFactory
-                                                                  .getLogger(RpcConnectionManagerTest.class);
-
+        .getLogger(RpcConnectionManagerTest.class);
+    CONNECTEventProcessor            serverConnectProcessor   = new CONNECTEventProcessor();
     private DefaultConnectionManager cm;
     private ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy();
     private RemotingAddressParser    addressParser            = new RpcAddressParser();
     private ConnectionFactory        connctionFactory         = new RpcConnectionFactory();
     private ConnectionEventHandler   connectionEventHandler   = new RpcConnectionEventHandler();
     private ConnectionEventListener  connectionEventListener  = new ConnectionEventListener();
-
     private BoltServer               server;
-
     private String                   ip                       = "127.0.0.1";
     private int                      port                     = 1111;
-
-    CONNECTEventProcessor            serverConnectProcessor   = new CONNECTEventProcessor();
 
     @Before
     public void init() {

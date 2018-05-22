@@ -34,7 +34,7 @@ public class ConnectionPool implements Scannable {
     // ~~~ constants
     /** logger */
     private static final Logger              logger            = BoltLoggerFactory
-                                                                   .getLogger("CommonDefault");
+        .getLogger("CommonDefault");
 
     /** connections */
     private CopyOnWriteArrayList<Connection> conns             = new CopyOnWriteArrayList<Connection>();

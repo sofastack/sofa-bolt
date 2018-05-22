@@ -16,12 +16,7 @@
  */
 package com.alipay.remoting.inner.utiltest;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import com.alipay.remoting.Configs;
 import com.alipay.remoting.rpc.RpcClient;
@@ -40,6 +35,10 @@ public class GlobalSwitchTest {
     public static void initClass() {
     }
 
+    @AfterClass
+    public static void afterClass() {
+    }
+
     @Before
     public void init() {
         client1 = new RpcClient();
@@ -48,10 +47,6 @@ public class GlobalSwitchTest {
 
     @After
     public void stop() {
-    }
-
-    @AfterClass
-    public static void afterClass() {
     }
 
     @Test

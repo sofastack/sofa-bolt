@@ -77,7 +77,8 @@ public class ProtocolCodeBasedDecoder extends AbstractBatchDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in,
+                          List<Object> out) throws Exception {
         in.markReaderIndex();
         ProtocolCode protocolCode = decodeProtocolCode(in);
         if (null != protocolCode) {

@@ -77,18 +77,18 @@ public interface InvokeFuture {
     public void tryAsyncExecuteInvokeCallbackAbnormally();
 
     /**
-     * Set the cause if exception caught.
-     * 
-     * @param cause
-     */
-    public void setCause(Throwable cause);
-
-    /**
      * Get the cause of exception of the future.
-     * 
+     *
      * @return
      */
     public Throwable getCause();
+
+    /**
+     * Set the cause if exception caught.
+     *
+     * @param cause
+     */
+    public void setCause(Throwable cause);
 
     /**
      * Get the application callback of the future.
@@ -129,14 +129,14 @@ public interface InvokeFuture {
     public byte getProtocolCode();
 
     /**
-     * set invoke context
-     * @param invokeContext
-     */
-    public void setInvokeContext(InvokeContext invokeContext);
-
-    /**
      * get invoke context
      * @return
      */
     public InvokeContext getInvokeContext();
+
+    /**
+     * set invoke context
+     * @param invokeContext
+     */
+    public void setInvokeContext(InvokeContext invokeContext);
 }

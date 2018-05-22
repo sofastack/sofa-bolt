@@ -59,7 +59,8 @@ public class ConnectionUtil {
         return null;
     }
 
-    public static void addIdGroupCallbackMapping(Integer id, InvokeFuture callback, Channel channel) {
+    public static void addIdGroupCallbackMapping(Integer id, InvokeFuture callback,
+                                                 Channel channel) {
         Connection connection = getConnectionFromChannel(channel);
         if (connection != null) {
             connection.addInvokeFuture(callback);

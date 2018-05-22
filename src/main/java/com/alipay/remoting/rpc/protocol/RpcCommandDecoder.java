@@ -25,11 +25,7 @@ import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.CommandDecoder;
 import com.alipay.remoting.ResponseStatus;
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.rpc.HeartbeatAckCommand;
-import com.alipay.remoting.rpc.HeartbeatCommand;
-import com.alipay.remoting.rpc.RequestCommand;
-import com.alipay.remoting.rpc.ResponseCommand;
-import com.alipay.remoting.rpc.RpcCommandType;
+import com.alipay.remoting.rpc.*;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -47,8 +43,9 @@ public class RpcCommandDecoder implements CommandDecoder {
     private int                 lessLen;
 
     {
-        lessLen = RpcProtocol.getResponseHeaderLength() < RpcProtocol.getRequestHeaderLength() ? RpcProtocol
-            .getResponseHeaderLength() : RpcProtocol.getRequestHeaderLength();
+        lessLen = RpcProtocol.getResponseHeaderLength() < RpcProtocol.getRequestHeaderLength()
+            ? RpcProtocol.getResponseHeaderLength()
+            : RpcProtocol.getRequestHeaderLength();
     }
 
     /**
@@ -180,8 +177,8 @@ public class RpcCommandDecoder implements CommandDecoder {
                             command.setHeader(header);
                             command.setContent(content);
                             command.setResponseTimeMillis(System.currentTimeMillis());
-                            command.setResponseHost((InetSocketAddress) ctx.channel()
-                                .remoteAddress());
+                            command
+                                .setResponseHost((InetSocketAddress) ctx.channel().remoteAddress());
                             out.add(command);
                         } else {
                             in.resetReaderIndex();

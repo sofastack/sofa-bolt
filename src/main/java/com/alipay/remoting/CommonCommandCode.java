@@ -24,16 +24,12 @@ package com.alipay.remoting;
  */
 public enum CommonCommandCode implements CommandCode {
 
-    HEARTBEAT(CommandCode.HEARTBEAT_VALUE);
+                                                      HEARTBEAT(CommandCode.HEARTBEAT_VALUE);
 
     private short value;
 
     private CommonCommandCode(short value) {
         this.value = value;
-    }
-
-    public short value() {
-        return this.value;
     }
 
     public static CommonCommandCode valueOf(short value) {
@@ -42,6 +38,10 @@ public enum CommonCommandCode implements CommandCode {
                 return HEARTBEAT;
         }
         throw new IllegalArgumentException("Unknown Rpc command code value ," + value);
+    }
+
+    public short value() {
+        return this.value;
     }
 
 }

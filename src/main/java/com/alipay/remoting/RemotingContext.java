@@ -181,15 +181,6 @@ public class RemotingContext {
     }
 
     /**
-     * Setter method for property <tt>arriveTimestamp<tt>.
-     *
-     * @param arriveTimestamp value to be assigned to property arriveTimestamp
-     */
-    public void setArriveTimestamp(long arriveTimestamp) {
-        this.arriveTimestamp = arriveTimestamp;
-    }
-
-    /**
      * Getter method for property <tt>arriveTimestamp</tt>.
      *
      * @return property value of arriveTimestamp
@@ -199,12 +190,12 @@ public class RemotingContext {
     }
 
     /**
-     * Setter method for property <tt>timeout<tt>.
+     * Setter method for property <tt>arriveTimestamp<tt>.
      *
-     * @param timeout value to be assigned to property timeout
+     * @param arriveTimestamp value to be assigned to property arriveTimestamp
      */
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
+    public void setArriveTimestamp(long arriveTimestamp) {
+        this.arriveTimestamp = arriveTimestamp;
     }
 
     /**
@@ -214,6 +205,15 @@ public class RemotingContext {
      */
     public int getTimeout() {
         return timeout;
+    }
+
+    /**
+     * Setter method for property <tt>timeout<tt>.
+     *
+     * @param timeout value to be assigned to property timeout
+     */
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
 
     /**

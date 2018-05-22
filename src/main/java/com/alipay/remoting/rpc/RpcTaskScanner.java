@@ -37,7 +37,7 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 public class RpcTaskScanner {
     private static final Logger      logger           = BoltLoggerFactory.getLogger("RpcRemoting");
     private ScheduledExecutorService scheduledService = Executors
-                                                          .newSingleThreadScheduledExecutor(new ThreadFactory() {
+        .newSingleThreadScheduledExecutor(new ThreadFactory() {
                                                               @Override
                                                               public Thread newThread(Runnable r) {
                                                                   return new Thread(r,

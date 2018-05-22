@@ -27,13 +27,7 @@ import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 
 /**
  * Test rpc server invoke exception
@@ -43,7 +37,7 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
  */
 public class ServerInvokeExceptionTest {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(ServerInvokeExceptionTest.class);
+        .getLogger(ServerInvokeExceptionTest.class);
 
     BoltServer                server;
     RpcClient                 client;

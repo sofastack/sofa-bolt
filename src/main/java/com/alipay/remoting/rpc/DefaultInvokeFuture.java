@@ -24,16 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 
-import com.alipay.remoting.CommandFactory;
-import com.alipay.remoting.CommandHandler;
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeCallbackListener;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.InvokeFuture;
-import com.alipay.remoting.Protocol;
-import com.alipay.remoting.ProtocolCode;
-import com.alipay.remoting.ProtocolManager;
-import com.alipay.remoting.RemotingCommand;
+import com.alipay.remoting.*;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
 import io.netty.util.Timeout;
@@ -47,20 +38,13 @@ import io.netty.util.Timeout;
 public class DefaultInvokeFuture implements InvokeFuture {
 
     private static final Logger      logger                  = BoltLoggerFactory
-                                                                 .getLogger("RpcRemoting");
-
-    private int                      invokeId;
-
-    private InvokeCallbackListener   callbackListener;
-
-    private InvokeCallback           callback;
-
-    private volatile ResponseCommand responseCommand;
-
+        .getLogger("RpcRemoting");
     private final CountDownLatch     countDownLatch          = new CountDownLatch(1);
-
     private final AtomicBoolean      executeCallbackOnlyOnce = new AtomicBoolean(false);
-
+    private int                      invokeId;
+    private InvokeCallbackListener   callbackListener;
+    private InvokeCallback           callback;
+    private volatile ResponseCommand responseCommand;
     private Timeout                  timeout;
 
     private Throwable                cause;
@@ -82,7 +66,8 @@ public class DefaultInvokeFuture implements InvokeFuture {
      * @param protocol
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
-                               InvokeCallback callback, byte protocol, CommandFactory commandFactory) {
+                               InvokeCallback callback, byte protocol,
+                               CommandFactory commandFactory) {
         this.invokeId = invokeId;
         this.callbackListener = callbackListener;
         this.callback = callback;
@@ -197,20 +182,20 @@ public class DefaultInvokeFuture implements InvokeFuture {
         }
     }
 
-    /** 
-     * @see com.alipay.remoting.InvokeFuture#setCause(java.lang.Throwable)
-     */
-    @Override
-    public void setCause(Throwable cause) {
-        this.cause = cause;
-    }
-
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#getCause()
      */
     @Override
     public Throwable getCause() {
         return this.cause;
+    }
+
+    /**
+     * @see com.alipay.remoting.InvokeFuture#setCause(java.lang.Throwable)
+     */
+    @Override
+    public void setCause(Throwable cause) {
+        this.cause = cause;
     }
 
     /** 
@@ -222,19 +207,19 @@ public class DefaultInvokeFuture implements InvokeFuture {
     }
 
     /**
-     * @see InvokeFuture#getInvokeContext()
-     */
-    @Override
-    public void setInvokeContext(InvokeContext invokeContext) {
-        this.invokeContext = invokeContext;
-    }
-
-    /**
      * @see InvokeFuture#setInvokeContext(InvokeContext)
      */
     @Override
     public InvokeContext getInvokeContext() {
         return invokeContext;
+    }
+
+    /**
+     * @see InvokeFuture#getInvokeContext()
+     */
+    @Override
+    public void setInvokeContext(InvokeContext invokeContext) {
+        this.invokeContext = invokeContext;
     }
 
     /** 

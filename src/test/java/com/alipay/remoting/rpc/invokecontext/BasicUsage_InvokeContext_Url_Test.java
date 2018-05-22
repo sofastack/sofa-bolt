@@ -29,22 +29,12 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.Url;
+import com.alipay.remoting.*;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.TraceLogUtil;
 
@@ -56,7 +46,7 @@ import com.alipay.remoting.util.TraceLogUtil;
  */
 public class BasicUsage_InvokeContext_Url_Test {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(BasicUsage_InvokeContext_Url_Test.class);
+        .getLogger(BasicUsage_InvokeContext_Url_Test.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -262,8 +252,8 @@ public class BasicUsage_InvokeContext_Url_Test {
             logger.warn("CLIENT_CONN_CREATETIME:"
                         + invokeContext.get(InvokeContext.CLIENT_CONN_CREATETIME));
 
-            TraceLogUtil
-                .printConnectionTraceLog(logger, "0af4232214701387943901253", invokeContext);
+            TraceLogUtil.printConnectionTraceLog(logger, "0af4232214701387943901253",
+                invokeContext);
         }
 
         Assert.assertTrue(serverConnectProcessor.isConnected());

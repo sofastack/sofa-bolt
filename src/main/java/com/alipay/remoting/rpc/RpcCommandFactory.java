@@ -65,8 +65,8 @@ public class RpcCommandFactory implements CommandFactory {
             e = new RpcServerException(errMsg);
             response = new RpcResponseCommand(id, e);
         } else {
-            e = new RpcServerException(t.getClass().getName() + ": " + t.getMessage()
-                                       + ". AdditionalErrMsg: " + errMsg);
+            e = new RpcServerException(
+                t.getClass().getName() + ": " + t.getMessage() + ". AdditionalErrMsg: " + errMsg);
             e.setStackTrace(t.getStackTrace());
             response = new RpcResponseCommand(id, e);
         }
@@ -104,7 +104,8 @@ public class RpcCommandFactory implements CommandFactory {
     }
 
     @Override
-    public RemotingCommand createConnectionClosedResponse(InetSocketAddress address, String message) {
+    public RemotingCommand createConnectionClosedResponse(InetSocketAddress address,
+                                                          String message) {
         ResponseCommand responseCommand = new ResponseCommand();
         responseCommand.setResponseStatus(ResponseStatus.CONNECTION_CLOSED);
         responseCommand.setResponseTimeMillis(System.currentTimeMillis());

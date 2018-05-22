@@ -16,14 +16,7 @@
  */
 package com.alipay.remoting.rpc;
 
-import com.alipay.remoting.CommandFactory;
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.DefaultConnectionManager;
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.RemotingAddressParser;
-import com.alipay.remoting.RemotingCommand;
-import com.alipay.remoting.Url;
+import com.alipay.remoting.*;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.util.RemotingUtil;
 
@@ -55,13 +48,12 @@ public class RpcServerRemoting extends RpcRemoting {
      * @see com.alipay.remoting.rpc.RpcRemoting#invokeSync(com.alipay.remoting.Url, java.lang.Object, InvokeContext, int)
      */
     @Override
-    public Object invokeSync(Url url, Object request, InvokeContext invokeContext, int timeoutMillis)
-                                                                                                     throws RemotingException,
-                                                                                                     InterruptedException {
+    public Object invokeSync(Url url, Object request, InvokeContext invokeContext,
+                             int timeoutMillis) throws RemotingException, InterruptedException {
         Connection conn = this.connectionManager.get(url.getUniqueKey());
         if (null == conn) {
-            throw new RemotingException("Client address [" + url.getUniqueKey()
-                                        + "] not connected yet!");
+            throw new RemotingException(
+                "Client address [" + url.getUniqueKey() + "] not connected yet!");
         }
         this.connectionManager.check(conn);
         return this.invokeSync(conn, request, invokeContext, timeoutMillis);
@@ -71,12 +63,12 @@ public class RpcServerRemoting extends RpcRemoting {
      * @see com.alipay.remoting.rpc.RpcRemoting#oneway(com.alipay.remoting.Url, java.lang.Object, InvokeContext)
      */
     @Override
-    public void oneway(Url url, Object request, InvokeContext invokeContext)
-                                                                            throws RemotingException {
+    public void oneway(Url url, Object request,
+                       InvokeContext invokeContext) throws RemotingException {
         Connection conn = this.connectionManager.get(url.getUniqueKey());
         if (null == conn) {
-            throw new RemotingException("Client address [" + url.getOriginUrl()
-                                        + "] not connected yet!");
+            throw new RemotingException(
+                "Client address [" + url.getOriginUrl() + "] not connected yet!");
         }
         this.connectionManager.check(conn);
         this.oneway(conn, request, invokeContext);
@@ -90,8 +82,8 @@ public class RpcServerRemoting extends RpcRemoting {
                                               int timeoutMillis) throws RemotingException {
         Connection conn = this.connectionManager.get(url.getUniqueKey());
         if (null == conn) {
-            throw new RemotingException("Client address [" + url.getUniqueKey()
-                                        + "] not connected yet!");
+            throw new RemotingException(
+                "Client address [" + url.getUniqueKey() + "] not connected yet!");
         }
         this.connectionManager.check(conn);
         return this.invokeWithFuture(conn, request, invokeContext, timeoutMillis);
@@ -102,12 +94,12 @@ public class RpcServerRemoting extends RpcRemoting {
      */
     @Override
     public void invokeWithCallback(Url url, Object request, InvokeContext invokeContext,
-                                   InvokeCallback invokeCallback, int timeoutMillis)
-                                                                                    throws RemotingException {
+                                   InvokeCallback invokeCallback,
+                                   int timeoutMillis) throws RemotingException {
         Connection conn = this.connectionManager.get(url.getUniqueKey());
         if (null == conn) {
-            throw new RemotingException("Client address [" + url.getUniqueKey()
-                                        + "] not connected yet!");
+            throw new RemotingException(
+                "Client address [" + url.getUniqueKey() + "] not connected yet!");
         }
         this.connectionManager.check(conn);
         this.invokeWithCallback(conn, request, invokeContext, invokeCallback, timeoutMillis);

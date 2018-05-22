@@ -33,9 +33,6 @@ import com.alipay.sofa.common.log.LoggerSpaceManager;
  */
 public class BoltLoggerFactory {
     public static final String  BOLT_LOG_SPACE_PROPERTY   = "bolt.log.space";
-
-    private static String       BOLT_LOG_SPACE            = "com.alipay.remoting";
-
     private static final String LOG_PATH                  = "logging.path";
     private static final String LOG_PATH_DEFAULT          = System.getProperty("user.home")
                                                             + File.separator + "logs";
@@ -43,6 +40,7 @@ public class BoltLoggerFactory {
     private static final String CLIENT_LOG_LEVEL_DEFAULT  = "INFO";
     private static final String CLIENT_LOG_ENCODE         = "com.alipay.remoting.client.log.encode";
     private static final String CLIENT_LOG_ENCODE_DEFAULT = "UTF-8";
+    private static String       BOLT_LOG_SPACE            = "com.alipay.remoting";
 
     static {
         String logSpace = System.getProperty(BOLT_LOG_SPACE_PROPERTY);

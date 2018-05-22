@@ -25,9 +25,18 @@ package com.alipay.remoting;
  * @version $Id: RemotingAddressParser.java, v 0.1 Mar 11, 2016 5:56:55 PM xiaomin.cxm Exp $
  */
 public interface RemotingAddressParser {
+    /** symbol : */
+    public static final char COLON = ':';
+    /** symbol = */
+    public static final char EQUAL = '=';
+    /** symbol & */
+    public static final char AND   = '&';
+    /** symbol ? */
+    public static final char QUES  = '?';
+
     /**
      * Parse a simple string url to get {@link Url}
-     * 
+     *
      * @param url
      * @return parsed {@link Url}
      */
@@ -35,7 +44,7 @@ public interface RemotingAddressParser {
 
     /**
      * Parse a simple string url to get a unique key of a certain address
-     * 
+     *
      * @param url
      * @return
      */
@@ -43,7 +52,7 @@ public interface RemotingAddressParser {
 
     /**
      * Parse to get property value according to specified property key
-     * 
+     *
      * @param url
      * @param propKey
      * @return propValue
@@ -52,20 +61,8 @@ public interface RemotingAddressParser {
 
     /**
      * Initialize {@link Url} arguments
-     * 
+     *
      * @param url
      */
     public void initUrlArgs(Url url);
-
-    /** symbol : */
-    public static final char COLON = ':';
-
-    /** symbol = */
-    public static final char EQUAL = '=';
-
-    /** symbol & */
-    public static final char AND   = '&';
-
-    /** symbol ? */
-    public static final char QUES  = '?';
 }

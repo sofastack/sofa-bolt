@@ -34,13 +34,7 @@ import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.exception.RemotingException;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 import com.alipay.remoting.util.RemotingUtil;
 
 /**
@@ -53,7 +47,7 @@ import com.alipay.remoting.util.RemotingUtil;
  */
 public class BasicUsage_ProtocolV2_1_Test {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(BasicUsage_ProtocolV2_1_Test.class);
+        .getLogger(BasicUsage_ProtocolV2_1_Test.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -197,8 +191,8 @@ public class BasicUsage_ProtocolV2_1_Test {
                 } else {
                     InvokeContext invokeContext = new InvokeContext();
                     invokeContext.putIfAbsent(InvokeContext.BOLT_CRC_SWITCH, false);
-                    client.invokeWithCallback(addr, req, invokeContext, new InvokeCallBackImpl(
-                        rets, latch), 1000);
+                    client.invokeWithCallback(addr, req, invokeContext,
+                        new InvokeCallBackImpl(rets, latch), 1000);
                 }
             } catch (RemotingException e) {
                 latch.countDown();
@@ -223,35 +217,6 @@ public class BasicUsage_ProtocolV2_1_Test {
         Assert.assertTrue(serverConnectProcessor.isConnected());
         Assert.assertEquals(1, serverConnectProcessor.getConnectTimes());
         Assert.assertEquals(invokeTimes, serverUserProcessor.getInvokeTimes());
-    }
-
-    private class InvokeCallBackImpl implements InvokeCallback {
-        Executor       executor = Executors.newCachedThreadPool();
-        List<String>   rets;
-        CountDownLatch latch;
-
-        InvokeCallBackImpl(List<String> rets, CountDownLatch latch) {
-            this.rets = rets;
-            this.latch = latch;
-        }
-
-        @Override
-        public void onResponse(Object result) {
-            logger.warn("Result received in callback: " + result);
-            rets.add((String) result);
-            latch.countDown();
-        }
-
-        @Override
-        public void onException(Throwable e) {
-            logger.error("Process exception in callback.", e);
-            latch.countDown();
-        }
-
-        @Override
-        public Executor getExecutor() {
-            return executor;
-        }
     }
 
     @Test
@@ -300,5 +265,34 @@ public class BasicUsage_ProtocolV2_1_Test {
         Assert.assertTrue(serverConnectProcessor.isConnected());
         Assert.assertEquals(1, serverConnectProcessor.getConnectTimes());
         Assert.assertEquals(invokeTimes, serverUserProcessor.getInvokeTimes());
+    }
+
+    private class InvokeCallBackImpl implements InvokeCallback {
+        Executor       executor = Executors.newCachedThreadPool();
+        List<String>   rets;
+        CountDownLatch latch;
+
+        InvokeCallBackImpl(List<String> rets, CountDownLatch latch) {
+            this.rets = rets;
+            this.latch = latch;
+        }
+
+        @Override
+        public void onResponse(Object result) {
+            logger.warn("Result received in callback: " + result);
+            rets.add((String) result);
+            latch.countDown();
+        }
+
+        @Override
+        public void onException(Throwable e) {
+            logger.error("Process exception in callback.", e);
+            latch.countDown();
+        }
+
+        @Override
+        public Executor getExecutor() {
+            return executor;
+        }
     }
 }

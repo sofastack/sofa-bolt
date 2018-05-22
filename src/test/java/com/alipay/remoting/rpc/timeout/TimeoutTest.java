@@ -34,13 +34,7 @@ import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.BasicUsageTest;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
 
 /**
@@ -52,7 +46,7 @@ import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
 public class TimeoutTest {
 
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(BasicUsageTest.class);
+        .getLogger(BasicUsageTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -64,7 +58,8 @@ public class TimeoutTest {
     int                       invokeTimes               = 5;
     int                       timeout                   = 250;
 
-    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(timeout * 2);
+    SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(
+        timeout * 2);
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
@@ -144,8 +139,8 @@ public class TimeoutTest {
         } catch (InvokeTimeoutException e) {
             Assert.assertNull(obj);
         } catch (RemotingException e) {
-            logger
-                .error("Other RemotingException but InvokeTimeoutException occurred in future", e);
+            logger.error("Other RemotingException but InvokeTimeoutException occurred in future",
+                e);
             Assert.fail("Should not reach here!");
         } catch (InterruptedException e) {
             logger.error("InterruptedException in sync", e);
@@ -205,8 +200,8 @@ public class TimeoutTest {
             }, timeout);
 
         } catch (RemotingException e) {
-            logger
-                .error("Other RemotingException but InvokeTimeoutException occurred in future", e);
+            logger.error("Other RemotingException but InvokeTimeoutException occurred in future",
+                e);
             Assert.fail("Should not reach here!");
         }
         latch.await();

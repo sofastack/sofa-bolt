@@ -25,16 +25,12 @@ import com.alipay.remoting.CommandCode;
  */
 public enum RpcCommandCode implements CommandCode {
 
-    RPC_REQUEST((short) 1), RPC_RESPONSE((short) 2);
+                                                   RPC_REQUEST((short) 1), RPC_RESPONSE((short) 2);
 
     private short value;
 
     RpcCommandCode(short value) {
         this.value = value;
-    }
-
-    public short value() {
-        return this.value;
     }
 
     public static RpcCommandCode valueOf(short value) {
@@ -45,6 +41,10 @@ public enum RpcCommandCode implements CommandCode {
                 return RPC_RESPONSE;
         }
         throw new IllegalArgumentException("Unknown Rpc command code value: " + value);
+    }
+
+    public short value() {
+        return this.value;
     }
 
 }

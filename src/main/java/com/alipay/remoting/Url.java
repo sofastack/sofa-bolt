@@ -32,39 +32,37 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
  * @version $Id: Url.java, v 0.1 Mar 11, 2016 6:01:59 PM xiaomin.cxm Exp $
  */
 public class Url {
+    /** logger */
+    private static final Logger                                 logger      = LoggerFactory
+        .getLogger("RpcRemoting");
+    /** Use {@link SoftReference} to cache parsed urls. Key is the original url. */
+    public static ConcurrentHashMap<String, SoftReference<Url>> parsedUrls  = new ConcurrentHashMap<String, SoftReference<Url>>();
+    /** for unit test only, indicate this object have already been GCed */
+    public static volatile boolean                              isCollected = false;
     /** origin url */
     private String     originUrl;
-
     /** ip, can be number format or hostname format*/
     private String     ip;
-
     /** port, should be integer between (0, 65535]*/
     private int        port;
-
     /** unique key of this url */
     private String     uniqueKey;
-
     /** URL args: timeout value when do connect */
     private int        connectTimeout;
-
     /** URL args: protocol */
     private byte       protocol;
-
     /** URL args: version */
     private byte       version = RpcProtocolV2.PROTOCOL_VERSION_1;
-
     /** URL agrs: connection number */
     private int        connNum;
-
     /** URL agrs: whether need warm up connection */
     private boolean    connWarmup;
-
     /** URL agrs: all parsed args of each originUrl */
     private Properties properties;
 
     /**
      * Constructor with originUrl
-     * 
+     *
      * @param originUrl
      */
     protected Url(String originUrl) {
@@ -76,8 +74,8 @@ public class Url {
      * <ul>
      * <li>Initialize ip:port as {@link Url#originUrl} </li>
      * <li>Initialize {@link Url#originUrl} as {@link Url#uniqueKey} </li>
-     * </ul> 
-     * 
+     * </ul>
+     *
      * @param ip
      * @param port
      */
@@ -90,12 +88,12 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip and port
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize ip:port as {@link Url#uniqueKey} </li>
-     * </ul> 
-     * 
+     * </ul>
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -109,13 +107,13 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip, port and properties
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize ip:port as {@link Url#uniqueKey} </li>
      * <li>Initialize @param properties as {@link Url#properties} </li>
-     * </ul> 
-     * 
+     * </ul>
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -128,13 +126,13 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip, port, uniqueKey and properties
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize @param uniqueKey as {@link Url#uniqueKey} </li>
      * <li>Initialize @param properties as {@link Url#properties} </li>
      * </ul>
-     * 
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -149,7 +147,7 @@ public class Url {
 
     /**
      * Get property value according to property key
-     * 
+     *
      * @param key
      * @return property value
      */
@@ -202,8 +200,8 @@ public class Url {
 
     public void setConnNum(int connNum) {
         if (connNum <= 0 || connNum > Configs.MAX_CONN_NUM_PER_URL) {
-            throw new IllegalArgumentException("Illegal value of connection number [" + connNum
-                                               + "], must be an integer between ["
+            throw new IllegalArgumentException(
+                "Illegal value of connection number [" + connNum + "], must be an integer between ["
                                                + Configs.DEFAULT_CONN_NUM_PER_URL + ", "
                                                + Configs.MAX_CONN_NUM_PER_URL + "].");
         }
@@ -253,16 +251,6 @@ public class Url {
         sb.append("Origin url [" + this.originUrl + "], Unique key [" + this.uniqueKey + "].");
         return sb.toString();
     }
-
-    /** Use {@link SoftReference} to cache parsed urls. Key is the original url. */
-    public static ConcurrentHashMap<String, SoftReference<Url>> parsedUrls  = new ConcurrentHashMap<String, SoftReference<Url>>();
-
-    /** for unit test only, indicate this object have already been GCed */
-    public static volatile boolean                              isCollected = false;
-
-    /** logger */
-    private static final Logger                                 logger      = LoggerFactory
-                                                                                .getLogger("RpcRemoting");
 
     /**
      * @throws Throwable

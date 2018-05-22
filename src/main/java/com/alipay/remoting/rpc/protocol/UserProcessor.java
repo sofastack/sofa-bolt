@@ -92,19 +92,19 @@ public interface UserProcessor<T> {
     boolean timeoutDiscard();
 
     /**
+     * Getter.
+     *
+     * @return
+     */
+    ExecutorSelector getExecutorSelector();
+
+    /**
      * Setter.
      * Use this method to provide a executor selector.
      *
      * @param executorSelector
      */
     void setExecutorSelector(ExecutorSelector executorSelector);
-
-    /**
-     * Getter.
-     *
-     * @return
-     */
-    ExecutorSelector getExecutorSelector();
 
     /**
      * Executor selector interface.

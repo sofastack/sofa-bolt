@@ -31,13 +31,7 @@ import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
-import com.alipay.remoting.rpc.common.BoltServer;
-import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
-import com.alipay.remoting.rpc.common.PortScan;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.common.*;
 
 /**
  * water mark exception test, set a small buffer mark, and trigger write over flow.
@@ -47,7 +41,7 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
  */
 public class WaterMark_ExceptionTest {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(WaterMark_ExceptionTest.class);
+        .getLogger(WaterMark_ExceptionTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -59,9 +53,9 @@ public class WaterMark_ExceptionTest {
     int                       invokeTimes               = 10;
 
     SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(0, 20, 20,
-                                                            60, 100);
+        60, 100);
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor(0, 20, 20,
-                                                            60, 100);
+        60, 100);
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
     DISCONNECTEventProcessor  clientDisConnectProcessor = new DISCONNECTEventProcessor();
@@ -152,8 +146,8 @@ public class WaterMark_ExceptionTest {
                 public void run() {
                     try {
                         for (int i = 0; i < invokeTimes; i++) {
-                            String clientres = (String) server.getRpcServer().invokeSync(
-                                remoteAddr, req, 1000);
+                            String clientres = (String) server.getRpcServer().invokeSync(remoteAddr,
+                                req, 1000);
                             Assert.assertEquals(clientres, RequestBody.DEFAULT_CLIENT_RETURN_STR);
                         }
                     } catch (RemotingException e) {
