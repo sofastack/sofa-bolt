@@ -69,7 +69,7 @@ public class RpcConnectionFactory implements ConnectionFactory {
                                                                                .getRuntime()
                                                                                .availableProcessors() + 1,
                                                                            new NamedThreadFactory(
-                                                                               "Rpc-netty-client-worker"));
+                                                                               "Rpc-netty-client-worker", true));
 
     private Bootstrap                                   bootstrap;
 
@@ -217,14 +217,6 @@ public class RpcConnectionFactory implements ConnectionFactory {
                             + "] has already been registered to rpc client, can not register again!";
             throw new RuntimeException(errMsg);
         }
-    }
-
-    /**
-     * @see  com.alipay.remoting.ConnectionFactory#shutdown()
-     */
-    @Override
-    public void shutdown() {
-        workerGroup.shutdownGracefully();
     }
 
     /**

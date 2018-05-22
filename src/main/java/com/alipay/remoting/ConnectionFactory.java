@@ -75,8 +75,4 @@ public interface ConnectionFactory {
      */
     public void registerUserProcessor(UserProcessor<?> processor);
 
-    /**
-     * Shutdown the WorkerGroup
-     */
-    public void shutdown();
 }
