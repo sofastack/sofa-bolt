@@ -74,4 +74,9 @@ public interface ConnectionFactory {
      * @param processor
      */
     public void registerUserProcessor(UserProcessor<?> processor);
+
+    /**
+     * Shutdown the EventLoopGroup
+     */
+    public void shutdown();
 }

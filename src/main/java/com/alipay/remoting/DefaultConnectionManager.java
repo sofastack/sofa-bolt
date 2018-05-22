@@ -747,7 +747,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
             this.executorInitialized = true;
             this.asyncCreateConnectionExecutor = new ThreadPoolExecutor(minPoolSize, maxPoolSize,
                 keepAliveTime, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize),
-                new NamedThreadFactory("Bolt-conn-warmup-executor"));
+                new NamedThreadFactory("Bolt-conn-warmup-executor", true));
         }
     }
 

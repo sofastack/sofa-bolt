@@ -198,6 +198,14 @@ public class RpcConnectionFactory implements ConnectionFactory {
     }
 
     /**
+     * @see com.alipay.remoting.ConnectionFactory#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        workerGroup.shutdownGracefully();
+    }
+
+    /**
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
