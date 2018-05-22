@@ -149,6 +149,9 @@ public class RpcClient {
         if (connectionMonitor != null) {
             connectionMonitor.destroy();
         }
+        if (connctionFactory != null) {
+            connctionFactory.shutdown();
+        }
     }
 
     /**
