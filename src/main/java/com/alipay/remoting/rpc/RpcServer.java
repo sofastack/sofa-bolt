@@ -268,7 +268,9 @@ public class RpcServer extends RemotingServer {
      */
     @Override
     protected void doStop() {
-        this.channelFuture.channel().close();
+        if(null != this.channelFuture) {
+            this.channelFuture.channel().close();
+        }
         if (this.globalSwitch.isOn(GlobalSwitch.SERVER_SYNC_STOP)) {
             this.bossGroup.shutdownGracefully().awaitUninterruptibly();
         } else {
