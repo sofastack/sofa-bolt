@@ -74,5 +74,4 @@ public interface ConnectionFactory {
      * @param processor
      */
     public void registerUserProcessor(UserProcessor<?> processor);
-
 }
