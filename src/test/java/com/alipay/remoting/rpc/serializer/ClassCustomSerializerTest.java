@@ -201,7 +201,7 @@ public class ClassCustomSerializerTest {
             ret = (String) client.invokeSync(addr, body, 1000);
             Assert.fail("Should not reach here!");
         } catch (DeserializationException e) {
-            logger.error("", e);
+            logger.error("xxxxxx", e.getCause());
             Assert.assertTrue(e.isServerSide());
             Assert.assertEquals(null, ret);
             Assert.assertTrue(s1.isSerialized());
@@ -263,6 +263,8 @@ public class ClassCustomSerializerTest {
             Assert.fail("Should not reach here!");
         } catch (SerializationException e) {
             logger.error("", e);
+            logger.error(e.getMessage());
+            e.getCause().printStackTrace();
             Assert.assertTrue(e.isServerSide());
             Assert.assertEquals(null, ret);
             Assert.assertTrue(s1.isSerialized());

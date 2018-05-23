@@ -59,6 +59,12 @@ public class RpcCommandFactory implements CommandFactory {
 
     @Override
     public RpcResponseCommand createExceptionResponse(int id, final Throwable t, String errMsg) {
+        RpcResponseCommand response = doCreate(id, t, errMsg);
+        response.setResponseStatus(ResponseStatus.SERVER_EXCEPTION);
+        return response;
+    }
+
+    private RpcResponseCommand doCreate(final int id, final Throwable t, final String errMsg) {
         RpcResponseCommand response = null;
         RpcServerException e = null;
         if (null == t) {
@@ -66,12 +72,10 @@ public class RpcCommandFactory implements CommandFactory {
             response = new RpcResponseCommand(id, e);
         } else {
             e = new RpcServerException(t.getClass().getName() + ": " + t.getMessage()
-                                       + ". AdditionalErrMsg: " + errMsg);
+                    + ". AdditionalErrMsg: " + errMsg);
             e.setStackTrace(t.getStackTrace());
             response = new RpcResponseCommand(id, e);
         }
-        response.setResponseClass(e.getClass().getName());
-        response.setResponseStatus(ResponseStatus.SERVER_EXCEPTION);
         return response;
     }
 
@@ -81,6 +85,13 @@ public class RpcCommandFactory implements CommandFactory {
         responseCommand.setId(id);
         responseCommand.setResponseStatus(status);
         return responseCommand;
+    }
+
+    @Override
+    public RpcResponseCommand createExceptionResponse(int id, final Throwable t, final String errMsg,  ResponseStatus status) {
+        RpcResponseCommand response = doCreate(id, t, errMsg);
+        response.setResponseStatus(status);
+        return response;
     }
 
     @Override

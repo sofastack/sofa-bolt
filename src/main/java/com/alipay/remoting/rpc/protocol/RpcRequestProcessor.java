@@ -73,8 +73,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
      * @see com.alipay.remoting.AbstractRemotingProcessor#process(com.alipay.remoting.RemotingContext, com.alipay.remoting.RemotingCommand, java.util.concurrent.ExecutorService)
      */
     @Override
-    public void process(RemotingContext ctx, RpcRequestCommand cmd, ExecutorService defaultExecutor)
-                                                                                                    throws Exception {
+    public void process(RemotingContext ctx, RpcRequestCommand cmd, ExecutorService defaultExecutor) throws Exception {
         if (!deserializeRequestCommand(ctx, cmd, RpcDeserializeLevel.DESERIALIZE_CLAZZ)) {
             return;
         }
@@ -82,8 +81,8 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         if (userProcessor == null) {
             String errMsg = "No user processor found for request: " + cmd.getRequestClass();
             logger.error(errMsg);
-            sendResponseIfNecessary(ctx, cmd.getType(), this.getCommandFactory()
-                .createExceptionResponse(cmd.getId(), errMsg));
+            sendResponseIfNecessary(ctx, cmd.getType(),
+                this.getCommandFactory().createExceptionResponse(cmd.getId(), errMsg));
             return;// must end process
         }
 
@@ -111,8 +110,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 return;
             }
             //try get executor with strategy
-            executor = userProcessor.getExecutorSelector().select(cmd.getRequestClass(),
-                cmd.getRequestHeader());
+            executor = userProcessor.getExecutorSelector().select(cmd.getRequestClass(), cmd.getRequestHeader());
         }
 
         // Till now, if executor still null, then try default
@@ -152,8 +150,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
      * @param ctx
      * @param response
      */
-    public void sendResponseIfNecessary(final RemotingContext ctx, byte type,
-                                        final RemotingCommand response) {
+    public void sendResponseIfNecessary(final RemotingContext ctx, byte type, final RemotingCommand response) {
         final int id = response.getId();
         if (type != RpcCommandType.REQUEST_ONEWAY) {
             RemotingCommand serializedResponse = response;
@@ -163,40 +160,32 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 String errMsg = "SerializationException occurred when sendResponseIfNecessary in RpcRequestProcessor, id="
                                 + id;
                 logger.error(errMsg, e);
-                serializedResponse = this.getCommandFactory().createExceptionResponse(id,
+                serializedResponse = this.getCommandFactory().createExceptionResponse(id, e, errMsg,
                     ResponseStatus.SERVER_SERIAL_EXCEPTION);
             } catch (Throwable t) {
                 String errMsg = "Serialize RpcResponseCommand failed when sendResponseIfNecessary in RpcRequestProcessor, id="
                                 + id;
                 logger.error(errMsg, t);
-                serializedResponse = this.getCommandFactory()
-                    .createExceptionResponse(id, t, errMsg);
+                serializedResponse = this.getCommandFactory().createExceptionResponse(id, t, errMsg);
             }
 
             ctx.writeAndFlush(serializedResponse).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture future) throws Exception {
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Rpc response sent! requestId="
-                                     + id
-                                     + ". The address is "
-                                     + RemotingUtil.parseRemoteAddress(ctx.getChannelContext()
-                                         .channel()));
+                        logger.debug("Rpc response sent! requestId=" + id + ". The address is "
+                                     + RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
                     }
                     if (!future.isSuccess()) {
-                        logger.error(
-                            "Rpc response send failed! id="
-                                    + id
-                                    + ". The address is "
-                                    + RemotingUtil.parseRemoteAddress(ctx.getChannelContext()
-                                        .channel()), future.cause());
+                        logger.error("Rpc response send failed! id=" + id + ". The address is "
+                                     + RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()),
+                            future.cause());
                     }
                 }
             });
         } else {
             if (logger.isDebugEnabled()) {
-                logger.debug("Oneway rpc request received, do not send response, id=" + id
-                             + ", the address is "
+                logger.debug("Oneway rpc request received, do not send response, id=" + id + ", the address is "
                              + RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
             }
         }
@@ -218,34 +207,28 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 processor.handleRequest(processor.preHandleRequest(ctx, cmd.getRequestObject()),
                     new RpcAsyncContext(ctx, cmd, this), cmd.getRequestObject());
             } catch (RejectedExecutionException e) {
-                logger
-                    .warn("RejectedExecutionException occurred when do ASYNC process in RpcRequestProcessor");
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
+                logger.warn("RejectedExecutionException occurred when do ASYNC process in RpcRequestProcessor");
+                sendResponseIfNecessary(ctx, type,
+                    this.getCommandFactory().createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
             } catch (Throwable t) {
                 String errMsg = "AYSNC process rpc request failed in RpcRequestProcessor, id=" + id;
                 logger.error(errMsg, t);
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, t, errMsg));
+                sendResponseIfNecessary(ctx, type, this.getCommandFactory().createExceptionResponse(id, t, errMsg));
             }
         } else {
             try {
-                Object responseObject = processor
-                    .handleRequest(processor.preHandleRequest(ctx, cmd.getRequestObject()),
-                        cmd.getRequestObject());
+                Object responseObject = processor.handleRequest(processor.preHandleRequest(ctx, cmd.getRequestObject()),
+                    cmd.getRequestObject());
 
-                sendResponseIfNecessary(ctx, type,
-                    this.getCommandFactory().createResponse(responseObject, cmd));
+                sendResponseIfNecessary(ctx, type, this.getCommandFactory().createResponse(responseObject, cmd));
             } catch (RejectedExecutionException e) {
-                logger
-                    .warn("RejectedExecutionException occurred when do SYNC process in RpcRequestProcessor");
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
+                logger.warn("RejectedExecutionException occurred when do SYNC process in RpcRequestProcessor");
+                sendResponseIfNecessary(ctx, type,
+                    this.getCommandFactory().createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
             } catch (Throwable t) {
                 String errMsg = "SYNC process rpc request failed in RpcRequestProcessor, id=" + id;
                 logger.error(errMsg, t);
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, t, errMsg));
+                sendResponseIfNecessary(ctx, type, this.getCommandFactory().createExceptionResponse(id, t, errMsg));
             }
         }
     }
@@ -264,19 +247,19 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
             cmd.deserialize(level);
             result = true;
         } catch (DeserializationException e) {
-            logger
-                .error(
-                    "DeserializationException occurred when process in RpcRequestProcessor, id={}, deserializeLevel={}",
-                    cmd.getId(), RpcDeserializeLevel.valueOf(level), e);
-            sendResponseIfNecessary(ctx, cmd.getType(), this.getCommandFactory()
-                .createExceptionResponse(cmd.getId(), ResponseStatus.SERVER_DESERIAL_EXCEPTION));
+            String errMsg = String.format(
+                "DeserializationException occurred when process in RpcRequestProcessor, id={}, deserializeLevel={}",
+                cmd.getId(), RpcDeserializeLevel.valueOf(level));
+            logger.error(errMsg, e);
+            sendResponseIfNecessary(ctx, cmd.getType(), this.getCommandFactory().createExceptionResponse(cmd.getId(), e,
+                errMsg, ResponseStatus.SERVER_DESERIAL_EXCEPTION));
             result = false;
         } catch (Throwable t) {
-            String errMsg = "Deserialize RpcRequestCommand failed in RpcRequestProcessor, id="
-                            + cmd.getId() + ", deserializeLevel=" + level;
+            String errMsg = "Deserialize RpcRequestCommand failed in RpcRequestProcessor, id=" + cmd.getId()
+                            + ", deserializeLevel=" + level;
             logger.error(errMsg, t);
-            sendResponseIfNecessary(ctx, cmd.getType(), this.getCommandFactory()
-                .createExceptionResponse(cmd.getId(), t, errMsg));
+            sendResponseIfNecessary(ctx, cmd.getType(),
+                this.getCommandFactory().createExceptionResponse(cmd.getId(), t, errMsg));
             result = false;
         }
         return result;
@@ -289,13 +272,11 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
      * @param cmd
      * @param currenTimestamp
      */
-    private void preProcessRemotingContext(RemotingContext ctx, RpcRequestCommand cmd,
-                                           long currenTimestamp) {
+    private void preProcessRemotingContext(RemotingContext ctx, RpcRequestCommand cmd, long currenTimestamp) {
         ctx.setArriveTimestamp(cmd.getArriveTime());
         ctx.setTimeout(cmd.getTimeout());
         ctx.setRpcCommandType(cmd.getType());
-        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_WAIT_TIME,
-            currenTimestamp - cmd.getArriveTime());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_WAIT_TIME, currenTimestamp - cmd.getArriveTime());
     }
 
     /**
@@ -307,11 +288,10 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
      */
     private void timeoutLog(final RpcRequestCommand cmd, long currenTimestamp, RemotingContext ctx) {
         if (logger.isDebugEnabled()) {
-            logger
-                .debug(
-                    "request id [{}] currenTimestamp [{}] - arriveTime [{}] = server cost [{}] >= timeout value [{}].",
-                    cmd.getId(), currenTimestamp, cmd.getArriveTime(),
-                    (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
+            logger.debug(
+                "request id [{}] currenTimestamp [{}] - arriveTime [{}] = server cost [{}] >= timeout value [{}].",
+                cmd.getId(), currenTimestamp, cmd.getArriveTime(), (currenTimestamp - cmd.getArriveTime()),
+                cmd.getTimeout());
         }
 
         String remoteAddr = "UNKNOWN";
@@ -322,10 +302,9 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 remoteAddr = RemotingUtil.parseRemoteAddress(channel);
             }
         }
-        logger
-            .warn(
-                "Rpc request id[{}], from remoteAddr[{}] stop process, total wait time in queue is [{}], client timeout setting is [{}].",
-                cmd.getId(), remoteAddr, (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
+        logger.warn(
+            "Rpc request id[{}], from remoteAddr[{}] stop process, total wait time in queue is [{}], client timeout setting is [{}].",
+            cmd.getId(), remoteAddr, (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
     }
 
     /**
@@ -339,10 +318,8 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         if (logger.isDebugEnabled()) {
             logger.debug("Rpc request received! requestId={}, from {}", cmd.getId(),
                 RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
-            logger.debug(
-                "request id {} currenTimestamp {} - arriveTime {} = server cost {} < timeout {}.",
-                cmd.getId(), currenTimestamp, cmd.getArriveTime(),
-                (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
+            logger.debug("request id {} currenTimestamp {} - arriveTime {} = server cost {} < timeout {}.", cmd.getId(),
+                currenTimestamp, cmd.getArriveTime(), (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
         }
     }
 
@@ -371,13 +348,10 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 RpcRequestProcessor.this.doProcess(ctx, msg);
             } catch (Throwable e) {
                 //protect the thread running this task
-                String remotingAddress = RemotingUtil.parseRemoteAddress(ctx.getChannelContext()
-                    .channel());
-                logger
-                    .error(
-                        "Exception caught when process rpc request command in RpcRequestProcessor, Id="
-                                + msg.getId() + "! Invoke source address is [" + remotingAddress
-                                + "].", e);
+                String remotingAddress = RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel());
+                logger.error("Exception caught when process rpc request command in RpcRequestProcessor, Id="
+                             + msg.getId() + "! Invoke source address is [" + remotingAddress + "].",
+                    e);
             }
         }
 
