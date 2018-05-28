@@ -62,7 +62,7 @@ public class DefaultConnectionMonitor {
         long period = SystemProperties.conn_monitor_period();
 
         this.executor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory(
-            "ConnectionMonitorThread"), new ThreadPoolExecutor.AbortPolicy());
+            "ConnectionMonitorThread", true), new ThreadPoolExecutor.AbortPolicy());
         MonitorTask monitorTask = new MonitorTask();
         this.executor.scheduleAtFixedRate(monitorTask, initialDelay, period, TimeUnit.MILLISECONDS);
     }

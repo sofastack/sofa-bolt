@@ -214,7 +214,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configFile>${user.dir}/.middleware-common/AlipayFormatter.xml</configFile>
+                    <configFile>${project.basedir}/.middleware-common/AlipayFormatter.xml</configFile>
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>

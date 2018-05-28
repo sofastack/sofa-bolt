@@ -59,7 +59,7 @@ public class ProcessorManager {
     public ProcessorManager() {
         defaultExecutor = new ThreadPoolExecutor(minPoolSize, maxPoolSize, keepAliveTime,
             TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize), new NamedThreadFactory(
-                "Bolt-default-executor"));
+                "Bolt-default-executor", true));
     }
 
     /**

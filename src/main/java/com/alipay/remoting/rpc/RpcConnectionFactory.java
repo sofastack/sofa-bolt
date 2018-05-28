@@ -70,7 +70,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
                                                                                .getRuntime()
                                                                                .availableProcessors() + 1,
                                                                            new NamedThreadFactory(
-                                                                               "Rpc-netty-client-worker"));
+                                                                               "Rpc-netty-client-worker",
+                                                                               true));
 
     private Bootstrap                                   bootstrap;
 

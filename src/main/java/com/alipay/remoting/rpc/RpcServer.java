@@ -102,14 +102,16 @@ public class RpcServer extends RemotingServer {
     private final EventLoopGroup                        bossGroup               = new NioEventLoopGroup(
                                                                                     1,
                                                                                     new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-boss"));
+                                                                                        "Rpc-netty-server-boss",
+                                                                                        true));
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
     private final static NioEventLoopGroup              workerGroup             = new NioEventLoopGroup(
                                                                                     Runtime
                                                                                         .getRuntime()
                                                                                         .availableProcessors() * 2,
                                                                                     new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-worker"));
+                                                                                        "Rpc-netty-server-worker",
+                                                                                        true));
 
     /** address parser to get custom args */
     private RemotingAddressParser                       addressParser;
