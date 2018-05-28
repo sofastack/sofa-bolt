@@ -78,9 +78,9 @@ public class RpcServer extends RemotingServer {
     /** boss event loop group*/
     private final EventLoopGroup                        bossGroup               = NettyEventLoopUtil
                                                                                     .newEventLoopGroup(
-                                                                                        1,
-                                                                                        new NamedThreadFactory(
-                                                                                            "Rpc-netty-server-boss",
+                                                                                    1,
+                                                                                    new NamedThreadFactory(
+                                                                                        "Rpc-netty-server-boss",
                                                                                         false));
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
     private static final EventLoopGroup                 workerGroup             = NettyEventLoopUtil
@@ -90,7 +90,7 @@ public class RpcServer extends RemotingServer {
                                                                                             .availableProcessors() * 2,
                                                                                         new NamedThreadFactory(
                                                                                             "Rpc-netty-server-worker",
-                                                                                        true));
+                                                                                            true));
 
     /** address parser to get custom args */
     private RemotingAddressParser                       addressParser;
@@ -105,10 +105,7 @@ public class RpcServer extends RemotingServer {
         if (workerGroup instanceof NioEventLoopGroup) {
             ((NioEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
         } else if (workerGroup instanceof EpollEventLoopGroup) {
-            ((EpollEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
-
-        }
-
+            ((EpollEventLoopGroup)workerGroup).setIoRatio(SystemProperties.netty_io_ratio());}
     }
 
     /**

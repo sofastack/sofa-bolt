@@ -27,6 +27,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
+/**
+ * Utils for netty EventLoop
+ *
+ * @author YANGLiiN
+ * @version $Id: NettyEventLoopUtil.java, v 1.5 2018-05-28 14:07 tsui YANGLiiN $
+ */
 public class NettyEventLoopUtil {
 
     /**
