@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.util.NettyEventLoopUtil;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import org.slf4j.Logger;
 
@@ -65,12 +66,13 @@ public class RpcConnectionFactory implements ConnectionFactory {
     private static final Logger                         logger         = BoltLoggerFactory
                                                                            .getLogger("RpcRemoting");
 
-    private static final EventLoopGroup                 workerGroup    = new NioEventLoopGroup(
-                                                                           Runtime
-                                                                               .getRuntime()
-                                                                               .availableProcessors() + 1,
-                                                                           new NamedThreadFactory(
-                                                                               "Rpc-netty-client-worker",
+    private static final EventLoopGroup                 workerGroup    = NettyEventLoopUtil
+                                                                           .newEventLoopGroup(
+                                                                               Runtime
+                                                                                   .getRuntime()
+                                                                                   .availableProcessors() + 1,
+                                                                               new NamedThreadFactory(
+                                                                                   "Rpc-netty-client-worker",
                                                                                true));
 
     private Bootstrap                                   bootstrap;
@@ -84,7 +86,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
     @Override
     public void init(final ConnectionEventHandler connectionEventHandler) {
         bootstrap = new Bootstrap();
-        bootstrap.group(workerGroup).channel(NioSocketChannel.class)
+        bootstrap.group(workerGroup)
+            .channel(NettyEventLoopUtil.getClientSocketChannelClass(workerGroup))
             .option(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
             .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
             .option(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
