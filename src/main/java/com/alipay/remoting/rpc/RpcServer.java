@@ -81,7 +81,7 @@ public class RpcServer extends RemotingServer {
                                                                                         1,
                                                                                         new NamedThreadFactory(
                                                                                             "Rpc-netty-server-boss",
-                                                                                            true));
+                                                                                            false));
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
     private static final EventLoopGroup                 workerGroup             = NettyEventLoopUtil
                                                                                     .newEventLoopGroup(
