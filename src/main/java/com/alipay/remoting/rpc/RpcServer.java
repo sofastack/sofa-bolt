@@ -71,6 +71,13 @@ import io.netty.handler.timeout.IdleStateHandler;
 /**
  * Server for Rpc.
  *
+ * Usage:
+ * You can initialize RpcServer with one of the three constructors:
+ *   {@link #RpcServer(int)}, {@link #RpcServer(int, boolean)}, {@link #RpcServer(int, boolean, boolean)}
+ * Then call start() to start a rpc server, and call stop() to stop a rpc server.
+ * When rpc server has been stopped, it can not be start again.
+ * You should create another instance of RpcServer to start if you need.
+ *
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
  */
@@ -98,7 +105,7 @@ public class RpcServer extends RemotingServer {
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors          = new ConcurrentHashMap<String, UserProcessor<?>>(
                                                                                     4);
 
-    /** boss event loop group*/
+    /** boss event loop group, boss group should not be daemon, need shutdown manually */
     private final EventLoopGroup                        bossGroup               = new NioEventLoopGroup(
                                                                                     1,
                                                                                     new NamedThreadFactory(

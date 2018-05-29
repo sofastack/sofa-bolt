@@ -112,7 +112,9 @@ public abstract class RemotingServer {
      *   <li>If you need, you should destroy it, and instantiate another one.
      */
     public void stop() {
-        if (inited.compareAndSet(true, false) || started.compareAndSet(true, false)) {
+        if (inited.get() || started.get()) {
+            inited.compareAndSet(true, false);
+            started.compareAndSet(true, false);
             this.doStop();
         } else {
             throw new IllegalStateException("ERROR: The server has already stopped!");

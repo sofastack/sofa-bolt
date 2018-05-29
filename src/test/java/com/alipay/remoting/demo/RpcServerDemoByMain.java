@@ -57,7 +57,7 @@ public class RpcServerDemoByMain {
         } else {
             System.out.println("server start failed!");
         }
-        //        server.getRpcServer().stop();
+        // server.getRpcServer().stop();
     }
 
     public static void main(String[] args) {
