@@ -59,6 +59,10 @@ public class Configs {
     public static final String NETTY_BUFFER_LOW_WATERMARK            = "bolt.netty.buffer.low.watermark";
     public static final String NETTY_BUFFER_LOW_WATERMARK_DEFAULT    = Integer.toString(32 * 1024);
 
+    /** Netty epoll switch */
+    public static final String NETTY_EPOLL_SWITCH                    = "bolt.netty.epoll.switch";
+    public static final String NETTY_EPOLL_SWITCH_DEFAULT            = "false";
+
     // ~~~ configs and default values for idle
 
     /** TCP idle switch */

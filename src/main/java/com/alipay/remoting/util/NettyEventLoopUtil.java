@@ -18,6 +18,7 @@ package com.alipay.remoting.util;
 
 import java.util.concurrent.ThreadFactory;
 
+import com.alipay.remoting.SystemProperties;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.*;
@@ -42,7 +43,7 @@ public class NettyEventLoopUtil {
      * @return an EventLoopGroup suitable for the current platform
      */
     public static EventLoopGroup newEventLoopGroup(int nThreads, ThreadFactory threadFactory) {
-        if (Epoll.isAvailable()) {
+        if (SystemProperties.netty_epoll() && Epoll.isAvailable()) {
             return new EpollEventLoopGroup(nThreads, threadFactory);
         } else {
             // Fallback to NIO
@@ -84,7 +85,7 @@ public class NettyEventLoopUtil {
      * @param bootstrap
      */
     public static void enableTriggeredMode(ServerBootstrap bootstrap) {
-        if (Epoll.isAvailable()) {
+        if (SystemProperties.netty_epoll() && Epoll.isAvailable()) {
             bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED);
         }
     }
