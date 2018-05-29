@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /** 
+ * test rpc server and stop logic
  *
  * @author tsui  
  * @version $Id: RpcServerTest.java, v 0.1 2018-05-29 15:27 tsui Exp $$  
@@ -33,7 +34,6 @@ public class RpcServerTest {
 
     @Before
     public void init() {
-
     }
 
     @After
@@ -42,22 +42,42 @@ public class RpcServerTest {
 
     @Test
     public void doTestStartAndStop() {
-        RpcServer rpcServer = new RpcServer(1111, false, true);
-        if (!rpcServer.start()) {
+        doTestStartAndStop(true);
+        doTestStartAndStop(false);
+    }
+
+    private void doTestStartAndStop(boolean syncStop) {
+        // 1. start a rpc server successfully
+        RpcServer rpcServer1 = new RpcServer(1111, false, syncStop);
+        if (!rpcServer1.start()) {
             Assert.fail("Should not reach here");
             logger.warn("start fail");
         } else {
             logger.warn("start success");
         }
 
-        rpcServer.stop();
-
-        rpcServer = new RpcServer(1111, false, true);
-        if (!rpcServer.start()) {
-            Assert.fail("Should not reach here");
+        // 2. start a rpc server with the same port number failed
+        RpcServer rpcServer2 = new RpcServer(1111, false, syncStop);
+        if (!rpcServer2.start()) {
             logger.warn("start fail");
         } else {
+            Assert.fail("Should not reach here");
             logger.warn("start success");
+        }
+
+        // 3. stop the first rpc server successfully
+        try {
+            rpcServer1.stop();
+        } catch (IllegalStateException e) {
+            Assert.fail("Should not reach here");
+        }
+
+        // 4. stop the second rpc server failed, for if start failed, stop method will be called automatically
+        try {
+            rpcServer2.stop();
+            Assert.fail("Should not reach here");
+        } catch (IllegalStateException e) {
+            // expect
         }
     }
 }
