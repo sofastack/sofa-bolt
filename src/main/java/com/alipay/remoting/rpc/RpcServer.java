@@ -105,7 +105,8 @@ public class RpcServer extends RemotingServer {
         if (workerGroup instanceof NioEventLoopGroup) {
             ((NioEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
         } else if (workerGroup instanceof EpollEventLoopGroup) {
-            ((EpollEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());}
+            ((EpollEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+        }
     }
 
     /**
