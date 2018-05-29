@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -76,9 +76,9 @@ public abstract class RemotingServer {
                 return false;
             }
         } else {
-            this.stop();
-            logger.error("ERROR: The server has already started!");
-            return false;
+            String errMsg = "ERROR: The server has already started!";
+            logger.error(errMsg);
+            throw new IllegalStateException(errMsg);
         }
     }
 
@@ -98,9 +98,9 @@ public abstract class RemotingServer {
                 return false;
             }
         } else {
-            this.stop();
-            logger.error("ERROR: The server has already started!");
-            return false;
+            String errMsg = "ERROR: The server has already started!";
+            logger.error(errMsg);
+            throw new IllegalStateException(errMsg);
         }
     }
 

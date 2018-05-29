@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -20,6 +20,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import io.netty.buffer.UnpooledByteBufAllocator;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -69,7 +70,8 @@ public class RpcConnectionFactory implements ConnectionFactory {
                                                                                .getRuntime()
                                                                                .availableProcessors() + 1,
                                                                            new NamedThreadFactory(
-                                                                               "Rpc-netty-client-worker", true));
+                                                                               "Rpc-netty-client-worker",
+                                                                               true));
 
     private Bootstrap                                   bootstrap;
 
@@ -87,14 +89,14 @@ public class RpcConnectionFactory implements ConnectionFactory {
             .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
             .option(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
 
-        /**
-         * init netty write buffer water mark
-         */
+        // init netty write buffer water mark
         initWriteBufferWaterMark();
 
-        boolean pooledBuffer = SystemProperties.netty_buffer_pooled();
-        if (pooledBuffer) {
-            bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+        // init byte buf allocator
+        if (SystemProperties.netty_buffer_pooled()) {
+            this.bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+        } else {
+            this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
         final boolean idleSwitch = SystemProperties.tcp_idle_switch();

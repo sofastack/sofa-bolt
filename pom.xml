@@ -142,6 +142,12 @@
             <version>3.2.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -208,7 +214,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configFile>${user.dir}/.middleware-common/AlipayFormatter.xml</configFile>
+                    <configFile>${project.basedir}/.middleware-common/AlipayFormatter.xml</configFile>
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
@@ -262,6 +268,9 @@
                         <exclude>**/AbstractBatchDecoder.java</exclude>
                     </excludes>
                     <strictCheck>true</strictCheck>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
                 </configuration>
             </plugin>
 
@@ -370,6 +379,15 @@
                     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
             </distributionManagement>
+        </profile>
+        <profile>
+            <id>disable-javadoc-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
         </profile>
     </profiles>
 </project>
