@@ -67,7 +67,7 @@ public class RpcClientDemoByMain {
             logger.error(errMsg, e);
             Assert.fail(errMsg);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("interrupted!");
         }
         client.shutdown();
     }

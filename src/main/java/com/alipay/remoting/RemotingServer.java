@@ -71,6 +71,7 @@ public abstract class RemotingServer {
                 return this.doStart();
             } catch (Throwable t) {
                 started.set(false);
+                this.stop();
                 logger.error("ERROR: Failed to start the Server!", t);
                 return false;
             }
@@ -92,6 +93,7 @@ public abstract class RemotingServer {
                 return this.doStart(ip);
             } catch (Throwable t) {
                 started.set(false);
+                this.stop();
                 logger.error("ERROR: Failed to start the Server!", t);
                 return false;
             }
@@ -110,7 +112,9 @@ public abstract class RemotingServer {
      *   <li>If you need, you should destroy it, and instantiate another one.
      */
     public void stop() {
-        if (started.compareAndSet(true, false)) {
+        if (inited.get() || started.get()) {
+            inited.compareAndSet(true, false);
+            started.compareAndSet(true, false);
             this.doStop();
         } else {
             throw new IllegalStateException("ERROR: The server has already stopped!");
