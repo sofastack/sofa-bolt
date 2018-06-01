@@ -39,7 +39,7 @@ public abstract class BaseRemoting {
     /** logger */
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
 
-    private CommandFactory      commandFactory;
+    protected CommandFactory    commandFactory;
 
     public BaseRemoting(CommandFactory commandFactory) {
         this.commandFactory = commandFactory;
