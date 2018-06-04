@@ -75,8 +75,9 @@ import io.netty.handler.timeout.IdleStateHandler;
  * You can initialize RpcServer with one of the three constructors:
  *   {@link #RpcServer(int)}, {@link #RpcServer(int, boolean)}, {@link #RpcServer(int, boolean, boolean)}
  * Then call start() to start a rpc server, and call stop() to stop a rpc server.
- * When rpc server has been stopped, it can not be start again.
- * You should create another instance of RpcServer to start if you need.
+ *
+ * Notice:
+ *   Once rpc server has been stopped, it can never be start again. You should init another instance of RpcServer to use.
  *
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
