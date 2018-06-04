@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -49,12 +49,13 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
 import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
-import com.alipay.remoting.util.GlobalSwitch;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.UnpooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -69,7 +70,15 @@ import io.netty.handler.timeout.IdleStateHandler;
 
 /**
  * Server for Rpc.
- * 
+ *
+ * Usage:
+ * You can initialize RpcServer with one of the three constructors:
+ *   {@link #RpcServer(int)}, {@link #RpcServer(int, boolean)}, {@link #RpcServer(int, boolean, boolean)}
+ * Then call start() to start a rpc server, and call stop() to stop a rpc server.
+ *
+ * Notice:
+ *   Once rpc server has been stopped, it can never be start again. You should init another instance of RpcServer to use.
+ *
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
  */
@@ -78,7 +87,6 @@ public class RpcServer extends RemotingServer {
     /** logger */
     private static final Logger                         logger                  = BoltLoggerFactory
                                                                                     .getLogger("RpcRemoting");
-
     /** server bootstrap */
     private ServerBootstrap                             bootstrap;
 
@@ -98,18 +106,20 @@ public class RpcServer extends RemotingServer {
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors          = new ConcurrentHashMap<String, UserProcessor<?>>(
                                                                                     4);
 
-    /** boss event loop group*/
+    /** boss event loop group, boss group should not be daemon, need shutdown manually */
     private final EventLoopGroup                        bossGroup               = new NioEventLoopGroup(
                                                                                     1,
                                                                                     new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-boss"));
+                                                                                        "Rpc-netty-server-boss",
+                                                                                        false));
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
     private final static NioEventLoopGroup              workerGroup             = new NioEventLoopGroup(
                                                                                     Runtime
                                                                                         .getRuntime()
                                                                                         .availableProcessors() * 2,
                                                                                     new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-worker"));
+                                                                                        "Rpc-netty-server-worker",
+                                                                                        true));
 
     /** address parser to get custom args */
     private RemotingAddressParser                       addressParser;
@@ -180,7 +190,16 @@ public class RpcServer extends RemotingServer {
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
         }
-        initRpcRemoting(null);
+        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+            this.connectionEventHandler = new RpcConnectionEventHandler(globalSwitch);
+            this.connectionManager = new DefaultConnectionManager(new RandomSelectStrategy());
+            this.connectionEventHandler.setConnectionManager(this.connectionManager);
+            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
+        } else {
+            this.connectionEventHandler = new ConnectionEventHandler(globalSwitch);
+            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
+        }
+        initRpcRemoting();
         this.bootstrap = new ServerBootstrap();
         this.bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
             .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
@@ -191,10 +210,13 @@ public class RpcServer extends RemotingServer {
         // set write buffer water mark
         initWriteBufferWaterMark();
 
-        boolean pooledBuffer = SystemProperties.netty_buffer_pooled();
-        if (pooledBuffer) {
+        // init byte buf allocator
+        if (SystemProperties.netty_buffer_pooled()) {
             this.bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+        } else {
+            this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
+                .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
         final boolean idleSwitch = SystemProperties.tcp_idle_switch();
@@ -268,7 +290,9 @@ public class RpcServer extends RemotingServer {
      */
     @Override
     protected void doStop() {
-        this.channelFuture.channel().close();
+        if (null != this.channelFuture) {
+            this.channelFuture.channel().close();
+        }
         if (this.globalSwitch.isOn(GlobalSwitch.SERVER_SYNC_STOP)) {
             this.bossGroup.shutdownGracefully().awaitUninterruptibly();
         } else {
@@ -283,24 +307,10 @@ public class RpcServer extends RemotingServer {
 
     /**
      * init rpc remoting
-     * @param rpcRemoting
      */
-    protected void initRpcRemoting(RpcRemoting rpcRemoting) {
-        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
-            this.connectionEventHandler = new RpcConnectionEventHandler(globalSwitch);
-            this.connectionManager = new DefaultConnectionManager(new RandomSelectStrategy());
-            this.connectionEventHandler.setConnectionManager(this.connectionManager);
-            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
-        } else {
-            this.connectionEventHandler = new ConnectionEventHandler(globalSwitch);
-            this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
-        }
-        if (null != rpcRemoting) {
-            this.rpcRemoting = rpcRemoting;
-        } else {
-            this.rpcRemoting = new RpcServerRemoting(new RpcCommandFactory(), this.addressParser,
-                this.connectionManager);
-        }
+    protected void initRpcRemoting() {
+        this.rpcRemoting = new RpcServerRemoting(new RpcCommandFactory(), this.addressParser,
+            this.connectionManager);
     }
 
     /**
@@ -825,7 +835,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * check whether a client address connected
-     * 
+     *
      * @param remoteAddr
      * @return
      */
@@ -836,7 +846,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * check whether a {@link Url} connected
-     *  
+     *
      * @param url
      * @return
      */
@@ -883,7 +893,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * Getter method for property <tt>addressParser</tt>.
-     * 
+     *
      * @return property value of addressParser
      */
     public RemotingAddressParser getAddressParser() {
@@ -892,7 +902,7 @@ public class RpcServer extends RemotingServer {
 
     /**
      * Setter method for property <tt>addressParser</tt>.
-     * 
+     *
      * @param addressParser value to be assigned to property addressParser
      */
     public void setAddressParser(RemotingAddressParser addressParser) {

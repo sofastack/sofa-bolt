@@ -148,4 +148,10 @@
         <appender-ref ref="HttpRemotingAppender"/>
         <appender-ref ref="ERROR-APPENDER"/>
     </logger>
+
+    <root>
+        <level value="${com.alipay.remoting.client.log.level}"/>
+        <appender-ref ref="CommonDefaultAppender"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+    </root>
 </log4j:configuration>

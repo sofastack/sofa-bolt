@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -263,7 +263,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         Logger          logger   = BoltLoggerFactory.getLogger("CommonDefault");
         ExecutorService executor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS,
                                      new LinkedBlockingQueue<Runnable>(10000),
-                                     new NamedThreadFactory("Bolt-conn-event-executor"));
+                                     new NamedThreadFactory("Bolt-conn-event-executor", true));
 
         /**
          * Process event.

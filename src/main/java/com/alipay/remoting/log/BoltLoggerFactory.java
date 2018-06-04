@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -42,6 +42,7 @@ public class BoltLoggerFactory {
     private static final String CLIENT_LOG_LEVEL          = "com.alipay.remoting.client.log.level";
     private static final String CLIENT_LOG_LEVEL_DEFAULT  = "INFO";
     private static final String CLIENT_LOG_ENCODE         = "com.alipay.remoting.client.log.encode";
+    private static final String COMMON_ENCODE             = "file.encoding";
     private static final String CLIENT_LOG_ENCODE_DEFAULT = "UTF-8";
 
     static {
@@ -51,16 +52,23 @@ public class BoltLoggerFactory {
         }
 
         String logPath = System.getProperty(LOG_PATH);
-        String logLevel = System.getProperty(CLIENT_LOG_LEVEL);
-        String logEncode = System.getProperty(CLIENT_LOG_ENCODE);
         if (StringUtils.isBlank(logPath)) {
             System.setProperty(LOG_PATH, LOG_PATH_DEFAULT);
         }
+
+        String logLevel = System.getProperty(CLIENT_LOG_LEVEL);
         if (StringUtils.isBlank(logLevel)) {
             System.setProperty(CLIENT_LOG_LEVEL, CLIENT_LOG_LEVEL_DEFAULT);
         }
-        if (StringUtils.isBlank(logEncode)) {
-            System.setProperty(CLIENT_LOG_ENCODE, CLIENT_LOG_ENCODE_DEFAULT);
+
+        String commonEncode = System.getProperty(COMMON_ENCODE);
+        if (StringUtils.isNotBlank(commonEncode)) {
+            System.setProperty(CLIENT_LOG_ENCODE, commonEncode);
+        } else {
+            String logEncode = System.getProperty(CLIENT_LOG_ENCODE);
+            if (StringUtils.isBlank(logEncode)) {
+                System.setProperty(CLIENT_LOG_ENCODE, CLIENT_LOG_ENCODE_DEFAULT);
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -67,7 +67,7 @@ public class RpcClientDemoByMain {
             logger.error(errMsg, e);
             Assert.fail(errMsg);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("interrupted!");
         }
         client.shutdown();
     }

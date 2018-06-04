@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -39,7 +39,7 @@ public abstract class BaseRemoting {
     /** logger */
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
 
-    private CommandFactory      commandFactory;
+    protected CommandFactory    commandFactory;
 
     public BaseRemoting(CommandFactory commandFactory) {
         this.commandFactory = commandFactory;

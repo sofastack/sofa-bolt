@@ -1,4 +1,4 @@
-/**
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -71,12 +71,14 @@ public abstract class RemotingServer {
                 return this.doStart();
             } catch (Throwable t) {
                 started.set(false);
+                this.stop();
                 logger.error("ERROR: Failed to start the Server!", t);
                 return false;
             }
         } else {
-            logger.error("ERROR: The server has already started!");
-            return false;
+            String errMsg = "ERROR: The server has already started!";
+            logger.error(errMsg);
+            throw new IllegalStateException(errMsg);
         }
     }
 
@@ -91,12 +93,14 @@ public abstract class RemotingServer {
                 return this.doStart(ip);
             } catch (Throwable t) {
                 started.set(false);
+                this.stop();
                 logger.error("ERROR: Failed to start the Server!", t);
                 return false;
             }
         } else {
-            logger.error("ERROR: The server has already started!");
-            return false;
+            String errMsg = "ERROR: The server has already started!";
+            logger.error(errMsg);
+            throw new IllegalStateException(errMsg);
         }
     }
 
@@ -108,7 +112,9 @@ public abstract class RemotingServer {
      *   <li>If you need, you should destroy it, and instantiate another one.
      */
     public void stop() {
-        if (started.compareAndSet(true, false)) {
+        if (inited.get() || started.get()) {
+            inited.compareAndSet(true, false);
+            started.compareAndSet(true, false);
             this.doStop();
         } else {
             throw new IllegalStateException("ERROR: The server has already stopped!");

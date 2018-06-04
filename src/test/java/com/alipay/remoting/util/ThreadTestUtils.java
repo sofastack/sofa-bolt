@@ -14,26 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.util;
 
-/**
- * Listener to listen response and invoke callback.
- * 
- * @author jiangping
- * @version $Id: InvokeCallbackListener.java, v 0.1 2015-9-21 PM5:17:08 tao Exp $
+/** 
+ * utils of thread operations
+ *
+ * @author tsui  
+ * @version $Id: ThreadTestUtils.java, v 0.1 2018-05-29 15:29 tsui Exp $$  
  */
-public interface InvokeCallbackListener {
-    /**
-     * Response arrived.
-     * 
-     * @param future
-     */
-    public void onResponse(final InvokeFuture future);
-
-    /**
-     * Get the remote address.
-     * 
-     * @return
-     */
-    public String getRemoteAddress();
+public class ThreadTestUtils {
+    public static void sleep(long duration) {
+        try {
+            Thread.sleep(duration);
+        } catch (InterruptedException e) {
+            //ignore
+        }
+    }
 }

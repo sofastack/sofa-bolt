@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.alipay.sofa</groupId>
     <artifactId>bolt</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -78,7 +78,7 @@
         <maven.source.plugin>3.0.0</maven.source.plugin>
         <maven.staging.plugin>1.6.7</maven.staging.plugin>
         <maven.surefire.plugin>2.18.1</maven.surefire.plugin>
-        <netty.version>4.1.13.Final</netty.version>
+        <netty.version>4.1.25.Final</netty.version>
         <project.encoding>UTF-8</project.encoding>
         <slf4j.version>1.7.21</slf4j.version>
         <sofa.common.tools>1.0.12</sofa.common.tools>
@@ -140,6 +140,12 @@
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
             <version>3.2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.8.5</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -208,7 +214,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configFile>${user.dir}/.middleware-common/AlipayFormatter.xml</configFile>
+                    <configFile>${project.basedir}/.middleware-common/AlipayFormatter.xml</configFile>
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
@@ -262,6 +268,9 @@
                         <exclude>**/AbstractBatchDecoder.java</exclude>
                     </excludes>
                     <strictCheck>true</strictCheck>
+                    <mapping>
+                        <java>SLASHSTAR_STYLE</java>
+                    </mapping>
                 </configuration>
             </plugin>
 
@@ -370,6 +379,15 @@
                     <url>https://oss.sonatype.org/content/repositories/snapshots</url>
                 </snapshotRepository>
             </distributionManagement>
+        </profile>
+        <profile>
+            <id>disable-javadoc-doclint</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <additionalparam>-Xdoclint:none</additionalparam>
+            </properties>
         </profile>
     </profiles>
 </project>
