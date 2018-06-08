@@ -64,7 +64,6 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -78,6 +77,9 @@ public class RpcServer extends RemotingServer {
     /** logger */
     private static final Logger                         logger                  = BoltLoggerFactory
                                                                                     .getLogger("RpcRemoting");
+    /** transport type of nio or epoll */
+    private static final TransportType                  transportType           = TransportType
+                                                                                    .detectTransportType();
 
     /** server bootstrap */
     private ServerBootstrap                             bootstrap;
@@ -97,19 +99,21 @@ public class RpcServer extends RemotingServer {
     /** user processors of rpc server */
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors          = new ConcurrentHashMap<String, UserProcessor<?>>(
                                                                                     4);
-
     /** boss event loop group*/
-    private final EventLoopGroup                        bossGroup               = new NioEventLoopGroup(
-                                                                                    1,
-                                                                                    new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-boss"));
+    private final EventLoopGroup                        bossGroup               = transportType
+                                                                                    .newEventLoopGroup(
+                                                                                        1,
+                                                                                        new NamedThreadFactory(
+                                                                                            "Rpc-netty-server-boss"));
+
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
-    private final static NioEventLoopGroup              workerGroup             = new NioEventLoopGroup(
-                                                                                    Runtime
-                                                                                        .getRuntime()
-                                                                                        .availableProcessors() * 2,
-                                                                                    new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-worker"));
+    private static final EventLoopGroup                 workerGroup             = transportType
+                                                                                    .newEventLoopGroup(
+                                                                                        Runtime
+                                                                                            .getRuntime()
+                                                                                            .availableProcessors() * 2,
+                                                                                        new NamedThreadFactory(
+                                                                                            "Rpc-netty-server-worker"));
 
     /** address parser to get custom args */
     private RemotingAddressParser                       addressParser;
@@ -121,7 +125,9 @@ public class RpcServer extends RemotingServer {
     protected RpcRemoting                               rpcRemoting;
 
     static {
-        workerGroup.setIoRatio(SystemProperties.netty_io_ratio());
+        if (workerGroup instanceof NioEventLoopGroup) {
+            ((NioEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+        }
     }
 
     /**
@@ -182,7 +188,7 @@ public class RpcServer extends RemotingServer {
         }
         initRpcRemoting(null);
         this.bootstrap = new ServerBootstrap();
-        this.bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+        this.bootstrap.group(bossGroup, workerGroup).channel(transportType.serverChannelClass())
             .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
             .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
             .childOption(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())

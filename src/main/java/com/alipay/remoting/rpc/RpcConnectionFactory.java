@@ -47,9 +47,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -63,14 +61,15 @@ public class RpcConnectionFactory implements ConnectionFactory {
     /** logger */
     private static final Logger                         logger         = BoltLoggerFactory
                                                                            .getLogger("RpcRemoting");
-
-    private static final EventLoopGroup                 workerGroup    = new NioEventLoopGroup(
-                                                                           Runtime
-                                                                               .getRuntime()
-                                                                               .availableProcessors() + 1,
-                                                                           new NamedThreadFactory(
-                                                                               "Rpc-netty-client-worker"));
-
+    private static final TransportType                  transportType  = TransportType
+                                                                           .detectTransportType();
+    private static final EventLoopGroup                 workerGroup    = transportType
+                                                                           .newEventLoopGroup(
+                                                                               Runtime
+                                                                                   .getRuntime()
+                                                                                   .availableProcessors() + 1,
+                                                                               new NamedThreadFactory(
+                                                                                   "Rpc-netty-client-worker"));
     private Bootstrap                                   bootstrap;
 
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors = new ConcurrentHashMap<String, UserProcessor<?>>(
@@ -82,7 +81,7 @@ public class RpcConnectionFactory implements ConnectionFactory {
     @Override
     public void init(final ConnectionEventHandler connectionEventHandler) {
         bootstrap = new Bootstrap();
-        bootstrap.group(workerGroup).channel(NioSocketChannel.class)
+        bootstrap.group(workerGroup).channel(TransportType.socketChannelType(workerGroup))
             .option(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
             .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
             .option(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
