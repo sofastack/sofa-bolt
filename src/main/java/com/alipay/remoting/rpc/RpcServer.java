@@ -229,8 +229,7 @@ public class RpcServer extends RemotingServer {
         }
 
         // enable trigger mode for epoll if need
-        NettyEventLoopUtil
-            .enableTriggeredMode(SystemProperties.netty_epoll_lt_enabled(), bootstrap);
+        NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
         final boolean idleSwitch = SystemProperties.tcp_idle_switch();
         final int idleTime = SystemProperties.tcp_server_idle();

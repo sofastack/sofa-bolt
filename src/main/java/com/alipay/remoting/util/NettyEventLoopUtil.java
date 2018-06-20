@@ -82,16 +82,18 @@ public class NettyEventLoopUtil {
     }
 
     /**
-     * Use {@link EpollMode#LEVEL_TRIGGERED} for server bootstrap if levelTriggerEnabled true,
-     *   otherwise use {@link EpollMode#EDGE_TRIGGERED}
-     * @param bootstrap whether level trigger enabled
+     * Use {@link EpollMode#LEVEL_TRIGGERED} for server bootstrap if level trigger enabled by system properties,
+     *   otherwise use {@link EpollMode#EDGE_TRIGGERED}.
+     * @param serverBootstrap server bootstrap
      */
-    public static void enableTriggeredMode(boolean levelTriggerEnabled, ServerBootstrap bootstrap) {
+    public static void enableTriggeredMode(ServerBootstrap serverBootstrap) {
         if (epollEnabled) {
-            if (levelTriggerEnabled) {
-                bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED);
+            if (SystemProperties.netty_epoll_lt_enabled()) {
+                serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE,
+                    EpollMode.LEVEL_TRIGGERED);
             } else {
-                bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
+                serverBootstrap
+                    .childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
             }
         }
     }
