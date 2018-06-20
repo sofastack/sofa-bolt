@@ -86,18 +86,18 @@ public class RpcServer extends RemotingServer {
     /** boss event loop group, boss group should not be daemon, need shutdown manually*/
     private final EventLoopGroup                        bossGroup               = NettyEventLoopUtil
                                                                                     .newEventLoopGroup(
-                                                                                    1,
-                                                                                    new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-boss",
+                                                                                        1,
+                                                                                        new NamedThreadFactory(
+                                                                                            "Rpc-netty-server-boss",
                                                                                             false));
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
-    private  static final EventLoopGroup              workerGroup             = NettyEventLoopUtil
+    private static final EventLoopGroup                 workerGroup             = NettyEventLoopUtil
                                                                                     .newEventLoopGroup(
-                                                                                    Runtime
-                                                                                        .getRuntime()
-                                                                                        .availableProcessors() * 2,
-                                                                                    new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-worker",
+                                                                                        Runtime
+                                                                                            .getRuntime()
+                                                                                            .availableProcessors() * 2,
+                                                                                        new NamedThreadFactory(
+                                                                                            "Rpc-netty-server-worker",
                                                                                             true));
 
     /** address parser to get custom args */
