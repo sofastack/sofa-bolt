@@ -19,9 +19,15 @@ package com.alipay.remoting.util;
 import java.util.concurrent.ThreadFactory;
 
 import com.alipay.remoting.SystemProperties;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.epoll.*;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollChannelOption;
+import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollMode;
+import io.netty.channel.epoll.EpollServerSocketChannel;
+import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
@@ -36,14 +42,16 @@ import io.netty.channel.socket.nio.NioSocketChannel;
  */
 public class NettyEventLoopUtil {
 
+    /** check whether epoll enabled, and it would not be changed during runtime. */
+    private static boolean epollEnabled = SystemProperties.netty_epoll() && Epoll.isAvailable();
+
     /**
-     *
      * @param nThreads
      * @param threadFactory
      * @return an EventLoopGroup suitable for the current platform
      */
     public static EventLoopGroup newEventLoopGroup(int nThreads, ThreadFactory threadFactory) {
-        if (SystemProperties.netty_epoll() && Epoll.isAvailable()) {
+        if (epollEnabled) {
             return new EpollEventLoopGroup(nThreads, threadFactory);
         } else {
             // Fallback to NIO
@@ -52,12 +60,10 @@ public class NettyEventLoopUtil {
     }
 
     /**
-     *
-     * @param eventLoopGroup
      * @return a SocketChannel class suitable for the given EventLoopGroup implementation
      */
-    public static Class<? extends SocketChannel> getClientSocketChannelClass(EventLoopGroup eventLoopGroup) {
-        if (eventLoopGroup instanceof EpollEventLoopGroup) {
+    public static Class<? extends SocketChannel> getClientSocketChannelClass() {
+        if (epollEnabled) {
             return EpollSocketChannel.class;
         } else {
             return NioSocketChannel.class;
@@ -65,12 +71,10 @@ public class NettyEventLoopUtil {
     }
 
     /**
-     *
-     * @param eventLoopGroup
      * @return a ServerSocketChannel class suitable for the given EventLoopGroup implementation
      */
-    public static Class<? extends ServerSocketChannel> getServerSocketChannelClass(EventLoopGroup eventLoopGroup) {
-        if (eventLoopGroup instanceof EpollEventLoopGroup) {
+    public static Class<? extends ServerSocketChannel> getServerSocketChannelClass() {
+        if (epollEnabled) {
             return EpollServerSocketChannel.class;
         } else {
             return NioServerSocketChannel.class;
@@ -78,15 +82,17 @@ public class NettyEventLoopUtil {
     }
 
     /**
-     * Do not use {@code EPOLLET} (level-triggered).
-     * 
-     * @see <a href="http://linux.die.net/man/7/epoll">man 7 epoll</a>.
-     *
-     * @param bootstrap
+     * Use {@link EpollMode#LEVEL_TRIGGERED} for server bootstrap if levelTriggerEnabled true,
+     *   otherwise use {@link EpollMode#EDGE_TRIGGERED}
+     * @param bootstrap whether level trigger enabled
      */
-    public static void enableTriggeredMode(ServerBootstrap bootstrap) {
-        if (SystemProperties.netty_epoll() && Epoll.isAvailable()) {
-            bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED);
+    public static void enableTriggeredMode(boolean levelTriggerEnabled, ServerBootstrap bootstrap) {
+        if (epollEnabled) {
+            if (levelTriggerEnabled) {
+                bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED);
+            } else {
+                bootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
+            }
         }
     }
 }

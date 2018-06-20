@@ -16,6 +16,8 @@
  */
 package com.alipay.remoting;
 
+import io.netty.channel.epoll.EpollMode;
+
 /**
  * get configs from system properties
  *
@@ -60,6 +62,10 @@ public class SystemProperties {
 
     public static boolean netty_epoll() {
         return getBool(Configs.NETTY_EPOLL_SWITCH, Configs.NETTY_EPOLL_SWITCH_DEFAULT);
+    }
+
+    public static boolean netty_epoll_lt_enabled() {
+        return getBool(Configs.NETTY_EPOLL_LT, Configs.NETTY_EPOLL_LT_DEFAULT);
     }
 
     // ~~~ properties for idle
