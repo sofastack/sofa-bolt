@@ -58,6 +58,10 @@ public class SystemProperties {
             Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT);
     }
 
+    public static boolean netty_epoll() {
+        return getBool(Configs.NETTY_EPOLL_SWITCH, Configs.NETTY_EPOLL_SWITCH_DEFAULT);
+    }
+
     // ~~~ properties for idle
     public static boolean tcp_idle_switch() {
         return getBool(Configs.TCP_IDLE_SWITCH, Configs.TCP_IDLE_SWITCH_DEFAULT);
