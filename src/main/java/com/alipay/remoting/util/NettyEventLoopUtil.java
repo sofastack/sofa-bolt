@@ -79,9 +79,11 @@ public class NettyEventLoopUtil {
     public static void enableTriggeredMode(ServerBootstrap serverBootstrap) {
         if (epollEnabled) {
             if (SystemProperties.netty_epoll_lt_enabled()) {
-                serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED);
+                serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE,
+                    EpollMode.LEVEL_TRIGGERED);
             } else {
-                serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
+                serverBootstrap
+                    .childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
             }
         }
     }
