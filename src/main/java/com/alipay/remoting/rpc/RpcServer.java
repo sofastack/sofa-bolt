@@ -51,6 +51,7 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.util.GlobalSwitch;
+import com.alipay.remoting.util.NettyEventLoopUtil;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
 
@@ -64,9 +65,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -107,20 +108,22 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors          = new ConcurrentHashMap<String, UserProcessor<?>>(
                                                                                     4);
 
-    /** boss event loop group, boss group should not be daemon, need shutdown manually */
-    private final EventLoopGroup                        bossGroup               = new NioEventLoopGroup(
-                                                                                    1,
-                                                                                    new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-boss",
-                                                                                        false));
+    /** boss event loop group, boss group should not be daemon, need shutdown manually*/
+    private final EventLoopGroup                        bossGroup               = NettyEventLoopUtil
+                                                                                    .newEventLoopGroup(
+                                                                                        1,
+                                                                                        new NamedThreadFactory(
+                                                                                            "Rpc-netty-server-boss",
+                                                                                            false));
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
-    private final static NioEventLoopGroup              workerGroup             = new NioEventLoopGroup(
-                                                                                    Runtime
-                                                                                        .getRuntime()
-                                                                                        .availableProcessors() * 2,
-                                                                                    new NamedThreadFactory(
-                                                                                        "Rpc-netty-server-worker",
-                                                                                        true));
+    private static final EventLoopGroup                 workerGroup             = NettyEventLoopUtil
+                                                                                    .newEventLoopGroup(
+                                                                                        Runtime
+                                                                                            .getRuntime()
+                                                                                            .availableProcessors() * 2,
+                                                                                        new NamedThreadFactory(
+                                                                                            "Rpc-netty-server-worker",
+                                                                                            true));
 
     /** address parser to get custom args */
     private RemotingAddressParser                       addressParser;
@@ -132,7 +135,11 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     protected RpcRemoting                               rpcRemoting;
 
     static {
-        workerGroup.setIoRatio(SystemProperties.netty_io_ratio());
+        if (workerGroup instanceof NioEventLoopGroup) {
+            ((NioEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+        } else if (workerGroup instanceof EpollEventLoopGroup) {
+            ((EpollEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+        }
     }
 
     /**
@@ -233,7 +240,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         }
         initRpcRemoting();
         this.bootstrap = new ServerBootstrap();
-        this.bootstrap.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class)
+        this.bootstrap.group(bossGroup, workerGroup)
+            .channel(NettyEventLoopUtil.getServerSocketChannelClass())
             .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
             .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
             .childOption(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
@@ -250,6 +258,9 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
             this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
+
+        // enable trigger mode for epoll if need
+        NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
         final boolean idleSwitch = SystemProperties.tcp_idle_switch();
         final int idleTime = SystemProperties.tcp_server_idle();
