@@ -46,39 +46,29 @@ public class NettyEventLoopUtil {
     private static boolean epollEnabled = SystemProperties.netty_epoll() && Epoll.isAvailable();
 
     /**
+     * Create the right event loop according to current platform and system property, fallback to NIO when epoll not enabled.
+     *
      * @param nThreads
      * @param threadFactory
      * @return an EventLoopGroup suitable for the current platform
      */
     public static EventLoopGroup newEventLoopGroup(int nThreads, ThreadFactory threadFactory) {
-        if (epollEnabled) {
-            return new EpollEventLoopGroup(nThreads, threadFactory);
-        } else {
-            // Fallback to NIO
-            return new NioEventLoopGroup(nThreads, threadFactory);
-        }
+        return epollEnabled ? new EpollEventLoopGroup(nThreads, threadFactory)
+            : new NioEventLoopGroup(nThreads, threadFactory);
     }
 
     /**
      * @return a SocketChannel class suitable for the given EventLoopGroup implementation
      */
     public static Class<? extends SocketChannel> getClientSocketChannelClass() {
-        if (epollEnabled) {
-            return EpollSocketChannel.class;
-        } else {
-            return NioSocketChannel.class;
-        }
+        return epollEnabled ? EpollSocketChannel.class : NioSocketChannel.class;
     }
 
     /**
      * @return a ServerSocketChannel class suitable for the given EventLoopGroup implementation
      */
     public static Class<? extends ServerSocketChannel> getServerSocketChannelClass() {
-        if (epollEnabled) {
-            return EpollServerSocketChannel.class;
-        } else {
-            return NioServerSocketChannel.class;
-        }
+        return epollEnabled ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
     }
 
     /**
@@ -89,11 +79,9 @@ public class NettyEventLoopUtil {
     public static void enableTriggeredMode(ServerBootstrap serverBootstrap) {
         if (epollEnabled) {
             if (SystemProperties.netty_epoll_lt_enabled()) {
-                serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE,
-                    EpollMode.LEVEL_TRIGGERED);
+                serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.LEVEL_TRIGGERED);
             } else {
-                serverBootstrap
-                    .childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
+                serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE, EpollMode.EDGE_TRIGGERED);
             }
         }
     }
