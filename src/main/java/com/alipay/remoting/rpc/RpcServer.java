@@ -52,8 +52,9 @@ import io.netty.handler.timeout.IdleStateHandler;
  * You can initialize RpcServer with one of the three constructors:
  *   {@link #RpcServer(int)}, {@link #RpcServer(int, boolean)}, {@link #RpcServer(int, boolean, boolean)}
  * Then call start() to start a rpc server, and call stop() to stop a rpc server.
- * When rpc server has been stopped, it can not be start again.
- * You should create another instance of RpcServer to start if you need.
+ *
+ * Notice:
+ *   Once rpc server has been stopped, it can never be start again. You should init another instance of RpcServer to use.
  *
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
@@ -82,21 +83,21 @@ public class RpcServer extends RemotingServer {
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors          = new ConcurrentHashMap<String, UserProcessor<?>>(
                                                                                     4);
 
-    /** boss event loop group, boss group should not be daemon, need shutdown manually */
+    /** boss event loop group, boss group should not be daemon, need shutdown manually*/
     private final EventLoopGroup                        bossGroup               = NettyEventLoopUtil
                                                                                     .newEventLoopGroup(
-                                                                                        1,
-                                                                                        new NamedThreadFactory(
-                                                                                            "Rpc-netty-server-boss",
+                                                                                    1,
+                                                                                    new NamedThreadFactory(
+                                                                                        "Rpc-netty-server-boss",
                                                                                             false));
     /** worker event loop group. Reuse I/O worker threads between rpc servers. */
-    private static final EventLoopGroup                 workerGroup             = NettyEventLoopUtil
+    private  static final EventLoopGroup              workerGroup             = NettyEventLoopUtil
                                                                                     .newEventLoopGroup(
-                                                                                        Runtime
-                                                                                            .getRuntime()
-                                                                                            .availableProcessors() * 2,
-                                                                                        new NamedThreadFactory(
-                                                                                            "Rpc-netty-server-worker",
+                                                                                    Runtime
+                                                                                        .getRuntime()
+                                                                                        .availableProcessors() * 2,
+                                                                                    new NamedThreadFactory(
+                                                                                        "Rpc-netty-server-worker",
                                                                                             true));
 
     /** address parser to get custom args */
