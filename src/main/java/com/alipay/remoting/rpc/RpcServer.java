@@ -21,9 +21,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import io.netty.channel.epoll.EpollMode;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.*;
+import com.alipay.remoting.CommandCode;
+import com.alipay.remoting.Connection;
+import com.alipay.remoting.ConnectionEventHandler;
+import com.alipay.remoting.ConnectionEventListener;
+import com.alipay.remoting.ConnectionEventProcessor;
+import com.alipay.remoting.ConnectionEventType;
+import com.alipay.remoting.DefaultConnectionManager;
+import com.alipay.remoting.InvokeCallback;
+import com.alipay.remoting.InvokeContext;
+import com.alipay.remoting.NamedThreadFactory;
+import com.alipay.remoting.ProtocolCode;
+import com.alipay.remoting.ProtocolManager;
+import com.alipay.remoting.RandomSelectStrategy;
+import com.alipay.remoting.RemotingAddressParser;
+import com.alipay.remoting.RemotingProcessor;
+import com.alipay.remoting.RemotingServer;
+import com.alipay.remoting.ServerIdleHandler;
+import com.alipay.remoting.SystemProperties;
+import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.ProtocolCodeBasedEncoder;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -39,7 +58,13 @@ import com.alipay.remoting.util.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -185,7 +210,7 @@ public class RpcServer extends RemotingServer {
         initRpcRemoting();
         this.bootstrap = new ServerBootstrap();
         this.bootstrap.group(bossGroup, workerGroup)
-            .channel(NettyEventLoopUtil.getServerSocketChannelClass(bossGroup))
+            .channel(NettyEventLoopUtil.getServerSocketChannelClass())
             .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
             .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
             .childOption(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
@@ -203,6 +228,7 @@ public class RpcServer extends RemotingServer {
                 .childOption(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
+        // enable trigger mode for epoll if need
         NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
         final boolean idleSwitch = SystemProperties.tcp_idle_switch();

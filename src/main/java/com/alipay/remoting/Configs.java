@@ -61,7 +61,11 @@ public class Configs {
 
     /** Netty epoll switch */
     public static final String NETTY_EPOLL_SWITCH                    = "bolt.netty.epoll.switch";
-    public static final String NETTY_EPOLL_SWITCH_DEFAULT            = "false";
+    public static final String NETTY_EPOLL_SWITCH_DEFAULT            = "true";
+
+    /** Netty epoll level trigger enabled */
+    public static final String NETTY_EPOLL_LT                        = "bolt.netty.epoll.lt";
+    public static final String NETTY_EPOLL_LT_DEFAULT                = "true";
 
     // ~~~ configs and default values for idle
 

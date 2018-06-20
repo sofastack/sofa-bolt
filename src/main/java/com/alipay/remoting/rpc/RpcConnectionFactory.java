@@ -86,8 +86,7 @@ public class RpcConnectionFactory implements ConnectionFactory {
     @Override
     public void init(final ConnectionEventHandler connectionEventHandler) {
         bootstrap = new Bootstrap();
-        bootstrap.group(workerGroup)
-            .channel(NettyEventLoopUtil.getClientSocketChannelClass(workerGroup))
+        bootstrap.group(workerGroup).channel(NettyEventLoopUtil.getClientSocketChannelClass())
             .option(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
             .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
             .option(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
