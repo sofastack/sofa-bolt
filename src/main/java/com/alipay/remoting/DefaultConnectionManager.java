@@ -32,6 +32,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.util.GlobalSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
