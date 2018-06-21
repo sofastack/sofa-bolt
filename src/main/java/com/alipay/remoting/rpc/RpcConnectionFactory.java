@@ -17,11 +17,9 @@
 package com.alipay.remoting.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.SystemProperties;
+import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.connection.DefaultConnectionFactory;
-import io.netty.channel.ChannelHandler;
 
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.NamedThreadFactory;
@@ -32,7 +30,7 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
-import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.channel.ChannelHandler;
 
 /**
  * Default RPC connection factory impl.
@@ -42,18 +40,19 @@ import io.netty.handler.timeout.IdleStateHandler;
 public class RpcConnectionFactory extends DefaultConnectionFactory implements ConnectionFactory {
 
     public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
-        this(Runtime.getRuntime().availableProcessors() + 1, new NamedThreadFactory(
-            "Rpc-netty-client-worker", true), new ProtocolCodeBasedEncoder(
-            ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE)), new RpcProtocolDecoder(
-            RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH), new IdleStateHandler(
-            SystemProperties.tcp_idle(), SystemProperties.tcp_idle(), 0, TimeUnit.MILLISECONDS),
-            new HeartbeatHandler(), new RpcHandler(userProcessors));
+        super(Runtime.getRuntime().availableProcessors() + 1, new NamedThreadFactory(
+            "Rpc-netty-client-worker", true), new Codec() {
+            @Override
+            public ChannelHandler newEncoder() {
+                return new ProtocolCodeBasedEncoder(
+                    ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE));
+            }
+
+            @Override
+            public ChannelHandler newDecoder() {
+                return new RpcProtocolDecoder(RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH);
+            }
+        }, new HeartbeatHandler(), new RpcHandler(userProcessors));
     }
 
-    public RpcConnectionFactory(int threads, NamedThreadFactory threadFactory,
-                                ChannelHandler encoder, ChannelHandler decoder,
-                                IdleStateHandler idleStateHandler, ChannelHandler heartbeatHandler,
-                                ChannelHandler handler) {
-        super(threads, threadFactory, encoder, decoder, idleStateHandler, heartbeatHandler, handler);
-    }
 }

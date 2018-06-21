@@ -140,7 +140,8 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         Attribute attr = ctx.channel().attr(Connection.CONNECTION);
         if (null != attr) {
             // add reconnect task
-            if (this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
+            if (this.globalSwitch != null
+                && this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
                 Connection conn = (Connection) attr.get();
                 if (reconnectManager != null) {
                     reconnectManager.addReconnectTask(conn.getUrl());

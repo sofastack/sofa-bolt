@@ -14,21 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
+package com.alipay.remoting.codec;
 
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.codec.Codec;
 import io.netty.channel.ChannelHandler;
 
 /**
- * Default connection factory.
+ * Codec interface.
  *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * @author chengyi (mark.lx@antfin.com) 2018-06-20 21:07
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+public interface Codec {
 
-    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler);
-    }
+    ChannelHandler newEncoder();
+
+    ChannelHandler newDecoder();
 }

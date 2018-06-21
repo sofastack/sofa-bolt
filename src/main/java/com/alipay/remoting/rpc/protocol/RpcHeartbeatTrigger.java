@@ -74,7 +74,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                     "Heartbeat failed for {} times, close the connection from client side: {} ",
                     heartbeatTimes, RemotingUtil.parseRemoteAddress(ctx.channel()));
             } catch (Exception e) {
-                logger.warn("Exception caught when closing connection in HeartbeatHandler.", e);
+                logger.warn("Exception caught when closing connection in SharableHandler.", e);
             }
         } else {
             boolean heartbeatSwitch = ctx.channel().attr(Connection.HEARTBEAT_SWITCH).get();

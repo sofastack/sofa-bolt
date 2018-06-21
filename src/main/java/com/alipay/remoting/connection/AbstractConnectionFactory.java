@@ -23,6 +23,7 @@ import com.alipay.remoting.NamedThreadFactory;
 import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
@@ -44,6 +45,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ConnectionFactory to create connection.
@@ -52,14 +54,36 @@ import java.net.InetSocketAddress;
  */
 public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
-    private static final Logger logger = BoltLoggerFactory
-                                           .getLogger(AbstractConnectionFactory.class);
+    private static final Logger  logger = BoltLoggerFactory
+                                            .getLogger(AbstractConnectionFactory.class);
 
-    protected EventLoopGroup    workerGroup;
-    protected Bootstrap         bootstrap;
+    private final Codec          codec;
+    private final ChannelHandler heartbeatHandler;
+    private final ChannelHandler handler;
 
-    public AbstractConnectionFactory() {
-        workerGroup = new NioEventLoopGroup(threads(), threadFactory());
+    protected EventLoopGroup     workerGroup;
+    protected Bootstrap          bootstrap;
+
+    public AbstractConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
+                                     ChannelHandler heartbeatHandler, ChannelHandler handler) {
+        if (threads <= 0) {
+            throw new IllegalArgumentException("threads must be positive, given: " + threads);
+        }
+        if (threadFactory == null) {
+            throw new IllegalArgumentException("null threadFactory");
+        }
+        if (codec == null) {
+            throw new IllegalArgumentException("null codec");
+        }
+        if (handler == null) {
+            throw new IllegalArgumentException("null handler");
+        }
+
+        this.codec = codec;
+        this.heartbeatHandler = heartbeatHandler;
+        this.handler = handler;
+
+        this.workerGroup = new NioEventLoopGroup(threads, threadFactory);
     }
 
     @Override
@@ -84,17 +108,20 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast("decoder", decoder());
-                pipeline.addLast("encoder", encoder());
+                pipeline.addLast("decoder", codec.newDecoder());
+                pipeline.addLast("encoder", codec.newEncoder());
 
                 boolean idleSwitch = SystemProperties.tcp_idle_switch();
                 if (idleSwitch) {
-                    pipeline.addLast("idleStateHandler", idleStateHandler());
-                    pipeline.addLast("heartbeatHandler", heartbeatHandler());
+                    pipeline.addLast(
+                        "idleStateHandler",
+                        new IdleStateHandler(SystemProperties.tcp_idle(), SystemProperties
+                            .tcp_idle(), 0, TimeUnit.MILLISECONDS));
+                    pipeline.addLast("heartbeatHandler", heartbeatHandler);
                 }
 
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
-                pipeline.addLast("handler", handler());
+                pipeline.addLast("handler", handler);
             }
         });
     }
@@ -180,18 +207,4 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         }
         return future.channel();
     }
-
-    protected abstract int threads();
-
-    protected abstract NamedThreadFactory threadFactory();
-
-    protected abstract ChannelHandler encoder();
-
-    protected abstract ChannelHandler decoder();
-
-    protected abstract IdleStateHandler idleStateHandler();
-
-    protected abstract ChannelHandler heartbeatHandler();
-
-    protected abstract ChannelHandler handler();
 }

@@ -26,9 +26,9 @@ import com.alipay.remoting.ProtocolManager;
 import com.alipay.remoting.RemotingContext;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.ChannelHandler.Sharable;
 
 /**
  * Dispatch messages to corresponding protocol.
@@ -36,7 +36,7 @@ import io.netty.channel.ChannelHandler.Sharable;
  * @author jiangping
  * @version $Id: RpcHandler.java, v 0.1 2015-12-14 PM4:01:37 tao Exp $
  */
-@Sharable
+@ChannelHandler.Sharable
 public class RpcHandler extends ChannelInboundHandlerAdapter {
     private boolean                                     serverSide;
 
