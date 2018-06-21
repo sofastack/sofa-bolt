@@ -46,6 +46,7 @@ public class RpcConnectionFactory extends DefaultConnectionFactory implements Co
             public ChannelHandler newEncoder() {
                 return new ProtocolCodeBasedEncoder(
                     ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE));
+
             }
 
             @Override
@@ -54,5 +55,4 @@ public class RpcConnectionFactory extends DefaultConnectionFactory implements Co
             }
         }, new HeartbeatHandler(), new RpcHandler(userProcessors));
     }
-
 }
