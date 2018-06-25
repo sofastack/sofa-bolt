@@ -32,6 +32,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.util.GlobalSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,12 +166,12 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
 
     /**
      * @param connectionSelectStrategy
-     * @param connctionFactory
+     * @param connectionFactory
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
-                                    ConnectionFactory connctionFactory) {
+                                    ConnectionFactory connectionFactory) {
         this(connectionSelectStrategy);
-        this.connectionFactory = connctionFactory;
+        this.connectionFactory = connectionFactory;
     }
 
     /**
@@ -188,15 +189,15 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
 
     /**
      * @param connectionSelectStrategy
-     * @param connctionFactory
+     * @param connectionFactory
      * @param connectionEventHandler
      * @param connectionEventListener
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
-                                    ConnectionFactory connctionFactory,
+                                    ConnectionFactory connectionFactory,
                                     ConnectionEventHandler connectionEventHandler,
                                     ConnectionEventListener connectionEventListener) {
-        this(connectionSelectStrategy, connctionFactory);
+        this(connectionSelectStrategy, connectionFactory);
         this.connectionEventHandler = connectionEventHandler;
         this.connectionEventListener = connectionEventListener;
     }

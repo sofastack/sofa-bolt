@@ -14,40 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.codec;
 
-import java.util.concurrent.ExecutorService;
+import io.netty.channel.ChannelHandler;
 
 /**
- * Remoting processor processes remoting commands.
- * 
- * @author jiangping
- * @version $Id: RemotingProcessor.java, v 0.1 Dec 22, 2015 11:48:43 AM tao Exp $
+ * Codec interface.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2018-06-20 21:07
  */
-public interface RemotingProcessor<T extends RemotingCommand> {
+public interface Codec {
 
-    /**
-     * Process the remoting command.
-     * 
-     * @param ctx
-     * @param msg
-     * @param defaultExecutor
-     * @throws Exception
-     */
-    void process(RemotingContext ctx, T msg, ExecutorService defaultExecutor) throws Exception;
+    ChannelHandler newEncoder();
 
-    /**
-     * Get the executor.
-     * 
-     * @return
-     */
-    ExecutorService getExecutor();
-
-    /**
-     * Set executor.
-     * 
-     * @param executor
-     */
-    void setExecutor(ExecutorService executor);
-
+    ChannelHandler newDecoder();
 }

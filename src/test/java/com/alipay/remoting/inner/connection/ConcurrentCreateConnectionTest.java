@@ -16,6 +16,7 @@
  */
 package com.alipay.remoting.inner.connection;
 
+import com.alipay.remoting.rpc.protocol.UserProcessor;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,7 +28,7 @@ import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.ConnectionFactory;
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.RandomSelectStrategy;
@@ -40,6 +41,8 @@ import com.alipay.remoting.rpc.RpcConnectionFactory;
 import com.alipay.remoting.rpc.common.BoltServer;
 import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Concurrent create connection test
  * 
@@ -48,26 +51,28 @@ import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
  */
 public class ConcurrentCreateConnectionTest {
 
-    private final static Logger      logger                   = LoggerFactory
-                                                                  .getLogger(RpcConnectionManagerTest.class);
+    private final static Logger                         logger                   = LoggerFactory
+                                                                                     .getLogger(RpcConnectionManagerTest.class);
+    private ConcurrentHashMap<String, UserProcessor<?>> userProcessors           = new ConcurrentHashMap<String, UserProcessor<?>>();
 
-    private DefaultConnectionManager cm;
-    private ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy();
-    private RemotingAddressParser    addressParser            = new RpcAddressParser();
-    private ConnectionFactory        connctionFactory         = new RpcConnectionFactory();
-    private ConnectionEventHandler   connectionEventHandler   = new RpcConnectionEventHandler();
-    private ConnectionEventListener  connectionEventListener  = new ConnectionEventListener();
+    private DefaultConnectionManager                    cm;
+    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy();
+    private RemotingAddressParser                       addressParser            = new RpcAddressParser();
+    private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
+                                                                                     userProcessors);
+    private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler();
+    private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
 
-    private BoltServer               server;
+    private BoltServer                                  server;
 
-    private String                   ip                       = "127.0.0.1";
-    private int                      port                     = 1111;
+    private String                                      ip                       = "127.0.0.1";
+    private int                                         port                     = 1111;
 
-    CONNECTEventProcessor            serverConnectProcessor   = new CONNECTEventProcessor();
+    CONNECTEventProcessor                               serverConnectProcessor   = new CONNECTEventProcessor();
 
     @Before
     public void init() {
-        cm = new DefaultConnectionManager(connectionSelectStrategy, connctionFactory,
+        cm = new DefaultConnectionManager(connectionSelectStrategy, connectionFactory,
             connectionEventHandler, connectionEventListener);
         cm.setAddressParser(addressParser);
         cm.init();

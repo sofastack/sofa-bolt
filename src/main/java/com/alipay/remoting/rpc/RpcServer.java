@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.netty.channel.epoll.EpollMode;
+import com.alipay.remoting.AbstractRemotingServer;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandCode;
@@ -84,7 +84,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
  */
-public class RpcServer extends RemotingServer {
+public class RpcServer extends AbstractRemotingServer implements RemotingServer {
 
     /** logger */
     private static final Logger                         logger                  = BoltLoggerFactory
@@ -148,11 +148,20 @@ public class RpcServer extends RemotingServer {
      * Note:<br>
      * You can only use invoke methods with params {@link Connection}, for example {@link #invokeSync(Connection, Object, int)} <br>
      * Otherwise {@link UnsupportedOperationException} will be thrown.
-     *
-     * @param port
      */
     public RpcServer(int port) {
-        super(port);
+        this(port, false);
+    }
+
+    /**
+     * Construct a rpc server. <br>
+     *
+     * Note:<br>
+     * You can only use invoke methods with params {@link Connection}, for example {@link #invokeSync(Connection, Object, int)} <br>
+     * Otherwise {@link UnsupportedOperationException} will be thrown.
+     */
+    public RpcServer(String ip, int port) {
+        this(ip, port, false);
     }
 
     /**
@@ -166,12 +175,34 @@ public class RpcServer extends RemotingServer {
      * </ul>
      * </ul>
      *
-     * @param port
+     * @param port listened port
      * @param manageConnection true to enable connection management feature
      */
     public RpcServer(int port, boolean manageConnection) {
-        this(port);
-        /** server connection management feature enabled or not, default value false, means disabled. */
+        super(port);
+        /* server connection management feature enabled or not, default value false, means disabled. */
+        if (manageConnection) {
+            this.globalSwitch.turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
+        }
+    }
+
+    /**
+     * Construct a rpc server. <br>
+     *
+     * <ul>
+     * <li>You can enable connection management feature by specify @param manageConnection true.</li>
+     * <ul>
+     * <li>When connection management feature enabled, you can use all invoke methods with params {@link String}, {@link Url}, {@link Connection} methods.</li>
+     * <li>When connection management feature disabled, you can only use invoke methods with params {@link Connection}, otherwise {@link UnsupportedOperationException} will be thrown.</li>
+     * </ul>
+     * </ul>
+     *
+     * @param port listened port
+     * @param manageConnection true to enable connection management feature
+     */
+    public RpcServer(String ip, int port, boolean manageConnection) {
+        super(ip, port);
+        /* server connection management feature enabled or not, default value false, means disabled. */
         if (manageConnection) {
             this.globalSwitch.turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
         }
@@ -182,8 +213,8 @@ public class RpcServer extends RemotingServer {
      *
      * You can construct a rpc server with synchronous or asynchronous stop strategy by {@param syncStop}.
      *
-     * @param port
-     * @param manageConnection
+     * @param port listened port
+     * @param manageConnection manage connection
      * @param syncStop true to enable stop in synchronous way
      */
     public RpcServer(int port, boolean manageConnection, boolean syncStop) {
@@ -237,12 +268,12 @@ public class RpcServer extends RemotingServer {
         final RpcHandler rpcHandler = new RpcHandler(true, this.userProcessors);
         this.bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
 
-            protected void initChannel(SocketChannel channel) throws Exception {
+            protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
                 pipeline.addLast("decoder", new RpcProtocolDecoder(
                     RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
                 pipeline.addLast(
-                    "encoder",
+                    "newEncoder",
                     new ProtocolCodeBasedEncoder(ProtocolCode
                         .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
                 if (idleSwitch) {
@@ -261,8 +292,6 @@ public class RpcServer extends RemotingServer {
              * <li>If flag manageConnection be true, use {@link DefaultConnectionManager} to add a new connection, meanwhile bind it with the channel.</li>
              * <li>If flag manageConnection be false, just create a new connection and bind it with the channel.</li>
              * </ul>
-             *
-             * @param channel
              */
             private void createConnection(SocketChannel channel) {
                 Url url = addressParser.parse(RemotingUtil.parseRemoteAddress(channel));
@@ -276,32 +305,19 @@ public class RpcServer extends RemotingServer {
         });
     }
 
-    /**
-     * @throws InterruptedException
-     * @see com.alipay.remoting.RemotingServer#doStart()
-     */
     @Override
     protected boolean doStart() throws InterruptedException {
-        this.channelFuture = this.bootstrap.bind(new InetSocketAddress(this.port)).sync();
+        this.channelFuture = this.bootstrap.bind(new InetSocketAddress(ip(), port())).sync();
         return this.channelFuture.isSuccess();
-    }
-
-    /**
-     * @see com.alipay.remoting.RemotingServer#doStart(String)
-     */
-    @Override
-    protected boolean doStart(String ip) throws InterruptedException {
-        this.channelFuture = this.bootstrap.bind(new InetSocketAddress(ip, this.port)).sync();
-        return channelFuture.isSuccess();
     }
 
     /**
      * Notice: only {@link GlobalSwitch#SERVER_MANAGE_CONNECTION_SWITCH} switch on, will close all connections.
      *
-     * @see com.alipay.remoting.RemotingServer#doStop()
+     * @see AbstractRemotingServer#doStop()
      */
     @Override
-    protected void doStop() {
+    protected boolean doStop() {
         if (null != this.channelFuture) {
             this.channelFuture.channel().close();
         }
@@ -315,6 +331,7 @@ public class RpcServer extends RemotingServer {
             logger.warn("Close all connections from server side!");
         }
         logger.warn("Rpc Server stopped!");
+        return true;
     }
 
     /**
@@ -326,7 +343,7 @@ public class RpcServer extends RemotingServer {
     }
 
     /**
-     * @see com.alipay.remoting.RemotingServer#registerProcessor(byte, com.alipay.remoting.CommandCode, com.alipay.remoting.RemotingProcessor)
+     * @see RemotingServer#registerProcessor(byte, com.alipay.remoting.CommandCode, com.alipay.remoting.RemotingProcessor)
      */
     @Override
     public void registerProcessor(byte protocolCode, CommandCode cmd, RemotingProcessor<?> processor) {
@@ -335,7 +352,7 @@ public class RpcServer extends RemotingServer {
     }
 
     /**
-     * @see com.alipay.remoting.RemotingServer#registerDefaultExecutor(byte, ExecutorService)
+     * @see RemotingServer#registerDefaultExecutor(byte, ExecutorService)
      */
     @Override
     public void registerDefaultExecutor(byte protocolCode, ExecutorService executor) {
@@ -346,8 +363,8 @@ public class RpcServer extends RemotingServer {
     /**
      * Add processor to process connection event.
      *
-     * @param type
-     * @param processor
+     * @param type connection event type
+     * @param processor connection event processor
      */
     public void addConnectionEventProcessor(ConnectionEventType type,
                                             ConnectionEventProcessor processor) {
@@ -355,7 +372,7 @@ public class RpcServer extends RemotingServer {
     }
 
     /**
-     * @see com.alipay.remoting.RemotingServer#registerUserProcessor(com.alipay.remoting.rpc.protocol.UserProcessor)
+     * @see AbstractRemotingServer#registerUserProcessor(com.alipay.remoting.rpc.protocol.UserProcessor)
      */
     @Override
     public void registerUserProcessor(UserProcessor<?> processor) {

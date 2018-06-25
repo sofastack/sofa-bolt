@@ -24,7 +24,7 @@ package com.alipay.remoting;
  */
 public interface Protocol {
     /**
-     * Get the encoder for the protocol.
+     * Get the newEncoder for the protocol.
      * 
      * @return
      */

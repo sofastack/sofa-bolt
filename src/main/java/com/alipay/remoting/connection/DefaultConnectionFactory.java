@@ -14,40 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.connection;
 
-import java.util.concurrent.ExecutorService;
+import com.alipay.remoting.NamedThreadFactory;
+import com.alipay.remoting.codec.Codec;
+import io.netty.channel.ChannelHandler;
 
 /**
- * Remoting processor processes remoting commands.
- * 
- * @author jiangping
- * @version $Id: RemotingProcessor.java, v 0.1 Dec 22, 2015 11:48:43 AM tao Exp $
+ * Default connection factory.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
  */
-public interface RemotingProcessor<T extends RemotingCommand> {
+public class DefaultConnectionFactory extends AbstractConnectionFactory {
 
-    /**
-     * Process the remoting command.
-     * 
-     * @param ctx
-     * @param msg
-     * @param defaultExecutor
-     * @throws Exception
-     */
-    void process(RemotingContext ctx, T msg, ExecutorService defaultExecutor) throws Exception;
-
-    /**
-     * Get the executor.
-     * 
-     * @return
-     */
-    ExecutorService getExecutor();
-
-    /**
-     * Set executor.
-     * 
-     * @param executor
-     */
-    void setExecutor(ExecutorService executor);
-
+    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
+                                    ChannelHandler heartbeatHandler, ChannelHandler handler) {
+        super(threads, threadFactory, codec, heartbeatHandler, handler);
+    }
 }

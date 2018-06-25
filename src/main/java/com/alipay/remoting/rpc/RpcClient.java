@@ -18,7 +18,9 @@ package com.alipay.remoting.rpc;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.alipay.remoting.util.StringUtils;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -26,7 +28,7 @@ import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventProcessor;
 import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.ConnectionFactory;
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.ConnectionMonitorStrategy;
 import com.alipay.remoting.ConnectionPool;
 import com.alipay.remoting.ConnectionSelectStrategy;
@@ -53,51 +55,53 @@ import com.alipay.remoting.util.GlobalSwitch;
 public class RpcClient {
 
     /** logger */
-    private static final Logger       logger                   = BoltLoggerFactory
-                                                                   .getLogger("RpcRemoting");
+    private static final Logger                         logger                   = BoltLoggerFactory
+                                                                                     .getLogger("RpcRemoting");
 
+    private ConcurrentHashMap<String, UserProcessor<?>> userProcessors           = new ConcurrentHashMap<String, UserProcessor<?>>();
     /** global switch */
-    private GlobalSwitch              globalSwitch             = new GlobalSwitch();
+    private GlobalSwitch                                globalSwitch             = new GlobalSwitch();
 
     /** connection factory */
-    private ConnectionFactory         connctionFactory         = new RpcConnectionFactory();
+    private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
+                                                                                     userProcessors);
 
     /** connection event handler */
-    private ConnectionEventHandler    connectionEventHandler   = new RpcConnectionEventHandler(
-                                                                   globalSwitch);
+    private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler(
+                                                                                     globalSwitch);
 
     /** reconnect manager */
-    private ReconnectManager          reconnectManager;
+    private ReconnectManager                            reconnectManager;
 
     /** connection event listener */
-    private ConnectionEventListener   connectionEventListener  = new ConnectionEventListener();
+    private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
 
     /** address parser to get custom args */
-    private RemotingAddressParser     addressParser;
+    private RemotingAddressParser                       addressParser;
 
     /** connection select strategy */
-    private ConnectionSelectStrategy  connectionSelectStrategy = new RandomSelectStrategy(
-                                                                   globalSwitch);
+    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy(
+                                                                                     globalSwitch);
 
     /** connection manager */
-    private DefaultConnectionManager  connectionManager        = new DefaultConnectionManager(
-                                                                   connectionSelectStrategy,
-                                                                   connctionFactory,
-                                                                   connectionEventHandler,
-                                                                   connectionEventListener,
-                                                                   globalSwitch);
+    private DefaultConnectionManager                    connectionManager        = new DefaultConnectionManager(
+                                                                                     connectionSelectStrategy,
+                                                                                     connectionFactory,
+                                                                                     connectionEventHandler,
+                                                                                     connectionEventListener,
+                                                                                     globalSwitch);
 
     /** rpc remoting */
-    protected RpcRemoting             rpcRemoting;
+    protected RpcRemoting                               rpcRemoting;
 
     /** task scanner */
-    private RpcTaskScanner            taskScanner              = new RpcTaskScanner();
+    private RpcTaskScanner                              taskScanner              = new RpcTaskScanner();
 
     /** connection monitor */
-    private DefaultConnectionMonitor  connectionMonitor;
+    private DefaultConnectionMonitor                    connectionMonitor;
 
     /** connection monitor strategy */
-    private ConnectionMonitorStrategy monitorStrategy;
+    private ConnectionMonitorStrategy                   monitorStrategy;
 
     /**
      * Initialization.
@@ -670,7 +674,18 @@ public class RpcClient {
      * @throws RemotingException 
      */
     public void registerUserProcessor(UserProcessor<?> processor) {
-        this.connectionManager.getConnectionFactory().registerUserProcessor(processor);
+        if (processor == null || StringUtils.isBlank(processor.interest())) {
+            throw new RuntimeException("User processor or processor interest should not be blank!");
+        }
+
+        UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
+            processor);
+        if (preProcessor != null) {
+            String errMsg = "Processor with interest key ["
+                            + processor.interest()
+                            + "] has already been registered to rpc client, can not register again!";
+            throw new RuntimeException(errMsg);
+        }
     }
 
     /**
