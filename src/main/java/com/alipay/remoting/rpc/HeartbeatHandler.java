@@ -30,7 +30,7 @@ import io.netty.handler.timeout.IdleStateEvent;
  * Heart beat triggerd.
  * 
  * @author jiangping
- * @version $Id: HeartbeatHandler.java, v 0.1 2015-12-14 PM3:16:00 tao Exp $
+ * @version $Id: SharableHandler.java, v 0.1 2015-12-14 PM3:16:00 tao Exp $
  */
 @Sharable
 public class HeartbeatHandler extends ChannelDuplexHandler {

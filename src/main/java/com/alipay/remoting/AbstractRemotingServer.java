@@ -27,8 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 
  * @author jiangping
  * @version $Id: AbstractRemotingServer.java, v 0.1 2015-9-5 PM7:37:48 tao Exp $
- * @author chengyi
- * @version $Id: AbstractRemotingServer.java, v 0.1 2018-6-16 AM08:20:41 tao Exp $
  */
 public abstract class AbstractRemotingServer implements RemotingServer {
 

@@ -273,7 +273,7 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
                 pipeline.addLast("decoder", new RpcProtocolDecoder(
                     RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
                 pipeline.addLast(
-                    "encoder",
+                    "newEncoder",
                     new ProtocolCodeBasedEncoder(ProtocolCode
                         .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
                 if (idleSwitch) {
