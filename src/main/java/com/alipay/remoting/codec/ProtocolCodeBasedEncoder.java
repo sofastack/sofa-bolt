@@ -30,7 +30,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.util.Attribute;
 
 /**
- * Protocol code based newEncoder, the main newEncoder for a certain protocol, which is lead by one or multi bytes (magic code).
+ * Protocol code based encoder, the main encoder for a certain protocol, which is lead by one or multi bytes (magic code).
  *
  * Notice: this is stateless can be noted as {@link io.netty.channel.ChannelHandler.Sharable}
  * @author jiangping
