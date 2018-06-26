@@ -22,6 +22,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.alipay.remoting.AbstractRemotingServer;
+import com.alipay.remoting.codec.Codec;
+import com.alipay.remoting.codec.DefaultCodec;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandCode;
@@ -133,6 +135,9 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
 
     /** rpc remoting */
     protected RpcRemoting                               rpcRemoting;
+
+    /**  codec */
+    private Codec                                       codec                   = new DefaultCodec();
 
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
@@ -270,12 +275,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
 
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast("decoder", new RpcProtocolDecoder(
-                    RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
-                pipeline.addLast(
-                    "newEncoder",
-                    new ProtocolCodeBasedEncoder(ProtocolCode
-                        .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
+                pipeline.addLast("decoder", codec.newDecoder());
+                pipeline.addLast("newEncoder",codec.newEncoder());
                 if (idleSwitch) {
                     pipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTime,
                         TimeUnit.MILLISECONDS));

@@ -19,6 +19,7 @@ package com.alipay.remoting.rpc;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.codec.Codec;
+import com.alipay.remoting.codec.DefaultCodec;
 import com.alipay.remoting.connection.DefaultConnectionFactory;
 
 import com.alipay.remoting.connection.ConnectionFactory;
@@ -41,18 +42,6 @@ public class RpcConnectionFactory extends DefaultConnectionFactory implements Co
 
     public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
         super(Runtime.getRuntime().availableProcessors() + 1, new NamedThreadFactory(
-            "Rpc-netty-client-worker", true), new Codec() {
-            @Override
-            public ChannelHandler newEncoder() {
-                return new ProtocolCodeBasedEncoder(
-                    ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE));
-
-            }
-
-            @Override
-            public ChannelHandler newDecoder() {
-                return new RpcProtocolDecoder(RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH);
-            }
-        }, new HeartbeatHandler(), new RpcHandler(userProcessors));
+            "Rpc-netty-client-worker", true), new DefaultCodec(), new HeartbeatHandler(), new RpcHandler(userProcessors));
     }
 }
