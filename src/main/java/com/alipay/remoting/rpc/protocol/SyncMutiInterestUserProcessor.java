@@ -23,11 +23,12 @@ import java.util.List;
 
 /**
  * Extends this to process user defined request in SYNC way.<br>
- * If you want process reqeuest in ASYNC way, please extends {@link AsynMutiInterestUserProcessor}.
+ * If you want process reqeuest in ASYNC way, please extends {@link AsynMultiInterestUserProcessor}.
  * @author muyun.cyt
  * @version 2018/6/27 下午2:45
  */
-public abstract class SyncMutiInterestUserProcessor<T> extends AbstractMutiInterestUserProcessor<T> {
+public abstract class SyncMutiInterestUserProcessor<T> extends
+                                                       AbstractMultiInterestUserProcessor<T> {
 
     /**
      * @see com.alipay.remoting.rpc.protocol.UserProcessor#handleRequest(com.alipay.remoting.BizContext, java.lang.Object)
@@ -47,9 +48,9 @@ public abstract class SyncMutiInterestUserProcessor<T> extends AbstractMutiInter
     }
 
     /**
-     * @see com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor#mutiInterest()
+     * @see com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor#multiInterest()
      */
     @Override
-    public abstract List<String> mutiInterest();
+    public abstract List<String> multiInterest();
 
 }

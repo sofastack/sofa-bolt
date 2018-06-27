@@ -27,7 +27,8 @@ import java.util.List;
  * @author muyun.cyt
  * @version 2018/6/27 下午2:58
  */
-public abstract class AsynMutiInterestUserProcessor<T> extends AbstractMutiInterestUserProcessor<T> {
+public abstract class AsynMultiInterestUserProcessor<T> extends
+                                                        AbstractMultiInterestUserProcessor<T> {
     /**
      * unsupported here!
      *
@@ -36,7 +37,7 @@ public abstract class AsynMutiInterestUserProcessor<T> extends AbstractMutiInter
     @Override
     public Object handleRequest(BizContext bizCtx, T request) throws Exception {
         throw new UnsupportedOperationException(
-            "SYNC handle request is unsupported in AsynMutiInterestUserProcessor!");
+            "SYNC handle request is unsupported in AsynMultiInterestUserProcessor!");
     }
 
     /**
@@ -46,8 +47,8 @@ public abstract class AsynMutiInterestUserProcessor<T> extends AbstractMutiInter
     public abstract void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, T request);
 
     /**
-     * @see com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor#mutiInterest()
+     * @see com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor#multiInterest()
      */
     @Override
-    public abstract List<String> mutiInterest();
+    public abstract List<String> multiInterest();
 }

@@ -21,9 +21,9 @@ package com.alipay.remoting.rpc.protocol;
  * @author muyun.cyt
  * @version 2018/6/27 下午2:12
  */
-public abstract class AbstractMutiInterestUserProcessor<T> extends AbstractUserProcessor<T>
-                                                                                           implements
-                                                                                           MultiInterestUserProcessor<T> {
+public abstract class AbstractMultiInterestUserProcessor<T> extends AbstractUserProcessor<T>
+                                                                                            implements
+                                                                                            MultiInterestUserProcessor<T> {
 
     /**
      * do not need to implement this method because of the multiple interests

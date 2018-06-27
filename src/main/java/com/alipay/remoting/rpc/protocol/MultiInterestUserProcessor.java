@@ -19,7 +19,7 @@ package com.alipay.remoting.rpc.protocol;
 import java.util.List;
 
 /**
- * Offer multiple interests function based on UserProcessor
+ * Support multi-interests feature based on UserProcessor
  *
  * The implementations of this interface don't need to implement the {@link com.alipay.remoting.rpc.protocol.UserProcessor#interest() interest()} method;
  * @author muyun.cyt
@@ -33,6 +33,6 @@ public interface MultiInterestUserProcessor<T> extends UserProcessor<T> {
      *
      * @return
      */
-    List<String> mutiInterest();
+    List<String> multiInterest();
 
 }
