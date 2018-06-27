@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import com.alipay.remoting.AbstractRemotingServer;
 import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.codec.DefaultCodec;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandCode;
@@ -45,12 +44,8 @@ import com.alipay.remoting.RemotingServer;
 import com.alipay.remoting.ServerIdleHandler;
 import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.codec.ProtocolCodeBasedEncoder;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
-import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
-import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.NettyEventLoopUtil;
@@ -136,8 +131,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     /** rpc remoting */
     protected RpcRemoting                               rpcRemoting;
 
-    /**  codec */
-    private Codec                                       codec                   = new DefaultCodec();
+    /** rpc codec */
+    private Codec                                       codec                   = new RpcCodec();
 
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
@@ -276,7 +271,7 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
                 pipeline.addLast("decoder", codec.newDecoder());
-                pipeline.addLast("newEncoder",codec.newEncoder());
+                pipeline.addLast("encoder", codec.newEncoder());
                 if (idleSwitch) {
                     pipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTime,
                         TimeUnit.MILLISECONDS));

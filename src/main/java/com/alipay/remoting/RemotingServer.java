@@ -30,7 +30,6 @@ public interface RemotingServer {
      */
     boolean start();
 
-
     /**
      * Stop the server.
      *
