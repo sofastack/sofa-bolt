@@ -83,9 +83,6 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         this.codec = codec;
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
-
-        this.workerGroup = new NioEventLoopGroup(threads, threadFactory);
-
         this.workerGroup = NettyEventLoopUtil.newEventLoopGroup(threads, threadFactory);
     }
 
