@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.alipay.remoting.AbstractRemotingServer;
 import com.alipay.remoting.codec.Codec;
+import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandCode;
@@ -372,17 +373,45 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
      */
     @Override
     public void registerUserProcessor(UserProcessor<?> processor) {
-        if (processor == null || StringUtils.isBlank(processor.interest())) {
-            throw new RuntimeException("User processor or processor interest should not be blank!");
+        if (null == processor) {
+            throw new RuntimeException("User processor should not be null!");
         }
-        UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
-            processor);
-        if (preProcessor != null) {
-            String errMsg = "Processor with interest key ["
-                            + processor.interest()
-                            + "] has already been registered to rpc server, can not register again!";
-            throw new RuntimeException(errMsg);
+        if (processor instanceof MultiInterestUserProcessor) {
+            registerUserProcessor((MultiInterestUserProcessor) processor);
+        } else {
+            if (StringUtils.isBlank(processor.interest())) {
+                throw new RuntimeException("Processor interest should not be blank!");
+            }
+            UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
+                processor);
+            if (preProcessor != null) {
+                String errMsg = "Processor with interest key ["
+                                + processor.interest()
+                                + "] has already been registered to rpc server, can not register again!";
+                throw new RuntimeException(errMsg);
+            }
         }
+
+    }
+
+    /**
+     * @param processor
+     * @see RemotingServer#registerUserProcessor(com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor)
+     */
+    public void registerUserProcessor(MultiInterestUserProcessor<?> processor) {
+        if (null == processor.interest()) {
+            throw new RuntimeException("Processor interest should not be blank!");
+        }
+        for (String interest : processor.multiInterest()) {
+            UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(interest, processor);
+            if (preProcessor != null) {
+                String errMsg = "Processor with interest key ["
+                                + interest
+                                + "] has already been registered to rpc server, can not register again!";
+                throw new RuntimeException(errMsg);
+            }
+        }
+
     }
 
     /**
