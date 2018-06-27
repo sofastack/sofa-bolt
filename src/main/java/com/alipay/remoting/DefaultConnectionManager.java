@@ -32,13 +32,13 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.connection.ConnectionFactory;
-import com.alipay.remoting.util.GlobalSwitch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.util.FutureTaskUtil;
+import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.RunStateRecordedFutureTask;
 import com.alipay.remoting.util.StringUtils;
 
@@ -56,7 +56,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
      * logger
      */
     private static final Logger                                                     logger              = LoggerFactory
-                                                                                                            .getLogger(DefaultConnectionManager.class);
+                                                                                                            .getLogger("CommonDefault");
 
     /**
      * default expire time to remove connection pool, time unit: milliseconds
