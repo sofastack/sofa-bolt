@@ -97,7 +97,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
      * @return
      */
     private Connection randomGet(List<Connection> conns) {
-        if(null == conns || conns.isEmpty()){
+        if (null == conns || conns.isEmpty()) {
             return null;
         }
 
