@@ -21,30 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.AbstractRemotingServer;
+import com.alipay.remoting.*;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.CommandCode;
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.ConnectionEventListener;
-import com.alipay.remoting.ConnectionEventProcessor;
-import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.DefaultConnectionManager;
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.ProtocolCode;
-import com.alipay.remoting.ProtocolManager;
-import com.alipay.remoting.RandomSelectStrategy;
-import com.alipay.remoting.RemotingAddressParser;
-import com.alipay.remoting.RemotingProcessor;
-import com.alipay.remoting.RemotingServer;
-import com.alipay.remoting.ServerIdleHandler;
-import com.alipay.remoting.SystemProperties;
-import com.alipay.remoting.Url;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
@@ -134,6 +115,10 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
 
     /** rpc codec */
     private Codec                                       codec                   = new RpcCodec();
+
+    /** properties manager*/
+    private PropertiesManager                           propertiesManager       = new PropertiesManager(
+                                                                                    globalSwitch);
 
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
@@ -243,16 +228,16 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         this.bootstrap = new ServerBootstrap();
         this.bootstrap.group(bossGroup, workerGroup)
             .channel(NettyEventLoopUtil.getServerSocketChannelClass())
-            .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
-            .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
-            .childOption(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
-            .childOption(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
+            .option(ChannelOption.SO_BACKLOG, propertiesManager.tcp_so_backlog())
+            .option(ChannelOption.SO_REUSEADDR, propertiesManager.tcp_so_reuseaddr())
+            .childOption(ChannelOption.TCP_NODELAY, propertiesManager.tcp_nodelay())
+            .childOption(ChannelOption.SO_KEEPALIVE, propertiesManager.tcp_so_keepalive());
 
         // set write buffer water mark
         initWriteBufferWaterMark();
 
         // init byte buf allocator
-        if (SystemProperties.netty_buffer_pooled()) {
+        if (propertiesManager.netty_buffer_pooled()) {
             this.bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
         } else {
@@ -263,8 +248,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         // enable trigger mode for epoll if need
         NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
-        final boolean idleSwitch = SystemProperties.tcp_idle_switch();
-        final int idleTime = SystemProperties.tcp_server_idle();
+        final boolean idleSwitch = propertiesManager.tcp_idle_switch();
+        final int idleTime = propertiesManager.tcp_server_idle();
         final ChannelHandler serverIdleHandler = new ServerIdleHandler();
         final RpcHandler rpcHandler = new RpcHandler(true, this.userProcessors);
         this.bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
@@ -926,8 +911,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
-        int lowWaterMark = SystemProperties.netty_buffer_low_watermark();
-        int highWaterMark = SystemProperties.netty_buffer_high_watermark();
+        int lowWaterMark = propertiesManager.netty_buffer_low_watermark();
+        int highWaterMark = propertiesManager.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
                 String

@@ -17,6 +17,7 @@
 package com.alipay.remoting.connection;
 
 import com.alipay.remoting.NamedThreadFactory;
+import com.alipay.remoting.PropertiesManager;
 import com.alipay.remoting.codec.Codec;
 import io.netty.channel.ChannelHandler;
 
@@ -28,7 +29,8 @@ import io.netty.channel.ChannelHandler;
 public class DefaultConnectionFactory extends AbstractConnectionFactory {
 
     public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler);
+                                    ChannelHandler heartbeatHandler, ChannelHandler handler,
+                                    PropertiesManager propertiesManager) {
+        super(threads, threadFactory, codec, heartbeatHandler, handler, propertiesManager);
     }
 }
