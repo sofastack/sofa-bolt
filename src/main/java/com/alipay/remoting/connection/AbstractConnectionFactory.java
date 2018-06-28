@@ -21,6 +21,7 @@ import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
+import com.alipay.remoting.util.NettyEventLoopUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
@@ -80,14 +81,14 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
         this.propertiesManager = propertiesManager;
-
-        this.workerGroup = new NioEventLoopGroup(threads, threadFactory);
+      
+        this.workerGroup = NettyEventLoopUtil.newEventLoopGroup(threads, threadFactory);
     }
 
     @Override
     public void init(final ConnectionEventHandler connectionEventHandler) {
         bootstrap = new Bootstrap();
-        bootstrap.group(workerGroup).channel(NioSocketChannel.class)
+        bootstrap.group(workerGroup).channel(NettyEventLoopUtil.getClientSocketChannelClass())
             .option(ChannelOption.TCP_NODELAY, propertiesManager.tcp_nodelay())
             .option(ChannelOption.SO_REUSEADDR, propertiesManager.tcp_so_reuseaddr())
             .option(ChannelOption.SO_KEEPALIVE, propertiesManager.tcp_so_keepalive());
