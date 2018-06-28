@@ -81,7 +81,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
         this.propertiesManager = propertiesManager;
-      
+
         this.workerGroup = NettyEventLoopUtil.newEventLoopGroup(threads, threadFactory);
     }
 
