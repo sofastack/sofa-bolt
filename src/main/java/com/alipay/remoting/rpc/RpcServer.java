@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.alipay.remoting.AbstractRemotingServer;
+import com.alipay.remoting.codec.Codec;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandCode;
@@ -43,12 +44,8 @@ import com.alipay.remoting.RemotingServer;
 import com.alipay.remoting.ServerIdleHandler;
 import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.codec.ProtocolCodeBasedEncoder;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
-import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
-import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.NettyEventLoopUtil;
@@ -133,6 +130,9 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
 
     /** rpc remoting */
     protected RpcRemoting                               rpcRemoting;
+
+    /** rpc codec */
+    private Codec                                       codec                   = new RpcCodec();
 
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
@@ -270,12 +270,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
 
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast("decoder", new RpcProtocolDecoder(
-                    RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
-                pipeline.addLast(
-                    "newEncoder",
-                    new ProtocolCodeBasedEncoder(ProtocolCode
-                        .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
+                pipeline.addLast("decoder", codec.newDecoder());
+                pipeline.addLast("encoder", codec.newEncoder());
                 if (idleSwitch) {
                     pipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTime,
                         TimeUnit.MILLISECONDS));

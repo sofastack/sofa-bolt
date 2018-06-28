@@ -16,24 +16,27 @@
  */
 package com.alipay.remoting.rpc;
 
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.alipay.remoting.connection.DefaultConnectionFactory;
-
-import com.alipay.remoting.connection.ConnectionFactory;
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.ProtocolCode;
+import com.alipay.remoting.codec.Codec;
+import com.alipay.remoting.codec.ProtocolCodeBasedEncoder;
+import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
+import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
+import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
+import io.netty.channel.ChannelHandler;
 
 /**
- * Default RPC connection factory impl.
- *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:32
+ * @author muyun.cyt
+ * @version 2018/6/26 下午3:51
  */
-public class RpcConnectionFactory extends DefaultConnectionFactory implements ConnectionFactory {
+public class RpcCodec implements Codec {
 
-    public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
-        super(Runtime.getRuntime().availableProcessors() + 1, new NamedThreadFactory(
-            "Rpc-netty-client-worker", true), new RpcCodec(), new HeartbeatHandler(),
-            new RpcHandler(userProcessors));
+    @Override
+    public ChannelHandler newEncoder() {
+        return new ProtocolCodeBasedEncoder(ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE));
+    }
+
+    @Override
+    public ChannelHandler newDecoder() {
+        return new RpcProtocolDecoder(RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH);
     }
 }
