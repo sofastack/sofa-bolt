@@ -14,23 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
-
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.PropertiesManager;
-import com.alipay.remoting.codec.Codec;
-import io.netty.channel.ChannelHandler;
+package com.alipay.remoting.rpc.protocol;
 
 /**
- * Default connection factory.
- *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * Implements common function and provide default value.more details in {@link com.alipay.remoting.rpc.protocol.AbstractUserProcessor}
+ * @author muyun.cyt
+ * @version 2018/6/27 下午2:12
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+public abstract class AbstractMultiInterestUserProcessor<T> extends AbstractUserProcessor<T>
+                                                                                            implements
+                                                                                            MultiInterestUserProcessor<T> {
 
-    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                    PropertiesManager propertiesManager) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler, propertiesManager);
+    /**
+     * do not need to implement this method because of the multiple interests
+     * @return
+     * @see com.alipay.remoting.rpc.protocol.UserProcessor#interest()
+     * */
+    @Override
+    public String interest() {
+        return null;
     }
+
 }

@@ -16,7 +16,9 @@
  */
 package com.alipay.remoting.inner.connection;
 
+import com.alipay.remoting.*;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.util.GlobalSwitch;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,16 +26,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.ConnectionEventListener;
-import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.connection.ConnectionFactory;
-import com.alipay.remoting.ConnectionSelectStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
-import com.alipay.remoting.RandomSelectStrategy;
-import com.alipay.remoting.RemotingAddressParser;
-import com.alipay.remoting.Url;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
 import com.alipay.remoting.rpc.RpcConnectionEventHandler;
@@ -58,8 +51,11 @@ public class ConcurrentCreateConnectionTest {
     private DefaultConnectionManager                    cm;
     private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy();
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
+    private PropertiesManager                           propertiesManager        = new PropertiesManager(
+                                                                                     new GlobalSwitch());
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
-                                                                                     userProcessors);
+                                                                                     userProcessors,
+                                                                                     propertiesManager);
     private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler();
     private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
 

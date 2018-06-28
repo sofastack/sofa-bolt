@@ -14,23 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
+package com.alipay.remoting.rpc.protocol;
 
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.PropertiesManager;
-import com.alipay.remoting.codec.Codec;
-import io.netty.channel.ChannelHandler;
+import java.util.List;
 
 /**
- * Default connection factory.
+ * Support multi-interests feature based on UserProcessor
  *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * The implementations of this interface don't need to implement the {@link com.alipay.remoting.rpc.protocol.UserProcessor#interest() interest()} method;
+ * @author muyun.cyt
+ * @version 2018/6/27 下午2:05
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+public interface MultiInterestUserProcessor<T> extends UserProcessor<T> {
 
-    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                    PropertiesManager propertiesManager) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler, propertiesManager);
-    }
+    /**
+     * A list of the class names of user request.
+     * Use String type to avoid classloader problem.
+     *
+     * @return
+     */
+    List<String> multiInterest();
+
 }

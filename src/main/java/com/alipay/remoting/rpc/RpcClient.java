@@ -20,27 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.alipay.remoting.*;
+import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
 import com.alipay.remoting.util.StringUtils;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.ConnectionEventListener;
-import com.alipay.remoting.ConnectionEventProcessor;
-import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.connection.ConnectionFactory;
-import com.alipay.remoting.ConnectionMonitorStrategy;
-import com.alipay.remoting.ConnectionPool;
-import com.alipay.remoting.ConnectionSelectStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
-import com.alipay.remoting.DefaultConnectionMonitor;
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.RandomSelectStrategy;
-import com.alipay.remoting.ReconnectManager;
-import com.alipay.remoting.RemotingAddressParser;
-import com.alipay.remoting.ScheduledDisconnectStrategy;
-import com.alipay.remoting.Url;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
@@ -62,9 +47,13 @@ public class RpcClient {
     /** global switch */
     private GlobalSwitch                                globalSwitch             = new GlobalSwitch();
 
+    private PropertiesManager                           propertiesManager        = new PropertiesManager(
+                                                                                     globalSwitch);
+
     /** connection factory */
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
-                                                                                     userProcessors);
+                                                                                     userProcessors,
+                                                                                     propertiesManager);
 
     /** connection event handler */
     private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler(
@@ -674,17 +663,44 @@ public class RpcClient {
      * @throws RemotingException 
      */
     public void registerUserProcessor(UserProcessor<?> processor) {
-        if (processor == null || StringUtils.isBlank(processor.interest())) {
-            throw new RuntimeException("User processor or processor interest should not be blank!");
+        if (null == processor) {
+            throw new RuntimeException("User processor should not be null!");
         }
+        if (processor instanceof MultiInterestUserProcessor) {
+            registerUserProcessor((MultiInterestUserProcessor) processor);
+        } else {
+            if (StringUtils.isBlank(processor.interest())) {
+                throw new RuntimeException("Processor interest should not be blank!");
+            }
+            UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
+                processor);
+            if (preProcessor != null) {
+                String errMsg = "Processor with interest key ["
+                                + processor.interest()
+                                + "] has already been registered to rpc server, can not register again!";
+                throw new RuntimeException(errMsg);
+            }
+        }
+    }
 
-        UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
-            processor);
-        if (preProcessor != null) {
-            String errMsg = "Processor with interest key ["
-                            + processor.interest()
-                            + "] has already been registered to rpc client, can not register again!";
-            throw new RuntimeException(errMsg);
+    /**
+     * Register multi-interest user processor for client side.
+     *
+     * @param processor
+     * @throws RemotingException
+     */
+    public void registerUserProcessor(MultiInterestUserProcessor<?> processor) {
+        if (null == processor.interest()) {
+            throw new RuntimeException("Processor interest should not be blank!");
+        }
+        for (String interest : processor.multiInterest()) {
+            UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(interest, processor);
+            if (preProcessor != null) {
+                String errMsg = "Processor with interest key ["
+                                + interest
+                                + "] has already been registered to rpc server, can not register again!";
+                throw new RuntimeException(errMsg);
+            }
         }
     }
 

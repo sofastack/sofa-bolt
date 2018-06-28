@@ -16,13 +16,7 @@
  */
 package com.alipay.remoting.connection;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.ProtocolCode;
-import com.alipay.remoting.SystemProperties;
-import com.alipay.remoting.Url;
+import com.alipay.remoting.*;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
@@ -55,18 +49,19 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
-    private static final Logger  logger = BoltLoggerFactory
-                                            .getLogger(AbstractConnectionFactory.class);
+    private static final Logger     logger = BoltLoggerFactory
+                                               .getLogger(AbstractConnectionFactory.class);
 
-    private final Codec          codec;
-    private final ChannelHandler heartbeatHandler;
-    private final ChannelHandler handler;
-
-    protected EventLoopGroup     workerGroup;
-    protected Bootstrap          bootstrap;
+    private final Codec             codec;
+    private final ChannelHandler    heartbeatHandler;
+    private final ChannelHandler    handler;
+    private final PropertiesManager propertiesManager;
+    protected EventLoopGroup        workerGroup;
+    protected Bootstrap             bootstrap;
 
     public AbstractConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                     ChannelHandler heartbeatHandler, ChannelHandler handler) {
+                                     ChannelHandler heartbeatHandler, ChannelHandler handler,
+                                     PropertiesManager propertiesManager) {
         if (threads <= 0) {
             throw new IllegalArgumentException("threads must be positive, given: " + threads);
         }
@@ -79,10 +74,14 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         if (handler == null) {
             throw new IllegalArgumentException("null handler");
         }
-
+        if (propertiesManager == null) {
+            throw new IllegalArgumentException("null propertiesManager");
+        }
         this.codec = codec;
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
+        this.propertiesManager = propertiesManager;
+
         this.workerGroup = NettyEventLoopUtil.newEventLoopGroup(threads, threadFactory);
     }
 
@@ -90,15 +89,15 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     public void init(final ConnectionEventHandler connectionEventHandler) {
         bootstrap = new Bootstrap();
         bootstrap.group(workerGroup).channel(NettyEventLoopUtil.getClientSocketChannelClass())
-            .option(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
-            .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
-            .option(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
+            .option(ChannelOption.TCP_NODELAY, propertiesManager.tcp_nodelay())
+            .option(ChannelOption.SO_REUSEADDR, propertiesManager.tcp_so_reuseaddr())
+            .option(ChannelOption.SO_KEEPALIVE, propertiesManager.tcp_so_keepalive());
 
         // init netty write buffer water mark
         initWriteBufferWaterMark();
 
         // init byte buf allocator
-        if (SystemProperties.netty_buffer_pooled()) {
+        if (propertiesManager.netty_buffer_pooled()) {
             this.bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
         } else {
             this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
@@ -111,11 +110,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
                 pipeline.addLast("decoder", codec.newDecoder());
                 pipeline.addLast("encoder", codec.newEncoder());
 
-                boolean idleSwitch = SystemProperties.tcp_idle_switch();
+                boolean idleSwitch = propertiesManager.tcp_idle_switch();
                 if (idleSwitch) {
                     pipeline.addLast(
                         "idleStateHandler",
-                        new IdleStateHandler(SystemProperties.tcp_idle(), SystemProperties
+                        new IdleStateHandler(propertiesManager.tcp_idle(), propertiesManager
                             .tcp_idle(), 0, TimeUnit.MILLISECONDS));
                     pipeline.addLast("heartbeatHandler", heartbeatHandler);
                 }
@@ -161,10 +160,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
-        int lowWaterMark = SystemProperties.netty_buffer_low_watermark();
-        int highWaterMark = SystemProperties.netty_buffer_high_watermark();
+        int lowWaterMark = propertiesManager.netty_buffer_low_watermark();
+        int highWaterMark = propertiesManager.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
+
                 String
                     .format(
                         "[client side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
