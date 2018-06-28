@@ -75,7 +75,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
                         serviceStatusOnConns.add(conn);
                     }
                 }
-                if (serviceStatusOnConns.size() < 0) {
+                if (serviceStatusOnConns.size() == 0) {
                     throw new Exception(
                         "No available connection when select in RandomSelectStrategy.");
                 }
@@ -97,12 +97,17 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
      * @return
      */
     private Connection randomGet(List<Connection> conns) {
-        Connection result = null;
+        if (null == conns || conns.isEmpty()) {
+            return null;
+        }
+
         int size = conns.size();
         int tries = 0;
+        Connection result = null;
         while ((result == null || !result.isFine()) && tries++ < MAX_TIMES) {
             result = conns.get(this.random.nextInt(size));
         }
+
         if (result != null && !result.isFine()) {
             result = null;
         }
