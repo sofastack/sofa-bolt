@@ -164,7 +164,6 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
 
-
                 String
                     .format(
                         "[client side] bolt netty high water mark {%s} should not be smaller than low water mark {%s} bytes)",
