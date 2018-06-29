@@ -14,26 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.rpc.protocol;
+package com.alipay.remoting.rpc.userprocessor.multiinterestprocessor;
+
+import java.io.Serializable;
 
 /**
- * Implements common function and provide default value.
- * more details in {@link com.alipay.remoting.rpc.protocol.AbstractUserProcessor}
  * @author muyun.cyt
- * @version 2018/6/27 下午2:12
+ * @version 2018/6/29 下午4:52
  */
-public abstract class AbstractMultiInterestUserProcessor<T> extends AbstractUserProcessor<T>
-                                                                                            implements
-                                                                                            MultiInterestUserProcessor<T> {
+public interface MultiInterestBaseRequestBody extends Serializable {
+    /**
+     * Getter method for property <tt>id</tt>.
+     *
+     * @return property value of id
+     */
+    int getId();
 
     /**
-     * do not need to implement this method because of the multiple interests
-     * @return
-     * @see com.alipay.remoting.rpc.protocol.UserProcessor#interest()
-     * */
-    @Override
-    public String interest() {
-        return null;
-    }
+     * Setter method for property <tt>id</tt>.
+     *
+     * @param id value to be assigned to property id
+     */
+    void setId(int id);
 
+    /**
+     * Getter method for property <tt>msg</tt>.
+     *
+     * @return property value of msg
+     */
+    String getMsg();
+
+    /**
+     * Setter method for property <tt>msg</tt>.
+     *
+     * @param msg value to be assigned to property msg
+     */
+    void setMsg(String msg);
 }

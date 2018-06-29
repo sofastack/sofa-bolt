@@ -702,7 +702,7 @@ public class RpcClient {
      * @throws RemotingException
      */
     public void registerUserProcessor(MultiInterestUserProcessor<?> processor) {
-        if (null == processor.interest()) {
+        if (null == processor.multiInterest() || processor.multiInterest().isEmpty()) {
             throw new RuntimeException("Processor interest should not be blank!");
         }
         for (String interest : processor.multiInterest()) {
