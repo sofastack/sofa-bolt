@@ -11,11 +11,13 @@ jdk:
   - openjdk7
   - openjdk6
 
-before_install:
+script:
   - if: env(jdk) = openjdk6
     - echo "hehe!!!!!!"
   - else:
     - echo "haha!!!!!!"
+
+before_install:
   - echo "Downloading Maven 3.2.5"
    && wget https://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.zip
    && unzip -q apache-maven-3.2.5-bin.zip
