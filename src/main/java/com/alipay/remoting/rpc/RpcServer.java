@@ -380,17 +380,6 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     }
 
     /**
-     * Use UserProcessorRegisterHelper{@link UserProcessorRegisterHelper} to help register user processor for server side.
-     *
-     * @see AbstractRemotingServer#registerUserProcessor(com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor)
-     */
-
-    @Override
-    public void registerUserProcessor(MultiInterestUserProcessor<?> processor) {
-
-    }
-
-    /**
      * One way invocation using a string address, address format example - 127.0.0.1:12200?key1=value1&key2=value2 <br>
      * <p>
      * Notice:<br>

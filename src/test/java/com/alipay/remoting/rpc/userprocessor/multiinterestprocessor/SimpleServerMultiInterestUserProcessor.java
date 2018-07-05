@@ -131,7 +131,7 @@ public class SimpleServerMultiInterestUserProcessor
         }
     }
 
-    public Object handleRequest(BizContext bizCtx, RequestBodyC1 request) {
+    private Object handleRequest(BizContext bizCtx, RequestBodyC1 request) {
 
         Long waittime = (Long) bizCtx.getInvokeContext().get(InvokeContext.BOLT_PROCESS_WAIT_TIME);
         Assert.assertNotNull(waittime);
@@ -151,7 +151,7 @@ public class SimpleServerMultiInterestUserProcessor
         return RequestBodyC1.DEFAULT_SERVER_RETURN_STR;
     }
 
-    public Object handleRequest(BizContext bizCtx, RequestBodyC2 request) {
+    private Object handleRequest(BizContext bizCtx, RequestBodyC2 request) {
 
         Long waittime = (Long) bizCtx.getInvokeContext().get(InvokeContext.BOLT_PROCESS_WAIT_TIME);
         Assert.assertNotNull(waittime);

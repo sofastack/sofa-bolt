@@ -74,14 +74,8 @@ public interface RemotingServer {
     /**
      * Register user processor.
      *
-     * @param processor user processor
+     * @param processor user processor which can be a single-interest processor or a multi-interest processor
      */
     void registerUserProcessor(UserProcessor<?> processor);
 
-    /**
-     * Register multi-Interest user processor.
-     *
-     * @param processor multi-interest user processor
-     */
-    void registerUserProcessor(MultiInterestUserProcessor<?> processor);
 }

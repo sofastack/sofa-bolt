@@ -114,7 +114,7 @@ public class SimpleClientMultiInterestUserProcessor
         }
     }
 
-    public Object handleRequest(BizContext bizCtx, RequestBodyC1 request) {
+    private Object handleRequest(BizContext bizCtx, RequestBodyC1 request) {
 
         Long waittime = (Long) bizCtx.getInvokeContext().get(InvokeContext.BOLT_PROCESS_WAIT_TIME);
         Assert.assertNotNull(waittime);
@@ -122,7 +122,7 @@ public class SimpleClientMultiInterestUserProcessor
             logger.info("Client User processor process wait time {}", waittime);
         }
 
-        // processTimes(request);
+        processTimes(request);
         if (!delaySwitch) {
             return RequestBodyC1.DEFAULT_CLIENT_RETURN_STR;
         }
@@ -134,7 +134,7 @@ public class SimpleClientMultiInterestUserProcessor
         return RequestBodyC1.DEFAULT_CLIENT_RETURN_STR;
     }
 
-    public Object handleRequest(BizContext bizCtx, RequestBodyC2 request) {
+    private Object handleRequest(BizContext bizCtx, RequestBodyC2 request) {
 
         Long waittime = (Long) bizCtx.getInvokeContext().get(InvokeContext.BOLT_PROCESS_WAIT_TIME);
         Assert.assertNotNull(waittime);
@@ -142,7 +142,7 @@ public class SimpleClientMultiInterestUserProcessor
             logger.info("Client User processor process wait time {}", waittime);
         }
 
-        // processTimes(request);
+        processTimes(request);
         if (!delaySwitch) {
             return RequestBodyC2.DEFAULT_CLIENT_RETURN_STR;
         }

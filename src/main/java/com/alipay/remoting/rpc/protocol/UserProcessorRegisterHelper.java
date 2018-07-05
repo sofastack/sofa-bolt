@@ -62,8 +62,8 @@ public class UserProcessorRegisterHelper {
      * @param userProcessors    the map of user processors
      * @throws RuntimeException
      */
-    public static void registerUserProcessor(MultiInterestUserProcessor<?> processor,
-                                             ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
+    private static void registerUserProcessor(MultiInterestUserProcessor<?> processor,
+                                              ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
         if (null == processor.multiInterest() || processor.multiInterest().isEmpty()) {
             throw new RuntimeException("Processor interest should not be blank!");
         }
