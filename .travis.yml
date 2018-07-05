@@ -11,9 +11,9 @@ jdk:
   - openjdk7
   - openjdk6
 
-jdk: openjdk6
 script:
   - cp ./.middleware-common/pom_for_jdk6.xml ./pom.xml
+  - if: env(jdk) = openjdk6
 
 before_install:
   - echo "Downloading Maven 3.2.5"
