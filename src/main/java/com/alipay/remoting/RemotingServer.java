@@ -16,6 +16,7 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 import java.util.concurrent.ExecutorService;
@@ -73,7 +74,8 @@ public interface RemotingServer {
     /**
      * Register user processor.
      *
-     * @param processor user processor
+     * @param processor user processor which can be a single-interest processor or a multi-interest processor
      */
     void registerUserProcessor(UserProcessor<?> processor);
+
 }
