@@ -16,9 +16,9 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
-import com.alipay.remoting.util.StringUtils;
-
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.alipay.remoting.util.StringUtils;
 
 /**
  * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:22 AM

@@ -18,10 +18,9 @@ package com.alipay.remoting.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.connection.DefaultConnectionFactory;
-
-import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.NamedThreadFactory;
+import com.alipay.remoting.connection.ConnectionFactory;
+import com.alipay.remoting.connection.DefaultConnectionFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 /**

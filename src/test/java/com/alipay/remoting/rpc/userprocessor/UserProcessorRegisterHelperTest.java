@@ -16,17 +16,22 @@
  */
 package com.alipay.remoting.rpc.userprocessor;
 
-import com.alipay.remoting.BizContext;
-import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
-import com.alipay.remoting.rpc.protocol.*;
-import com.alipay.remoting.rpc.userprocessor.multiinterestprocessor.SimpleServerMultiInterestUserProcessor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import com.alipay.remoting.BizContext;
+import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
+import com.alipay.remoting.rpc.protocol.SyncMutiInterestUserProcessor;
+import com.alipay.remoting.rpc.protocol.SyncUserProcessor;
+import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
+import com.alipay.remoting.rpc.userprocessor.multiinterestprocessor.SimpleServerMultiInterestUserProcessor;
 
 /**
  * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   4:51 PM

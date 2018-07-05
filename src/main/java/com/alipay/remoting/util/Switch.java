@@ -16,8 +16,6 @@
  */
 package com.alipay.remoting.util;
 
-import java.util.BitSet;
-
 /**
  * switch interface
  *

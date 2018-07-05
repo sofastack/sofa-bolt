@@ -21,12 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.AbstractRemotingServer;
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
-import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
 import org.slf4j.Logger;
 
+import com.alipay.remoting.AbstractRemotingServer;
 import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
@@ -46,13 +43,14 @@ import com.alipay.remoting.RemotingServer;
 import com.alipay.remoting.ServerIdleHandler;
 import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
 import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.NettyEventLoopUtil;
 import com.alipay.remoting.util.RemotingUtil;
-import com.alipay.remoting.util.StringUtils;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;

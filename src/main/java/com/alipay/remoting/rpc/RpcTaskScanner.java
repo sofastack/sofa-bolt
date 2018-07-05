@@ -18,13 +18,8 @@ package com.alipay.remoting.rpc;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -42,14 +37,9 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 public class RpcTaskScanner {
     private static final Logger      logger           = BoltLoggerFactory.getLogger("RpcRemoting");
 
-    private ScheduledExecutorService scheduledService = Executors
-                                                          .newSingleThreadScheduledExecutor(new ThreadFactory() {
-                                                              @Override
-                                                              public Thread newThread(Runnable r) {
-                                                                  return new Thread(r,
-                                                                      "RpcTaskScannerThread");
-                                                              }
-                                                          });                                       ;
+    private ScheduledExecutorService scheduledService = new ScheduledThreadPoolExecutor(1,
+                                                          new NamedThreadFactory(
+                                                              "RpcTaskScannerThread", true));
 
     private List<Scannable>          scanList         = new LinkedList<Scannable>();
 
