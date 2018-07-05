@@ -15,7 +15,7 @@ script:
   - if: env(jdk) = openjdk6
     - echo "hehe!!!!!!"
   - else:
-    - echo "haha!!!!!!"
+    - echo "haha!!!!!!!"
 
 before_install:
   - echo "Downloading Maven 3.2.5"
