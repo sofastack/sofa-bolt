@@ -9,16 +9,13 @@ addons:
 jdk:
   - oraclejdk8
   - openjdk7
-  - openjdk6:
-    - script:
-      - cp ./.middleware-common/pom_for_jdk6.xml ./pom.xml
+  - openjdk6
 
 before_install:
-  - if [ env(jdk) == openjdk6 ]; then
-              echo "hehe!!!!!!";
-          else
-              echo "haha!！！！！！！！";
-    fi
+  - if: env(jdk) = openjdk6
+    - echo "hehe!!!!!!"
+  - else:
+    - echo "haha!!!!!!"
   - echo "Downloading Maven 3.2.5"
    && wget https://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.zip
    && unzip -q apache-maven-3.2.5-bin.zip
