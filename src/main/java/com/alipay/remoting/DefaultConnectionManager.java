@@ -224,6 +224,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     /**
      * @see com.alipay.remoting.ConnectionManager#init()
      */
+    @Override
     public void init() {
         this.connectionEventHandler.setConnectionManager(this);
         this.connectionEventHandler.setConnectionEventListener(connectionEventListener);

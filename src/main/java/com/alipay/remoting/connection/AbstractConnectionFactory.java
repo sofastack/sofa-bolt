@@ -106,6 +106,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
+            @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
                 pipeline.addLast("decoder", codec.newDecoder());

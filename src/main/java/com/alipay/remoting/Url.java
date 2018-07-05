@@ -224,12 +224,15 @@ public class Url {
 
     @Override
     public final boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Url url = (Url) obj;
         if (this.getOriginUrl().equals(url.getOriginUrl())) {
             return true;
