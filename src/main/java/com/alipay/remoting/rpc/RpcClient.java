@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
+import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
 import com.alipay.remoting.util.StringUtils;
 import org.slf4j.Logger;
 
@@ -669,51 +670,14 @@ public class RpcClient {
     }
 
     /**
-     * Register user processor for client side.
-     * 
+     * Use UserProcessorRegisterHelper{@link UserProcessorRegisterHelper} to help register user processor for client side.
+     *
      * @param processor
      * @throws RemotingException 
      */
-    public void registerUserProcessor(UserProcessor<?> processor) {
-        if (null == processor) {
-            throw new RuntimeException("User processor should not be null!");
-        }
-        if (processor instanceof MultiInterestUserProcessor) {
-            registerUserProcessor((MultiInterestUserProcessor) processor);
-        } else {
-            if (StringUtils.isBlank(processor.interest())) {
-                throw new RuntimeException("Processor interest should not be blank!");
-            }
-            UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
-                processor);
-            if (preProcessor != null) {
-                String errMsg = "Processor with interest key ["
-                                + processor.interest()
-                                + "] has already been registered to rpc server, can not register again!";
-                throw new RuntimeException(errMsg);
-            }
-        }
-    }
 
-    /**
-     * Register multi-interest user processor for client side.
-     *
-     * @param processor
-     * @throws RemotingException
-     */
-    public void registerUserProcessor(MultiInterestUserProcessor<?> processor) {
-        if (null == processor.multiInterest() || processor.multiInterest().isEmpty()) {
-            throw new RuntimeException("Processor interest should not be blank!");
-        }
-        for (String interest : processor.multiInterest()) {
-            UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(interest, processor);
-            if (preProcessor != null) {
-                String errMsg = "Processor with interest key ["
-                                + interest
-                                + "] has already been registered to rpc server, can not register again!";
-                throw new RuntimeException(errMsg);
-            }
-        }
+    public void registerUserProcessor(UserProcessor<?> processor) {
+        UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
     }
 
     /**

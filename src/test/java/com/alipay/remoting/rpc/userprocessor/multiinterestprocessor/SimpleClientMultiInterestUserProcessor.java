@@ -34,8 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author muyun.cyt
- * @version 2018/6/29 下午2:11
+ * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM
  */
 public class SimpleClientMultiInterestUserProcessor
                                                    extends

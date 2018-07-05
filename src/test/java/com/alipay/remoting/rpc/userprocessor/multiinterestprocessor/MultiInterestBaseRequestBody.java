@@ -19,8 +19,7 @@ package com.alipay.remoting.rpc.userprocessor.multiinterestprocessor;
 import java.io.Serializable;
 
 /**
- * @author muyun.cyt
- * @version 2018/6/29 下午4:52
+ * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM
  */
 public interface MultiInterestBaseRequestBody extends Serializable {
     /**

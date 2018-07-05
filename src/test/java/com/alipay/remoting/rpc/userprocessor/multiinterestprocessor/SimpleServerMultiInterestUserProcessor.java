@@ -31,8 +31,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author muyun.cyt
- * @version 2018/6/29 下午2:12
+ * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM
  */
 public class SimpleServerMultiInterestUserProcessor
                                                    extends

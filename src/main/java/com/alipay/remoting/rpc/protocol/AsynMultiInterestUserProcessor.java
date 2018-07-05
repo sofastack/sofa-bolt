@@ -24,8 +24,7 @@ import java.util.List;
 /**
  * Extends this to process user defined request in ASYNC way.<br>
  * If you want process reqeuest in SYNC way, please extends {@link SyncMutiInterestUserProcessor}.
- * @author muyun.cyt
- * @version 2018/6/27 下午2:58
+ * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:19 AM
  */
 public abstract class AsynMultiInterestUserProcessor<T> extends
                                                         AbstractMultiInterestUserProcessor<T> {

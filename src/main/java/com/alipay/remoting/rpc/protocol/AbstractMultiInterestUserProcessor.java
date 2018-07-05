@@ -19,8 +19,7 @@ package com.alipay.remoting.rpc.protocol;
 /**
  * Implements common function and provide default value.
  * more details in {@link com.alipay.remoting.rpc.protocol.AbstractUserProcessor}
- * @author muyun.cyt
- * @version 2018/6/27 下午2:12
+ * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:17 AM
  */
 public abstract class AbstractMultiInterestUserProcessor<T> extends AbstractUserProcessor<T>
                                                                                             implements

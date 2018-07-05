@@ -19,8 +19,7 @@ package com.alipay.remoting.rpc.userprocessor.multiinterestprocessor;
 import java.util.Random;
 
 /**
- * @author muyun.cyt
- * @version 2018/6/29 下午2:27
+ * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM
  */
 public class RequestBodyC1 implements MultiInterestBaseRequestBody {
 

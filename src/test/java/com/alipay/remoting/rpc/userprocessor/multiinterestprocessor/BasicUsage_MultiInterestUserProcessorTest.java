@@ -36,12 +36,11 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 /**
- * @author muyun.cyt
- * @version 2018/6/29 下午3:09
+ * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM
  */
-public class BasicUsage_MultiInterestUserProcessor {
+public class BasicUsage_MultiInterestUserProcessorTest {
     static Logger                          logger                    = LoggerFactory
-                                                                         .getLogger(BasicUsage_MultiInterestUserProcessor.class);
+                                                                         .getLogger(BasicUsage_MultiInterestUserProcessorTest.class);
 
     BoltServer                             server;
     RpcClient                              client;
