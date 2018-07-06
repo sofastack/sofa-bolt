@@ -16,10 +16,9 @@
  */
 package com.alipay.remoting;
 
-import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
-import com.alipay.remoting.rpc.protocol.UserProcessor;
-
 import java.util.concurrent.ExecutorService;
+
+import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 /**
  * @author chengyi (mark.lx@antfin.com) 2018-06-16 06:55

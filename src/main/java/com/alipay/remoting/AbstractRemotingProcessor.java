@@ -100,6 +100,7 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
      * 
      * @return property value of executor
      */
+    @Override
     public ExecutorService getExecutor() {
         return executor;
     }
@@ -109,6 +110,7 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
      * 
      * @param executor value to be assigned to property executor
      */
+    @Override
     public void setExecutor(ExecutorService executor) {
         this.executor = executor;
     }

@@ -22,18 +22,18 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.util.GlobalSwitch;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.util.Attribute;
 
 /**

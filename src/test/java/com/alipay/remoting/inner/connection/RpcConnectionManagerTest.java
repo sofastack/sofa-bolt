@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.rpc.protocol.UserProcessor;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,18 +31,19 @@ import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.RandomSelectStrategy;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
 import com.alipay.remoting.rpc.RpcConnectionEventHandler;
 import com.alipay.remoting.rpc.RpcConnectionFactory;
 import com.alipay.remoting.rpc.common.BoltServer;
 import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
+import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 /**
  * Rpc connection manager test

@@ -211,6 +211,7 @@ public abstract class RpcCommand implements RemotingCommand {
         return serializer;
     }
 
+    @Override
     public ProtocolSwitch getProtocolSwitch() {
         return protocolSwitch;
     }
@@ -243,6 +244,7 @@ public abstract class RpcCommand implements RemotingCommand {
         this.protocolSwitch = protocolSwitch;
     }
 
+    @Override
     public int getId() {
         return id;
     }

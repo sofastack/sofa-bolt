@@ -16,10 +16,10 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
+import java.util.List;
+
 import com.alipay.remoting.AsyncContext;
 import com.alipay.remoting.BizContext;
-
-import java.util.List;
 
 /**
  * Extends this to process user defined request in ASYNC way.<br>

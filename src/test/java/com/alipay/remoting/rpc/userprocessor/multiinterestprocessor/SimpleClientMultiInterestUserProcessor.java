@@ -16,15 +16,6 @@
  */
 package com.alipay.remoting.rpc.userprocessor.multiinterestprocessor;
 
-import com.alipay.remoting.BizContext;
-import com.alipay.remoting.InvokeContext;
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.protocol.SyncMutiInterestUserProcessor;
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -32,6 +23,16 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alipay.remoting.BizContext;
+import com.alipay.remoting.InvokeContext;
+import com.alipay.remoting.NamedThreadFactory;
+import com.alipay.remoting.rpc.common.RequestBody;
+import com.alipay.remoting.rpc.protocol.SyncMutiInterestUserProcessor;
 
 /**
  * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM

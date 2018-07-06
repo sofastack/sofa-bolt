@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.alipay.remoting.util.GlobalSwitch;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.StringUtils;
 
 /**

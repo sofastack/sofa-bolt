@@ -16,8 +16,6 @@
  */
 package com.alipay.remoting;
 
-import io.netty.channel.epoll.EpollMode;
-
 /**
  * get configs from system properties
  *

@@ -16,6 +16,11 @@
  */
 package com.alipay.remoting.connection;
 
+import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventType;
@@ -28,6 +33,7 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.util.NettyEventLoopUtil;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.UnpooledByteBufAllocator;
@@ -39,14 +45,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
-import org.slf4j.Logger;
-
-import java.net.InetSocketAddress;
-import java.util.concurrent.TimeUnit;
 
 /**
  * ConnectionFactory to create connection.
@@ -106,6 +106,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
+            @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
                 pipeline.addLast("decoder", codec.newDecoder());

@@ -16,11 +16,12 @@
  */
 package com.alipay.remoting;
 
-import com.alipay.remoting.log.BoltLoggerFactory;
-import org.slf4j.Logger;
-
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.slf4j.Logger;
+
+import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**
  * Server template for remoting.

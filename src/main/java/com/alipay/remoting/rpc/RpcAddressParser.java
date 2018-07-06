@@ -51,6 +51,7 @@ public class RpcAddressParser implements RemotingAddressParser {
     /**
      * @see com.alipay.remoting.RemotingAddressParser#parse(java.lang.String)
      */
+    @Override
     public Url parse(String url) {
         if (StringUtils.isBlank(url)) {
             throw new IllegalArgumentException("Illegal format address string [" + url
@@ -155,6 +156,7 @@ public class RpcAddressParser implements RemotingAddressParser {
     /**
      * @see com.alipay.remoting.RemotingAddressParser#parseUniqueKey(java.lang.String)
      */
+    @Override
     public String parseUniqueKey(String url) {
         boolean illegal = false;
         if (StringUtils.isBlank(url)) {
@@ -197,6 +199,7 @@ public class RpcAddressParser implements RemotingAddressParser {
     /**
      * @see com.alipay.remoting.RemotingAddressParser#initUrlArgs(Url)
      */
+    @Override
     public void initUrlArgs(Url url) {
         String connTimeoutStr = url.getProperty(RpcConfigs.CONNECT_TIMEOUT_KEY);
         int connTimeout = Configs.DEFAULT_CONNECT_TIMEOUT;

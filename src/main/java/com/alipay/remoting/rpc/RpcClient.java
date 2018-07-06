@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
-import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
-import com.alipay.remoting.util.StringUtils;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -30,7 +27,6 @@ import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventProcessor;
 import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.ConnectionMonitorStrategy;
 import com.alipay.remoting.ConnectionPool;
 import com.alipay.remoting.ConnectionSelectStrategy;
@@ -43,9 +39,11 @@ import com.alipay.remoting.ReconnectManager;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.ScheduledDisconnectStrategy;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
+import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
 import com.alipay.remoting.util.GlobalSwitch;
 
 /**
