@@ -2,7 +2,7 @@
 
 <ruleset name="PMD-Rules">
     <description>
-        customized rule set
+        customize rule set priority
     </description>
     <rule ref="rulesets/java/empty.xml/EmptyCatchBlock">
         <priority>1</priority>
