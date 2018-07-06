@@ -69,7 +69,7 @@ public class ProcessorManager {
      * @param processor
      */
     public void registerProcessor(CommandCode cmdCode, RemotingProcessor<?> processor) {
-        if (this.cmd2processors.contains(cmdCode)) {
+        if (this.cmd2processors.containsKey(cmdCode)) {
             logger
                 .warn(
                     "Processor for cmd={} is already registered, the processor is {}, and changed to {}",
