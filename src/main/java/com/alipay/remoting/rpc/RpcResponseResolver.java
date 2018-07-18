@@ -173,17 +173,16 @@ public class RpcResponseResolver {
 
     /**
      * Detail your error msg with the error msg returned from response command
-     * @param originErrMsg
+     * @param clientErrMsg
      * @param responseCommand
      * @return
      */
-    private static String detailErrMsg(String originErrMsg, ResponseCommand responseCommand) {
+    private static String detailErrMsg(String clientErrMsg, ResponseCommand responseCommand) {
         RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
         if (StringUtils.isNotBlank(resp.getErrorMsg())) {
-            return String.format("OriginErrorMsg:%s, AdditionalErrMsg:%s", originErrMsg,
-                resp.getErrorMsg());
+            return String.format("%s, ServerErrorMsg:%s", clientErrMsg, resp.getErrorMsg());
         } else {
-            return String.format("OriginErrorMsg:%s, AdditionalErrMsg:null", originErrMsg);
+            return String.format("%s, ServerErrorMsg:null", clientErrMsg);
         }
     }
 }

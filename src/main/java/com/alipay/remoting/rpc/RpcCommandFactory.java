@@ -131,8 +131,9 @@ public class RpcCommandFactory implements CommandFactory {
      * @return
      */
     private RpcServerException createServerException(Throwable t, String errMsg) {
-        String formattedErrMsg = String.format("OriginErrMsg: %s: %s. AdditionalErrMsg: %s", t
-            .getClass().getName(), t.getMessage(), errMsg);
+        String formattedErrMsg = String.format(
+            "[Server]OriginErrorMsg: %s: %s. AdditionalErrorMsg: %s", t.getClass().getName(),
+            t.getMessage(), errMsg);
         RpcServerException e = new RpcServerException(formattedErrMsg);
         e.setStackTrace(t.getStackTrace());
         return e;
