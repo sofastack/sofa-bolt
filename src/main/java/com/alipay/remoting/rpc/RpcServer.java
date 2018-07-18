@@ -323,7 +323,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         } else {
             this.bossGroup.shutdownGracefully();
         }
-        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)
+            && null != this.connectionManager) {
             this.connectionManager.removeAll();
             logger.warn("Close all connections from server side!");
         }
