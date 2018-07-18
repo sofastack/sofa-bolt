@@ -60,17 +60,12 @@ public class RpcCommandFactory implements CommandFactory {
     @Override
     public RpcResponseCommand createExceptionResponse(int id, final Throwable t, String errMsg) {
         RpcResponseCommand response = null;
-        RpcServerException e = null;
         if (null == t) {
-            e = new RpcServerException(errMsg);
-            response = new RpcResponseCommand(id, e);
+            response = new RpcResponseCommand(id, createServerException(errMsg));
         } else {
-            e = new RpcServerException(t.getClass().getName() + ": " + t.getMessage()
-                                       + ". AdditionalErrMsg: " + errMsg);
-            e.setStackTrace(t.getStackTrace());
-            response = new RpcResponseCommand(id, e);
+            response = new RpcResponseCommand(id, createServerException(t, errMsg));
         }
-        response.setResponseClass(e.getClass().getName());
+        response.setResponseClass(RpcServerException.class.getName());
         response.setResponseStatus(ResponseStatus.SERVER_EXCEPTION);
         return response;
     }
@@ -80,6 +75,14 @@ public class RpcCommandFactory implements CommandFactory {
         RpcResponseCommand responseCommand = new RpcResponseCommand();
         responseCommand.setId(id);
         responseCommand.setResponseStatus(status);
+        return responseCommand;
+    }
+
+    @Override
+    public RpcResponseCommand createExceptionResponse(int id, ResponseStatus status, Throwable t) {
+        RpcResponseCommand responseCommand = this.createExceptionResponse(id, status);
+        responseCommand.setResponseObject(createServerException(t, null));
+        responseCommand.setResponseClass(RpcServerException.class.getName());
         return responseCommand;
     }
 
@@ -110,5 +113,28 @@ public class RpcCommandFactory implements CommandFactory {
         responseCommand.setResponseTimeMillis(System.currentTimeMillis());
         responseCommand.setResponseHost(address);
         return responseCommand;
+    }
+
+    /**
+     * create server exception using error msg
+     * @param errMsg
+     * @return
+     */
+    private RpcServerException createServerException(String errMsg) {
+        return new RpcServerException(errMsg);
+    }
+
+    /**
+     * create server exception using error msg and throwable
+     * @param t
+     * @param errMsg
+     * @return
+     */
+    private RpcServerException createServerException(Throwable t, String errMsg) {
+        String formattedErrMsg = String.format("OriginErrMsg: %s: %s. AdditionalErrMsg: %s", t
+            .getClass().getName(), t.getMessage(), errMsg);
+        RpcServerException e = new RpcServerException(formattedErrMsg);
+        e.setStackTrace(t.getStackTrace());
+        return e;
     }
 }

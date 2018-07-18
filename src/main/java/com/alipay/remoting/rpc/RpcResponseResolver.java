@@ -111,27 +111,20 @@ public class RpcResponseResolver {
                 case SERVER_SERIAL_EXCEPTION:
                     msg = "Server serialize response exception! the address is " + addr + ", id="
                           + responseCommand.getId() + ", serverSide=true";
-                    e = new SerializationException(msg, true);
+                    e = new SerializationException(detailErrMsg(msg, responseCommand),
+                        toThrowable(responseCommand), true);
                     break;
                 case SERVER_DESERIAL_EXCEPTION:
                     msg = "Server deserialize request exception! the address is " + addr + ", id="
                           + responseCommand.getId() + ", serverSide=true";
-                    e = new DeserializationException(msg, true);
+                    e = new DeserializationException(detailErrMsg(msg, responseCommand),
+                        toThrowable(responseCommand), true);
                     break;
                 case SERVER_EXCEPTION:
                     msg = "Server exception! Please check the server log, the address is " + addr
                           + ", id=" + responseCommand.getId();
-                    RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
-                    if (resp.getErrorMsg() != null) {
-                        msg = msg + ".ErrorMsg: " + resp.getErrorMsg();
-                    }
-                    resp.deserialize();
-                    Object ex = resp.getResponseObject();
-                    if (ex != null && ex instanceof Throwable) {
-                        e = new InvokeServerException(msg, (Throwable) ex);
-                    } else {
-                        e = new InvokeServerException(msg);
-                    }
+                    e = new InvokeServerException(detailErrMsg(msg, responseCommand),
+                        toThrowable(responseCommand));
                     break;
                 default:
                     break;
@@ -158,5 +151,37 @@ public class RpcResponseResolver {
         RpcResponseCommand response = (RpcResponseCommand) responseCommand;
         response.deserialize();
         return response.getResponseObject();
+    }
+
+    /**
+     * Convert remoting response command to throwable if it is a throwable, otherwise return null.
+     * @param responseCommand
+     * @return
+     * @throws CodecException
+     */
+    private static Throwable toThrowable(ResponseCommand responseCommand) throws CodecException {
+        RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
+        resp.deserialize();
+        Object ex = resp.getResponseObject();
+        if (ex != null && ex instanceof Throwable) {
+            return (Throwable) ex;
+        }
+        return null;
+    }
+
+    /**
+     * Detail your error msg with the error msg returned from response command
+     * @param originErrMsg
+     * @param responseCommand
+     * @return
+     */
+    private static String detailErrMsg(String originErrMsg, ResponseCommand responseCommand) {
+        RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
+        if (StringUtils.isNotBlank(resp.getErrorMsg())) {
+            return String.format("OriginErrorMsg:%s, AdditionalErrMsg:%s", originErrMsg,
+                resp.getErrorMsg());
+        } else {
+            return String.format("OriginErrorMsg:%s, AdditionalErrMsg:null", originErrMsg);
+        }
     }
 }
