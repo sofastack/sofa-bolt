@@ -116,20 +116,20 @@ public class RpcCommandFactory implements CommandFactory {
     }
 
     /**
-     * create server exception using error msg
-     * @param errMsg
-     * @return
+     * create server exception using error msg, no stack trace
+     * @param errMsg the assigned error message
+     * @return an instance of RpcServerException
      */
     private RpcServerException createServerException(String errMsg) {
         return new RpcServerException(errMsg);
     }
 
     /**
-     * create server exception using error msg and throwable.
+     * create server exception using error msg and fill the stack trace using the stack trace of throwable.
      *
      * @param t the origin throwable to fill the stack trace of rpc server exception
      * @param errMsg additional error msg, <code>null</code> is allowed
-     * @return
+     * @return an instance of RpcServerException
      */
     private RpcServerException createServerException(Throwable t, String errMsg) {
         String formattedErrMsg = String.format(
