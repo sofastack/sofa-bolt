@@ -164,7 +164,13 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                                 + id;
                 logger.error(errMsg, e);
                 serializedResponse = this.getCommandFactory().createExceptionResponse(id,
-                    ResponseStatus.SERVER_SERIAL_EXCEPTION);
+                    ResponseStatus.SERVER_SERIAL_EXCEPTION, e);
+                try {
+                    serializedResponse.serialize();// serialize again for exception response
+                } catch (SerializationException e1) {
+                    // should not happen
+                    logger.error("serialize SerializationException response failed!");
+                }
             } catch (Throwable t) {
                 String errMsg = "Serialize RpcResponseCommand failed when sendResponseIfNecessary in RpcRequestProcessor, id="
                                 + id;
@@ -269,7 +275,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                     "DeserializationException occurred when process in RpcRequestProcessor, id={}, deserializeLevel={}",
                     cmd.getId(), RpcDeserializeLevel.valueOf(level), e);
             sendResponseIfNecessary(ctx, cmd.getType(), this.getCommandFactory()
-                .createExceptionResponse(cmd.getId(), ResponseStatus.SERVER_DESERIAL_EXCEPTION));
+                .createExceptionResponse(cmd.getId(), ResponseStatus.SERVER_DESERIAL_EXCEPTION, e));
             result = false;
         } catch (Throwable t) {
             String errMsg = "Deserialize RpcRequestCommand failed in RpcRequestProcessor, id="
