@@ -61,7 +61,8 @@ public class ConfigManager {
     public static int netty_buffer_low_watermark(ConfigContainer configContainer,
                                                  ConfigType configType) {
         if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK)) {
-            return configContainer.get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
+            return (Integer) configContainer
+                .get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
         } else {
             return netty_buffer_low_watermark();
         }
@@ -75,7 +76,8 @@ public class ConfigManager {
     public static int netty_buffer_high_watermark(ConfigContainer configContainer,
                                                   ConfigType configType) {
         if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK)) {
-            return configContainer.get(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
+            return (Integer) configContainer.get(configType,
+                ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
         } else {
             return netty_buffer_high_watermark();
         }
