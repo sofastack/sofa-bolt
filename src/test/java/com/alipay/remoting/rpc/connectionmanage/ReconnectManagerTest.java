@@ -117,7 +117,6 @@ public class ReconnectManagerTest {
         } else {
             System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
         }
-        GlobalSwitch.reinit();
         server = new BoltServer(port);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);

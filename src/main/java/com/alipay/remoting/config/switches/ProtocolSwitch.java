@@ -38,13 +38,18 @@ public class ProtocolSwitch implements Switch {
     // ~~~ public methods
 
     @Override
-    public void turnOn(int switchIndex) {
-        this.bs.set(switchIndex);
+    public void turnOn(int index) {
+        this.bs.set(index);
     }
 
     @Override
-    public boolean isOn(int switchIndex) {
-        return this.bs.get(switchIndex);
+    public void turnOff(int index) {
+        this.bs.clear(index);
+    }
+
+    @Override
+    public boolean isOn(int index) {
+        return this.bs.get(index);
     }
 
     /**

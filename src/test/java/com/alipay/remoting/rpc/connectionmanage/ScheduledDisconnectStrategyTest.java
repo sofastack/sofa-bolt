@@ -251,7 +251,6 @@ public class ScheduledDisconnectStrategyTest {
             System.setProperty(Configs.CONN_MONITOR_SWITCH, "false");
             System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
         }
-        GlobalSwitch.reinit();
         server = new BoltServer(port, false, true);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);

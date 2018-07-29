@@ -31,9 +31,15 @@ public interface Switch {
     void turnOn(int index);
 
     /**
+     * api for user to turn off a feature
+     * @param index the switch index of feature
+     */
+    void turnOff(int index);
+
+    /**
      * check switch whether on
      *
-     * @param index
+     * @param index the switch index of feature
      * @return true if either system setting is on or user setting is on
      */
     boolean isOn(int index);

@@ -892,6 +892,15 @@ public class RpcClient {
     }
 
     /**
+     * disable connection reconnect switch off
+     * <p>
+     * Notice: This api should be called before {@link RpcClient#init()}
+     */
+    public void disableReconnectSwith() {
+        this.globalSwitch.turnOff(GlobalSwitch.CONN_RECONNECT_SWITCH);
+    }
+
+    /**
      * is reconnect switch on
      * @return
      */
@@ -907,6 +916,15 @@ public class RpcClient {
     }
 
     /**
+     * disable connection monitor switch off
+     * <p>
+     * Notice: This api should be called before {@link RpcClient#init()}
+     */
+    public void disableConnectionMonitorSwitch() {
+        this.globalSwitch.turnOff(GlobalSwitch.CONN_MONITOR_SWITCH);
+    }
+
+    /**
      * is connection monitor switch on
      * @return
      */
@@ -916,6 +934,9 @@ public class RpcClient {
 
     /**
      * Initialize netty writer buffer water mark for client side.
+     * <p>
+     * Notice: This api should be called before {@link RpcClient#init()}
+     *
      * @param low [0, high]
      * @param high [high, Integer.MAX_VALUE)
      */
