@@ -32,13 +32,14 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.util.FutureTaskUtil;
-import com.alipay.remoting.util.GlobalSwitch;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.util.RunStateRecordedFutureTask;
 import com.alipay.remoting.util.StringUtils;
 
@@ -73,25 +74,25 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     /**
      * min pool size for asyncCreateConnectionExecutor
      */
-    private int                                                                     minPoolSize         = SystemProperties
+    private int                                                                     minPoolSize         = ConfigManager
                                                                                                             .conn_create_tp_min_size();
 
     /**
      * max pool size for asyncCreateConnectionExecutor
      */
-    private int                                                                     maxPoolSize         = SystemProperties
+    private int                                                                     maxPoolSize         = ConfigManager
                                                                                                             .conn_create_tp_max_size();
 
     /**
      * queue size for asyncCreateConnectionExecutor
      */
-    private int                                                                     queueSize           = SystemProperties
+    private int                                                                     queueSize           = ConfigManager
                                                                                                             .conn_create_tp_queue_size();
 
     /**
      * keep alive time for asyncCreateConnectionExecutor
      */
-    private long                                                                    keepAliveTime       = SystemProperties
+    private long                                                                    keepAliveTime       = ConfigManager
                                                                                                             .conn_create_tp_keepalive();
 
     /**

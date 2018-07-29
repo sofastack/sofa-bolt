@@ -26,7 +26,7 @@ import com.alipay.remoting.HeartbeatTrigger;
 import com.alipay.remoting.InvokeCallbackListener;
 import com.alipay.remoting.InvokeFuture;
 import com.alipay.remoting.ResponseStatus;
-import com.alipay.remoting.SystemProperties;
+import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.TimerHolder;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.DefaultInvokeFuture;
@@ -50,7 +50,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
     private static final Logger logger                 = BoltLoggerFactory.getLogger("RpcRemoting");
 
     /** max trigger times */
-    public static final Integer maxCount               = SystemProperties.tcp_idle_maxtimes();
+    public static final Integer maxCount               = ConfigManager.tcp_idle_maxtimes();
 
     private static final long   heartbeatTimeoutMillis = 1000;
 

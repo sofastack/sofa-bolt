@@ -14,27 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.util;
+package com.alipay.remoting.config.configs;
 
 /**
- * switch interface
+ * type of config
  *
  * @author tsui
- * @version $Id: Switch.java, v 0.1 2018-04-08 11:26 tsui Exp $
+ * @version $Id: ConfigType.java, v 0.1 2018-07-28 17:41 tsui Exp $$ 
  */
-public interface Switch {
-    /**
-     * api for user to turn on a feature
-     *
-     * @param index the switch index of feature
-     */
-    void turnOn(int index);
-
-    /**
-     * check switch whether on
-     *
-     * @param index
-     * @return true if either system setting is on or user setting is on
-     */
-    boolean isOn(int index);
+public enum ConfigType {
+    GLOBAL, // configs of this type can be used in both client side and server side
+    CLIENT_SIDE, // configs of this type can only be used in client side
+    SERVER_SIDE // configs of this type can only be used in server side
 }

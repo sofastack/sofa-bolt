@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.config.ConfigManager;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -56,10 +57,10 @@ public class DefaultConnectionMonitor {
      */
     public void start() {
         /** initial delay to execute schedule task, unit: ms */
-        long initialDelay = SystemProperties.conn_monitor_initial_delay();
+        long initialDelay = ConfigManager.conn_monitor_initial_delay();
 
         /** period of schedule task, unit: ms*/
-        long period = SystemProperties.conn_monitor_period();
+        long period = ConfigManager.conn_monitor_period();
 
         this.executor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory(
             "ConnectionMonitorThread", true), new ThreadPoolExecutor.AbortPolicy());

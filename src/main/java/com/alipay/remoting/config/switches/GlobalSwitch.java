@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.util;
+package com.alipay.remoting.config.switches;
+
+import com.alipay.remoting.config.ConfigManager;
 
 import java.util.BitSet;
-
-import com.alipay.remoting.SystemProperties;
 
 /**
  * Global switches used in client or server
@@ -53,13 +53,13 @@ public class GlobalSwitch implements Switch {
     }
 
     private static void init() {
-        if (SystemProperties.conn_reconnect_switch()) {
+        if (ConfigManager.conn_reconnect_switch()) {
             systemSettings.set(CONN_RECONNECT_SWITCH);
         } else {
             systemSettings.clear(CONN_RECONNECT_SWITCH);
         }
 
-        if (SystemProperties.conn_monitor_switch()) {
+        if (ConfigManager.conn_monitor_switch()) {
             systemSettings.set(CONN_MONITOR_SWITCH);
         } else {
             systemSettings.clear(CONN_MONITOR_SWITCH);

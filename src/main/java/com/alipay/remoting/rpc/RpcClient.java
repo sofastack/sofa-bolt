@@ -39,12 +39,16 @@ import com.alipay.remoting.ReconnectManager;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.ScheduledDisconnectStrategy;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.config.configs.ConfigContainer;
+import com.alipay.remoting.config.configs.ConfigItem;
+import com.alipay.remoting.config.configs.ConfigType;
+import com.alipay.remoting.config.configs.DefaultConfigContainer;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
-import com.alipay.remoting.util.GlobalSwitch;
 
 /**
  * Client for Rpc.
@@ -62,9 +66,13 @@ public class RpcClient {
     /** global switch */
     private GlobalSwitch                                globalSwitch             = new GlobalSwitch();
 
+    /** config container for client side */
+    private ConfigContainer                             configContainer          = new DefaultConfigContainer();
+
     /** connection factory */
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
-                                                                                     userProcessors);
+                                                                                     userProcessors,
+                                                                                     configContainer);
 
     /** connection event handler */
     private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler(
@@ -904,6 +912,18 @@ public class RpcClient {
      */
     public boolean isConnectionMonitorSwitchOn() {
         return this.globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH);
+    }
+
+    /**
+     * Initialize netty writer buffer water mark for client side.
+     * @param low [0, high]
+     * @param high [high, Integer.MAX_VALUE)
+     */
+    public void initClientWriterBufferWaterMark(int low, int high) {
+        this.configContainer.set(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK,
+            low);
+        this.configContainer.set(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK,
+            high);
     }
 
     // ~~~ getter and setter

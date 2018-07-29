@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.config;
 
 import com.alipay.remoting.serialization.SerializerManager;
 

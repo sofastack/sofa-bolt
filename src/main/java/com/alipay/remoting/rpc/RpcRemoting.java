@@ -34,7 +34,7 @@ import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcRequestCommand;
-import com.alipay.remoting.util.ProtocolSwitch;
+import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 
 /**

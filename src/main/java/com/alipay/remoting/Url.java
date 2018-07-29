@@ -20,6 +20,7 @@ import java.lang.ref.SoftReference;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.alipay.remoting.config.Configs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

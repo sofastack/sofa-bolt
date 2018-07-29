@@ -41,14 +41,18 @@ import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.RemotingProcessor;
 import com.alipay.remoting.RemotingServer;
 import com.alipay.remoting.ServerIdleHandler;
-import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.configs.ConfigContainer;
+import com.alipay.remoting.config.configs.ConfigItem;
+import com.alipay.remoting.config.configs.ConfigType;
+import com.alipay.remoting.config.configs.DefaultConfigContainer;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
-import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.NettyEventLoopUtil;
 import com.alipay.remoting.util.RemotingUtil;
 
@@ -95,6 +99,9 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     /** global switch */
     private GlobalSwitch                                globalSwitch            = new GlobalSwitch();
 
+    /** config container for client side */
+    private ConfigContainer                             configContainer         = new DefaultConfigContainer();
+
     /** connection event handler */
     private ConnectionEventHandler                      connectionEventHandler;
 
@@ -136,9 +143,9 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
 
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
-            ((NioEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+            ((NioEventLoopGroup) workerGroup).setIoRatio(ConfigManager.netty_io_ratio());
         } else if (workerGroup instanceof EpollEventLoopGroup) {
-            ((EpollEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+            ((EpollEventLoopGroup) workerGroup).setIoRatio(ConfigManager.netty_io_ratio());
         }
     }
 
@@ -242,16 +249,16 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         this.bootstrap = new ServerBootstrap();
         this.bootstrap.group(bossGroup, workerGroup)
             .channel(NettyEventLoopUtil.getServerSocketChannelClass())
-            .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
-            .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
-            .childOption(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
-            .childOption(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
+            .option(ChannelOption.SO_BACKLOG, ConfigManager.tcp_so_backlog())
+            .option(ChannelOption.SO_REUSEADDR, ConfigManager.tcp_so_reuseaddr())
+            .childOption(ChannelOption.TCP_NODELAY, ConfigManager.tcp_nodelay())
+            .childOption(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive());
 
         // set write buffer water mark
         initWriteBufferWaterMark();
 
         // init byte buf allocator
-        if (SystemProperties.netty_buffer_pooled()) {
+        if (ConfigManager.netty_buffer_pooled()) {
             this.bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
         } else {
@@ -262,8 +269,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         // enable trigger mode for epoll if need
         NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
-        final boolean idleSwitch = SystemProperties.tcp_idle_switch();
-        final int idleTime = SystemProperties.tcp_server_idle();
+        final boolean idleSwitch = ConfigManager.tcp_idle_switch();
+        final int idleTime = ConfigManager.tcp_server_idle();
         final ChannelHandler serverIdleHandler = new ServerIdleHandler();
         final RpcHandler rpcHandler = new RpcHandler(true, this.userProcessors);
         this.bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
@@ -878,6 +885,18 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     }
 
     /**
+     * Initialize netty writer buffer water mark for client side.
+     * @param low [0, high]
+     * @param high [high, Integer.MAX_VALUE)
+     */
+    public void initServerWriterBufferWaterMark(int low, int high) {
+        this.configContainer.set(ConfigType.SERVER_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK,
+            low);
+        this.configContainer.set(ConfigType.SERVER_SIDE, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK,
+            high);
+    }
+
+    /**
      * check whether connection manage feature enabled
      */
     private void check() {
@@ -891,8 +910,10 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
-        int lowWaterMark = SystemProperties.netty_buffer_low_watermark();
-        int highWaterMark = SystemProperties.netty_buffer_high_watermark();
+        int lowWaterMark = ConfigManager.netty_buffer_low_watermark(configContainer,
+            ConfigType.SERVER_SIDE);
+        int highWaterMark = ConfigManager.netty_buffer_high_watermark(configContainer,
+            ConfigType.SERVER_SIDE);
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
                 String

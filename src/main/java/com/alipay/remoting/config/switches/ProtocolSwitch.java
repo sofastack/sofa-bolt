@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.util;
+package com.alipay.remoting.config.switches;
 
 import java.util.BitSet;
 
 /**
- * Switches used in protocol
+ * Switches used in protocol, this is runtime switch.
  *
  * @author tsui
  * @version $Id: RpcProtocolSwitch.java, v 0.1 2017-09-31 15:50 tsui Exp $

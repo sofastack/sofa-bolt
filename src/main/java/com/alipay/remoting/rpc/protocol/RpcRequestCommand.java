@@ -18,7 +18,7 @@ package com.alipay.remoting.rpc.protocol;
 
 import java.io.UnsupportedEncodingException;
 
-import com.alipay.remoting.Configs;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.CustomSerializer;
 import com.alipay.remoting.CustomSerializerManager;
 import com.alipay.remoting.InvokeContext;

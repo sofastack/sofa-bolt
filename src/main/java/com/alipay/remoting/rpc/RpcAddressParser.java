@@ -19,7 +19,7 @@ package com.alipay.remoting.rpc;
 import java.lang.ref.SoftReference;
 import java.util.Properties;
 
-import com.alipay.remoting.Configs;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;

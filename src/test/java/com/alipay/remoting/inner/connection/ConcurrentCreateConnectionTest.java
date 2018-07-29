@@ -18,6 +18,7 @@ package com.alipay.remoting.inner.connection;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.alipay.remoting.config.configs.DefaultConfigContainer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -59,7 +60,8 @@ public class ConcurrentCreateConnectionTest {
     private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy();
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
-                                                                                     userProcessors);
+                                                                                     userProcessors,
+                                                                                     new DefaultConfigContainer());
     private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler();
     private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
 

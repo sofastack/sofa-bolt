@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.util.GlobalSwitch;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
 
