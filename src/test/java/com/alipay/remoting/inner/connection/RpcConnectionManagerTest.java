@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.config.configs.DefaultConfigContainer;
+import com.alipay.remoting.rpc.RpcClient;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -63,7 +64,7 @@ public class RpcConnectionManagerTest {
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
                                                                                      userProcessors,
-                                                                                     new DefaultConfigContainer());
+                                                                                     new RpcClient());
     private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler();
     private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
 

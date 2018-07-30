@@ -19,6 +19,8 @@ package com.alipay.remoting;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.alipay.remoting.config.AbstractConfigurableInstance;
+import com.alipay.remoting.config.configs.ConfigType;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -29,7 +31,8 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @author jiangping
  * @version $Id: AbstractRemotingServer.java, v 0.1 2015-9-5 PM7:37:48 tao Exp $
  */
-public abstract class AbstractRemotingServer implements RemotingServer {
+public abstract class AbstractRemotingServer extends AbstractConfigurableInstance implements
+                                                                                 RemotingServer {
 
     private static final Logger logger  = BoltLoggerFactory.getLogger("CommonDefault");
 
@@ -43,6 +46,7 @@ public abstract class AbstractRemotingServer implements RemotingServer {
     }
 
     public AbstractRemotingServer(String ip, int port) {
+        super(ConfigType.SERVER_SIDE);
         this.ip = ip;
         this.port = port;
     }

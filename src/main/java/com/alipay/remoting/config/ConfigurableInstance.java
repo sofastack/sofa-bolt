@@ -14,24 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
+package com.alipay.remoting.config;
 
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.ConfigurableInstance;
-
-import io.netty.channel.ChannelHandler;
+import com.alipay.remoting.config.configs.ConfigContainer;
+import com.alipay.remoting.config.configs.NettyConfigure;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 
 /**
- * Default connection factory.
+ * define an interface which can be used to implement configurable apis.
  *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * @author tsui
+ * @version $Id: ConfigurableInstance.java, v 0.1 2018-07-30 21:09 tsui Exp $$
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+public interface ConfigurableInstance extends NettyConfigure {
 
-    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                    ConfigurableInstance configInstance) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler, configInstance);
-    }
+    /**
+     * get the config container for current instance
+     *
+     * @return the config container
+     */
+    ConfigContainer conf();
+
+    /**
+     * get the global switch for current instance
+     * @return the global switch
+     */
+    GlobalSwitch switches();
 }

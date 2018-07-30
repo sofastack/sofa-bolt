@@ -69,7 +69,7 @@ public class WaterMark_UserProperty_ExceptionTest {
     @Before
     public void init() {
         server = new BoltServer(port, true);
-        server.getRpcServer().initServerWriterBufferWaterMark(1, 2);
+        server.getRpcServer().initWriteBufferWaterMark(1, 2);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);
@@ -79,7 +79,7 @@ public class WaterMark_UserProperty_ExceptionTest {
         client.addConnectionEventProcessor(ConnectionEventType.CONNECT, clientConnectProcessor);
         client.addConnectionEventProcessor(ConnectionEventType.CLOSE, clientDisConnectProcessor);
         client.registerUserProcessor(clientUserProcessor);
-        client.initClientWriterBufferWaterMark(1, 2);
+        client.initWriteBufferWaterMark(1, 2);
         client.init();
     }
 

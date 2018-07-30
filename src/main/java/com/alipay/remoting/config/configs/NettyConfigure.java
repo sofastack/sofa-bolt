@@ -14,24 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
-
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.ConfigurableInstance;
-
-import io.netty.channel.ChannelHandler;
+package com.alipay.remoting.config.configs;
 
 /**
- * Default connection factory.
+ * netty related configuration items
  *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * @author tsui
+ * @version $Id: NettyConfigure.java, v 0.1 2018-07-30 21:42 tsui Exp $$ 
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+public interface NettyConfigure {
+    /**
+     * Initialize netty write buffer water mark for remoting instance.
+     * <p>
+     * Notice: This api should be called before init remoting instance.
+     *
+     * @param low [0, high]
+     * @param high [high, Integer.MAX_VALUE)
+     */
+    void initWriteBufferWaterMark(int low, int high);
 
-    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                    ConfigurableInstance configInstance) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler, configInstance);
-    }
+    /**
+     * get the low water mark for netty write buffer
+     * @return low watermark
+     */
+    int netty_buffer_low_watermark();
+
+    /**
+     * get the high water mark for netty write buffer
+     * @return high watermark
+     */
+    int netty_buffer_high_watermark();
 }

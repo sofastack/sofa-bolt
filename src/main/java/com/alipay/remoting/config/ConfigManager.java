@@ -17,7 +17,6 @@
 package com.alipay.remoting.config;
 
 import com.alipay.remoting.config.configs.ConfigContainer;
-import com.alipay.remoting.config.configs.ConfigItem;
 import com.alipay.remoting.config.configs.ConfigType;
 
 /**
@@ -58,32 +57,12 @@ public class ConfigManager {
         return getBool(Configs.NETTY_BUFFER_POOLED, Configs.NETTY_BUFFER_POOLED_DEFAULT);
     }
 
-    public static int netty_buffer_low_watermark(ConfigContainer configContainer,
-                                                 ConfigType configType) {
-        if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK)) {
-            return (Integer) configContainer
-                .get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
-        } else {
-            return netty_buffer_low_watermark();
-        }
-    }
-
-    private static int netty_buffer_low_watermark() {
+    public static int netty_buffer_low_watermark() {
         return getInt(Configs.NETTY_BUFFER_LOW_WATERMARK,
             Configs.NETTY_BUFFER_LOW_WATERMARK_DEFAULT);
     }
 
-    public static int netty_buffer_high_watermark(ConfigContainer configContainer,
-                                                  ConfigType configType) {
-        if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK)) {
-            return (Integer) configContainer.get(configType,
-                ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
-        } else {
-            return netty_buffer_high_watermark();
-        }
-    }
-
-    private static int netty_buffer_high_watermark() {
+    public static int netty_buffer_high_watermark() {
         return getInt(Configs.NETTY_BUFFER_HIGH_WATERMARK,
             Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT);
     }

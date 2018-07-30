@@ -19,7 +19,6 @@ package com.alipay.remoting.connection;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.config.configs.ConfigType;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -30,7 +29,7 @@ import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.configs.ConfigContainer;
+import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
@@ -57,20 +56,20 @@ import io.netty.handler.timeout.IdleStateHandler;
  */
 public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
-    private static final Logger   logger = BoltLoggerFactory
-                                             .getLogger(AbstractConnectionFactory.class);
+    private static final Logger        logger = BoltLoggerFactory
+                                                  .getLogger(AbstractConnectionFactory.class);
 
-    private final ConfigContainer configContainer;
-    private final Codec           codec;
-    private final ChannelHandler  heartbeatHandler;
-    private final ChannelHandler  handler;
+    private final ConfigurableInstance confInstance;
+    private final Codec                codec;
+    private final ChannelHandler       heartbeatHandler;
+    private final ChannelHandler       handler;
 
-    protected EventLoopGroup      workerGroup;
-    protected Bootstrap           bootstrap;
+    protected EventLoopGroup           workerGroup;
+    protected Bootstrap                bootstrap;
 
     public AbstractConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
                                      ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                     ConfigContainer configContainer) {
+                                     ConfigurableInstance confInstance) {
         if (threads <= 0) {
             throw new IllegalArgumentException("threads must be positive, given: " + threads);
         }
@@ -84,7 +83,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             throw new IllegalArgumentException("null handler");
         }
 
-        this.configContainer = configContainer;
+        this.confInstance = confInstance;
         this.codec = codec;
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
@@ -166,10 +165,8 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
-        int lowWaterMark = ConfigManager.netty_buffer_low_watermark(configContainer,
-            ConfigType.CLIENT_SIDE);
-        int highWaterMark = ConfigManager.netty_buffer_high_watermark(configContainer,
-            ConfigType.CLIENT_SIDE);
+        int lowWaterMark = this.confInstance.netty_buffer_low_watermark();
+        int highWaterMark = this.confInstance.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
                 String
