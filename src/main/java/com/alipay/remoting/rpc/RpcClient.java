@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.config.AbstractConfigurableInstance;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -40,6 +39,7 @@ import com.alipay.remoting.ReconnectManager;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.ScheduledDisconnectStrategy;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.config.AbstractConfigurableInstance;
 import com.alipay.remoting.config.configs.ConfigType;
 import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.connection.ConnectionFactory;

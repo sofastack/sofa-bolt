@@ -21,9 +21,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.config.ConfigManager;
 import org.slf4j.Logger;
 
+import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.RunStateRecordedFutureTask;
 

@@ -19,10 +19,11 @@ package com.alipay.remoting.config;
 import com.alipay.remoting.serialization.SerializerManager;
 
 /**
- * Configuration items.
+ * Define the key for a certain config item using system property,
+ *   and provide the default value for that config item.
  *
- * @author jiangping
- * @version $Id: ConfigKeys.java, v 0.1 2015-10-10 PM3:01:50 tao Exp $
+ * @author tsui
+ * @version $Id: Configs.java, v 0.1 2017-08-03 19:21 tsui Exp $
  */
 public class Configs {
     // ~~~ configs and default values for bootstrap

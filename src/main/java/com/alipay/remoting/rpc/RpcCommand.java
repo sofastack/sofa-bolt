@@ -21,12 +21,12 @@ import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.RemotingCommand;
 import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.protocol.RpcDeserializeLevel;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
-import com.alipay.remoting.config.switches.ProtocolSwitch;
 
 /**
  * Remoting command. <br>

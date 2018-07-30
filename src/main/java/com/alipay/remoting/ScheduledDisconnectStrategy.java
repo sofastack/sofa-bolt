@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.config.Configs;
-import com.alipay.remoting.config.ConfigManager;
 import org.slf4j.Logger;
 
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.FutureTaskUtil;
 import com.alipay.remoting.util.RemotingUtil;

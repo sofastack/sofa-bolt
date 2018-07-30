@@ -16,17 +16,8 @@
  */
 package com.alipay.remoting.config;
 
-import com.alipay.remoting.config.configs.ConfigContainer;
-import com.alipay.remoting.config.configs.ConfigType;
-
 /**
- * This is a mediator to get configs.
- *
- * We use config type to name these method, and if there is no args of that method,
- *   we just use the property setting by system properties;
- *   if there are args like {@link ConfigContainer} and {@link ConfigType} of that method,
- *   it will try to get configs from user settings in config container,
- *   if none config exist, then degrade to use system properties.
+ * get configs through system properties prior to default value
  *
  * @author tsui
  * @version $Id: ConfigManager.java, v 0.1 2017-08-03 19:21 tsui Exp $

@@ -19,10 +19,10 @@ package com.alipay.remoting;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.alipay.remoting.config.AbstractConfigurableInstance;
-import com.alipay.remoting.config.configs.ConfigType;
 import org.slf4j.Logger;
 
+import com.alipay.remoting.config.AbstractConfigurableInstance;
+import com.alipay.remoting.config.configs.ConfigType;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**

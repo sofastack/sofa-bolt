@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.config.configs.DefaultConfigContainer;
-import com.alipay.remoting.rpc.RpcClient;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,6 +39,7 @@ import com.alipay.remoting.Url;
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
+import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcConnectionEventHandler;
 import com.alipay.remoting.rpc.RpcConnectionFactory;
 import com.alipay.remoting.rpc.common.BoltServer;
