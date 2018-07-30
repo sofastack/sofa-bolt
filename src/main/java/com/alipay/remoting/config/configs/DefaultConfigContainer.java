@@ -19,6 +19,10 @@ package com.alipay.remoting.config.configs;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+
+import com.alipay.remoting.log.BoltLoggerFactory;
+
 /**
  * default implementation for config container
  *
@@ -26,6 +30,10 @@ import java.util.Map;
  * @version $Id: DefaultConfigContainer.java, v 0.1 2018-07-28 18:11 tsui Exp $$
  */
 public class DefaultConfigContainer implements ConfigContainer {
+    /** logger */
+    private static final Logger                      logger      = BoltLoggerFactory
+                                                                     .getLogger("CommonDefault");
+
     /**
      * use a hash map to store the user configs with different config types and config items.
      */
@@ -33,17 +41,14 @@ public class DefaultConfigContainer implements ConfigContainer {
 
     @Override
     public boolean contains(ConfigType configType, ConfigItem configItem) {
+        validate(configType, configItem);
         return null != userConfigs.get(configType) ? userConfigs.get(configType).containsKey(
             configItem) : false;
     }
 
     @Override
     public <T> T get(ConfigType configType, ConfigItem configItem) {
-        if (null == configType || null == configItem) {
-            throw new IllegalArgumentException(String.format(
-                "ConfigType %s, ConfigItem %s, value %s should not be null!", configType,
-                configItem));
-        }
+        validate(configType, configItem);
         if (userConfigs.containsKey(configType)) {
             return (T) userConfigs.get(configType).get(configItem);
         }
@@ -52,16 +57,31 @@ public class DefaultConfigContainer implements ConfigContainer {
 
     @Override
     public void set(ConfigType configType, ConfigItem configItem, Object value) {
-        if (null == configType || null == configItem || null == value) {
-            throw new IllegalArgumentException(String.format(
-                "ConfigType %s, ConfigItem %s, value %s should not be null!", configType,
-                configItem, value.toString()));
-        }
+        validate(configType, configItem, value);
         Map<ConfigItem, Object> items = userConfigs.get(configType);
         if (null == items) {
             items = new HashMap<ConfigItem, Object>();
             userConfigs.put(configType, items);
         }
-        items.put(configItem, value);
+        Object prev = items.put(configItem, value);
+        if (null != prev) {
+            logger.warn("the value of ConfigType {}, ConfigItem {} changed from {} to {}",
+                configType, configItem, prev.toString(), value.toString());
+        }
+    }
+
+    private void validate(ConfigType configType, ConfigItem configItem) {
+        if (null == configType || null == configItem) {
+            throw new IllegalArgumentException(String.format(
+                "ConfigType {%s}, ConfigItem {%s} should not be null!", configType, configItem));
+        }
+    }
+
+    private void validate(ConfigType configType, ConfigItem configItem, Object value) {
+        if (null == configType || null == configItem || null == value) {
+            throw new IllegalArgumentException(String.format(
+                "ConfigType {%s}, ConfigItem {%s}, value {%s} should not be null!", configType,
+                configItem, value == null ? null : value.toString()));
+        }
     }
 }

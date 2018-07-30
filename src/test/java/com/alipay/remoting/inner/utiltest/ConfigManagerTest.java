@@ -55,16 +55,30 @@ public class ConfigManagerTest {
 
     @Test
     public void testUserSettings() {
+
+        int low_default = Integer.parseInt(Configs.NETTY_BUFFER_LOW_WATERMARK_DEFAULT);
+        int high_default = Integer.parseInt(Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT);
+
         ConfigContainer configContainer = new DefaultConfigContainer();
+
+        Assert.assertEquals(low_default,
+            ConfigManager.netty_buffer_low_watermark(configContainer, ConfigType.CLIENT_SIDE));
+        Assert.assertEquals(high_default,
+            ConfigManager.netty_buffer_high_watermark(configContainer, ConfigType.CLIENT_SIDE));
+        Assert.assertEquals(low_default,
+            ConfigManager.netty_buffer_low_watermark(configContainer, ConfigType.SERVER_SIDE));
+        Assert.assertEquals(high_default,
+            ConfigManager.netty_buffer_high_watermark(configContainer, ConfigType.SERVER_SIDE));
+
         configContainer.set(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK, 10);
         configContainer.set(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK, 20);
         Assert.assertEquals(10,
             ConfigManager.netty_buffer_low_watermark(configContainer, ConfigType.CLIENT_SIDE));
         Assert.assertEquals(20,
             ConfigManager.netty_buffer_high_watermark(configContainer, ConfigType.CLIENT_SIDE));
-        Assert.assertEquals(Integer.parseInt(Configs.NETTY_BUFFER_LOW_WATERMARK_DEFAULT),
+        Assert.assertEquals(low_default,
             ConfigManager.netty_buffer_low_watermark(configContainer, ConfigType.SERVER_SIDE));
-        Assert.assertEquals(Integer.parseInt(Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT),
+        Assert.assertEquals(high_default,
             ConfigManager.netty_buffer_high_watermark(configContainer, ConfigType.SERVER_SIDE));
 
         configContainer.set(ConfigType.SERVER_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK, 10);

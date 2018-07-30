@@ -19,6 +19,9 @@ package com.alipay.remoting.config.configs;
 /**
  * the interface of a config container
  *
+ * Mainly used to manage config by user api, this is instance related, not globally.
+ * That is to say, different remoting instance client or server hold different ConfigContainer.
+ *
  * @author tsui
  * @version $Id: ConfigContainer.java, v 0.1 2018-07-28 18:31 tsui Exp $$
  */
@@ -36,12 +39,14 @@ public interface ConfigContainer {
      * @param configType config types in the config container, different config type can hold the same config item key
      * @param configItem config items in the config container
      * @param <T> the generics of return value
-     * @return the right value and cast to type T
+     * @return the right value and cast to type T, if no mappings, then return null
      */
     <T> T get(ConfigType configType, ConfigItem configItem);
 
     /**
-     * init a config item with certian config type, and the value can be any type
+     * init a config item with certain config type, and the value can be any type.
+     * Notice: the value can be overwrite if you set more than once.
+     *
      * @param configType config types in the config container, different config type can hold the same config item key
      * @param configItem config items in the config container
      */

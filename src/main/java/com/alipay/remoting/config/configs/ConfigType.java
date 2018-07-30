@@ -23,7 +23,6 @@ package com.alipay.remoting.config.configs;
  * @version $Id: ConfigType.java, v 0.1 2018-07-28 17:41 tsui Exp $$ 
  */
 public enum ConfigType {
-    GLOBAL, // configs of this type can be used in both client side and server side
     CLIENT_SIDE, // configs of this type can only be used in client side
     SERVER_SIDE // configs of this type can only be used in server side
 }
