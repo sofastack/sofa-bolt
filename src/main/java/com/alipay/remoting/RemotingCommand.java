@@ -18,9 +18,9 @@ package com.alipay.remoting;
 
 import java.io.Serializable;
 
+import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
-import com.alipay.remoting.util.ProtocolSwitch;
 
 /**
  * Remoting command.

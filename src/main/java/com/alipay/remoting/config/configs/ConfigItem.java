@@ -14,24 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
-
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.ConfigurableInstance;
-
-import io.netty.channel.ChannelHandler;
+package com.alipay.remoting.config.configs;
 
 /**
- * Default connection factory.
+ * Items of config.
  *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * Mainly used to define some config items managed by {@link ConfigContainer}.
+ * You can define new config items based on this if need.
+ *
+ * @author tsui
+ * @version $Id: ConfigItem.java, v 0.1 2018-07-28 17:43 tsui Exp $$ 
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
-
-    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                    ConfigurableInstance configInstance) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler, configInstance);
-    }
+public enum ConfigItem {
+    // ~~~ netty related
+    NETTY_BUFFER_LOW_WATER_MARK, // netty writer buffer low water mark
+    NETTY_BUFFER_HIGH_WATER_MARK // netty writer buffer high water mark
 }

@@ -19,6 +19,7 @@ package com.alipay.remoting.rpc;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.NamedThreadFactory;
+import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.connection.DefaultConnectionFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
@@ -30,9 +31,10 @@ import com.alipay.remoting.rpc.protocol.UserProcessor;
  */
 public class RpcConnectionFactory extends DefaultConnectionFactory implements ConnectionFactory {
 
-    public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
+    public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors,
+                                ConfigurableInstance configInstance) {
         super(Runtime.getRuntime().availableProcessors() + 1, new NamedThreadFactory(
             "Rpc-netty-client-worker", true), new RpcCodec(), new HeartbeatHandler(),
-            new RpcHandler(userProcessors));
+            new RpcHandler(userProcessors), configInstance);
     }
 }

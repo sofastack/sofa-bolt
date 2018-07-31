@@ -16,6 +16,9 @@
  */
 package com.alipay.remoting.rpc.watermark;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,14 +40,14 @@ import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
 import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
 
 /**
- * water mark normal test, set a large enough buffer mark, and not trigger write over flow.
+ * water mark exception test, set a small buffer mark by system property, and trigger write over flow.
  * 
  * @author xiaomin.cxm
- * @version $Id: WaterMarkTest.java, v 0.1 Apr 6, 2016 8:58:36 PM xiaomin.cxm Exp $
+ * @version $Id: WaterMark_SystemProperty_ExceptionTest.java, v 0.1 Apr 6, 2016 8:58:36 PM xiaomin.cxm Exp $
  */
-public class WaterMarkTest {
+public class WaterMark_SystemProperty_ExceptionTest {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(WaterMarkTest.class);
+                                                            .getLogger(WaterMark_SystemProperty_ExceptionTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -53,11 +56,12 @@ public class WaterMarkTest {
     String                    ip                        = "127.0.0.1";
     String                    addr                      = "127.0.0.1:" + port;
 
-    int                       invokeTimes               = 5;
+    int                       invokeTimes               = 10;
 
     SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(0, 20, 20,
                                                             60, 100);
-    SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();
+    SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor(0, 20, 20,
+                                                            60, 100);
     CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
     DISCONNECTEventProcessor  clientDisConnectProcessor = new DISCONNECTEventProcessor();
@@ -65,8 +69,8 @@ public class WaterMarkTest {
 
     @Before
     public void init() {
-        System.setProperty(Configs.NETTY_BUFFER_HIGH_WATERMARK, Integer.toString(128 * 1024));
-        System.setProperty(Configs.NETTY_BUFFER_LOW_WATERMARK, Integer.toString(32 * 1024));
+        System.setProperty(Configs.NETTY_BUFFER_HIGH_WATERMARK, Integer.toString(2));
+        System.setProperty(Configs.NETTY_BUFFER_LOW_WATERMARK, Integer.toString(1));
 
         server = new BoltServer(port, true);
         server.start();
@@ -94,6 +98,7 @@ public class WaterMarkTest {
     @Test
     public void testSync() throws InterruptedException {
         final RequestBody req = new RequestBody(1, 1024);
+        final List<Boolean> overFlow = new ArrayList<Boolean>();
         for (int i = 0; i < invokeTimes; i++) {
             new Thread() {
                 @Override
@@ -104,9 +109,10 @@ public class WaterMarkTest {
                             res = (String) client.invokeSync(addr, req, 3000);
                         }
                     } catch (RemotingException e) {
-                        String errMsg = "RemotingException caught in sync!";
-                        logger.error(errMsg, e);
-                        Assert.fail(errMsg);
+                        if (e.getMessage().contains("overflow")) {
+                            logger.error("overflow exception!");
+                            overFlow.add(true);
+                        }
                     } catch (InterruptedException e) {
                         String errMsg = "InterruptedException caught in sync!";
                         logger.error(errMsg, e);
@@ -118,11 +124,15 @@ public class WaterMarkTest {
             }.start();
         }
 
-        Thread.sleep(5000);
+        Thread.sleep(3000);
 
-        Assert.assertTrue(serverConnectProcessor.isConnected());
-        Assert.assertEquals(1, serverConnectProcessor.getConnectTimes());
-        Assert.assertEquals(invokeTimes * invokeTimes, serverUserProcessor.getInvokeTimes());
+        if (overFlow.size() > 0 && overFlow.get(0)) {
+            Assert.assertTrue(serverConnectProcessor.isConnected());
+            Assert.assertEquals(1, serverConnectProcessor.getConnectTimes());
+            Assert.assertTrue(invokeTimes * invokeTimes > serverUserProcessor.getInvokeTimes());
+        } else {
+            Assert.fail("Should not reach here");
+        }
     }
 
     @Test
@@ -132,29 +142,43 @@ public class WaterMarkTest {
         RequestBody req1 = new RequestBody(1, RequestBody.DEFAULT_CLIENT_STR);
         String serverres = (String) client.invokeSync(clientConn, req1, 1000);
         Assert.assertEquals(serverres, RequestBody.DEFAULT_SERVER_RETURN_STR);
+
+        final String remoteAddr = serverUserProcessor.getRemoteAddr();
+        Assert.assertNotNull(remoteAddr);
+        final List<Boolean> overFlow = new ArrayList<Boolean>();
+        final RequestBody req = new RequestBody(1, 1024);
         for (int i = 0; i < invokeTimes; i++) {
             new Thread() {
                 public void run() {
                     try {
-                        String remoteAddr = serverUserProcessor.getRemoteAddr();
-                        Assert.assertNotNull(remoteAddr);
-                        RequestBody req = new RequestBody(1, 1024);
                         for (int i = 0; i < invokeTimes; i++) {
                             String clientres = (String) server.getRpcServer().invokeSync(
                                 remoteAddr, req, 1000);
                             Assert.assertEquals(clientres, RequestBody.DEFAULT_CLIENT_RETURN_STR);
                         }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
                     } catch (RemotingException e) {
-                        e.printStackTrace();
+                        if (e.getMessage().contains("overflow")) {
+                            logger.error("overflow exception!");
+                            overFlow.add(true);
+                        }
+                    } catch (InterruptedException e) {
+                        String errMsg = "InterruptedException caught in sync!";
+                        logger.error(errMsg, e);
+                        Assert.fail(errMsg);
                     }
+
                 }
             }.start();
         }
-        Thread.sleep(5000);
-        Assert.assertTrue(serverConnectProcessor.isConnected());
-        Assert.assertEquals(1, serverConnectProcessor.getConnectTimes());
-        Assert.assertEquals(invokeTimes * invokeTimes, clientUserProcessor.getInvokeTimes());
+
+        Thread.sleep(3000);
+
+        if (overFlow.size() > 0 && overFlow.get(0)) {
+            Assert.assertTrue(serverConnectProcessor.isConnected());
+            Assert.assertEquals(1, serverConnectProcessor.getConnectTimes());
+            Assert.assertTrue(invokeTimes * invokeTimes > clientUserProcessor.getInvokeTimes());
+        } else {
+            Assert.fail("Should not reach here");
+        }
     }
 }

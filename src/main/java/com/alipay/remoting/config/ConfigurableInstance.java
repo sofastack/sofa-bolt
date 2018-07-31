@@ -14,27 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.util;
+package com.alipay.remoting.config;
+
+import com.alipay.remoting.config.configs.ConfigContainer;
+import com.alipay.remoting.config.configs.NettyConfigure;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 
 /**
- * switch interface
+ * define an interface which can be used to implement configurable apis.
  *
  * @author tsui
- * @version $Id: Switch.java, v 0.1 2018-04-08 11:26 tsui Exp $
+ * @version $Id: ConfigurableInstance.java, v 0.1 2018-07-30 21:09 tsui Exp $$
  */
-public interface Switch {
-    /**
-     * api for user to turn on a feature
-     *
-     * @param index the switch index of feature
-     */
-    void turnOn(int index);
+public interface ConfigurableInstance extends NettyConfigure {
 
     /**
-     * check switch whether on
+     * get the config container for current instance
      *
-     * @param index
-     * @return true if either system setting is on or user setting is on
+     * @return the config container
      */
-    boolean isOn(int index);
+    ConfigContainer conf();
+
+    /**
+     * get the global switch for current instance
+     * @return the global switch
+     */
+    GlobalSwitch switches();
 }

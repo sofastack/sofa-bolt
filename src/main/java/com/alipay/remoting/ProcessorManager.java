@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 
+import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**
@@ -44,16 +45,16 @@ public class ProcessorManager {
     /** The default executor, if no executor is set for processor, this one will be used */
     private ExecutorService                                      defaultExecutor;
 
-    private int                                                  minPoolSize    = SystemProperties
+    private int                                                  minPoolSize    = ConfigManager
                                                                                     .default_tp_min_size();
 
-    private int                                                  maxPoolSize    = SystemProperties
+    private int                                                  maxPoolSize    = ConfigManager
                                                                                     .default_tp_max_size();
 
-    private int                                                  queueSize      = SystemProperties
+    private int                                                  queueSize      = ConfigManager
                                                                                     .default_tp_queue_size();
 
-    private long                                                 keepAliveTime  = SystemProperties
+    private long                                                 keepAliveTime  = ConfigManager
                                                                                     .default_tp_keepalive_time();
 
     public ProcessorManager() {

@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 
 /**

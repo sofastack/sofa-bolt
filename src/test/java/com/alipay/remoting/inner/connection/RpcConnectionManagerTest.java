@@ -39,6 +39,7 @@ import com.alipay.remoting.Url;
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
+import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcConnectionEventHandler;
 import com.alipay.remoting.rpc.RpcConnectionFactory;
 import com.alipay.remoting.rpc.common.BoltServer;
@@ -61,7 +62,8 @@ public class RpcConnectionManagerTest {
     private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy();
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
-                                                                                     userProcessors);
+                                                                                     userProcessors,
+                                                                                     new RpcClient());
     private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler();
     private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
 

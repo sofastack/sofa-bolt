@@ -28,13 +28,13 @@ import com.alipay.remoting.InvokeFuture;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.RemotingCommand;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcRequestCommand;
-import com.alipay.remoting.util.ProtocolSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 
 /**

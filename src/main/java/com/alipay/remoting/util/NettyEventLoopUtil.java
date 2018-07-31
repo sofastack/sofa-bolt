@@ -18,7 +18,7 @@ package com.alipay.remoting.util;
 
 import java.util.concurrent.ThreadFactory;
 
-import com.alipay.remoting.SystemProperties;
+import com.alipay.remoting.config.ConfigManager;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
@@ -43,7 +43,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 public class NettyEventLoopUtil {
 
     /** check whether epoll enabled, and it would not be changed during runtime. */
-    private static boolean epollEnabled = SystemProperties.netty_epoll() && Epoll.isAvailable();
+    private static boolean epollEnabled = ConfigManager.netty_epoll() && Epoll.isAvailable();
 
     /**
      * Create the right event loop according to current platform and system property, fallback to NIO when epoll not enabled.
@@ -78,7 +78,7 @@ public class NettyEventLoopUtil {
      */
     public static void enableTriggeredMode(ServerBootstrap serverBootstrap) {
         if (epollEnabled) {
-            if (SystemProperties.netty_epoll_lt_enabled()) {
+            if (ConfigManager.netty_epoll_lt_enabled()) {
                 serverBootstrap.childOption(EpollChannelOption.EPOLL_MODE,
                     EpollMode.LEVEL_TRIGGERED);
             } else {

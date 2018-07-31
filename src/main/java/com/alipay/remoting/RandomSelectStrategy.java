@@ -22,8 +22,9 @@ import java.util.Random;
 
 import org.slf4j.Logger;
 
+import com.alipay.remoting.config.Configs;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.StringUtils;
 
 /**

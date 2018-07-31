@@ -14,24 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
-
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.ConfigurableInstance;
-
-import io.netty.channel.ChannelHandler;
+package com.alipay.remoting.config.configs;
 
 /**
- * Default connection factory.
+ * type of config
  *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * @author tsui
+ * @version $Id: ConfigType.java, v 0.1 2018-07-28 17:41 tsui Exp $$ 
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
-
-    public DefaultConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                    ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                    ConfigurableInstance configInstance) {
-        super(threads, threadFactory, codec, heartbeatHandler, handler, configInstance);
-    }
+public enum ConfigType {
+    CLIENT_SIDE, // configs of this type can only be used in client side
+    SERVER_SIDE // configs of this type can only be used in server side
 }
