@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<ruleset name="PMD-Rules">
+    <description>
+        customize rule set priority
+    </description>
+    <rule ref="rulesets/java/empty.xml/EmptyCatchBlock">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/empty.xml/EmptyIfStmt">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/basic.xml/OverrideBothEqualsAndHashcode">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/clone.xml/CloneMethodMustImplementCloneable">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/imports.xml/DuplicateImports">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/imports.xml/UnusedImports">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/strings.xml/StringToString">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/unusedcode.xml/UnusedPrivateField">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/unusedcode.xml/UnusedPrivateMethod">
+        <priority>1</priority>
+    </rule>
+    <rule ref="rulesets/java/unusedcode.xml/UnusedFormalParameter">
+        <priority>1</priority>
+    </rule>
+</ruleset>

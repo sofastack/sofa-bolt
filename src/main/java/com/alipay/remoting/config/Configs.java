@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.config;
 
 import com.alipay.remoting.serialization.SerializerManager;
 
 /**
- * Configuration items.
+ * Define the key for a certain config item using system property,
+ *   and provide the default value for that config item.
  *
- * @author jiangping
- * @version $Id: ConfigKeys.java, v 0.1 2015-10-10 PM3:01:50 tao Exp $
+ * @author tsui
+ * @version $Id: Configs.java, v 0.1 2017-08-03 19:21 tsui Exp $
  */
 public class Configs {
     // ~~~ configs and default values for bootstrap
@@ -47,9 +48,9 @@ public class Configs {
     public static final String NETTY_IO_RATIO                        = "bolt.netty.io.ratio";
     public static final String NETTY_IO_RATIO_DEFAULT                = "70";
 
-    /** Netty buffer allocator */
+    /** Netty buffer allocator, enabled as default */
     public static final String NETTY_BUFFER_POOLED                   = "bolt.netty.buffer.pooled";
-    public static final String NETTY_BUFFER_POOLED_DEFAULT           = "false";
+    public static final String NETTY_BUFFER_POOLED_DEFAULT           = "true";
 
     /** Netty buffer high watermark */
     public static final String NETTY_BUFFER_HIGH_WATERMARK           = "bolt.netty.buffer.high.watermark";
@@ -58,6 +59,14 @@ public class Configs {
     /** Netty buffer low watermark */
     public static final String NETTY_BUFFER_LOW_WATERMARK            = "bolt.netty.buffer.low.watermark";
     public static final String NETTY_BUFFER_LOW_WATERMARK_DEFAULT    = Integer.toString(32 * 1024);
+
+    /** Netty epoll switch */
+    public static final String NETTY_EPOLL_SWITCH                    = "bolt.netty.epoll.switch";
+    public static final String NETTY_EPOLL_SWITCH_DEFAULT            = "true";
+
+    /** Netty epoll level trigger enabled */
+    public static final String NETTY_EPOLL_LT                        = "bolt.netty.epoll.lt";
+    public static final String NETTY_EPOLL_LT_DEFAULT                = "true";
 
     // ~~~ configs and default values for idle
 

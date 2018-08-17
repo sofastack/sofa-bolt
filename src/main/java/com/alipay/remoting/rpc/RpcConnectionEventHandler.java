@@ -18,7 +18,7 @@ package com.alipay.remoting.rpc;
 
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.util.GlobalSwitch;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 
 import io.netty.channel.ChannelHandlerContext;
 

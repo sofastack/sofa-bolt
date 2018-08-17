@@ -18,7 +18,6 @@ package com.alipay.remoting.rpc.exception;
 
 import java.util.concurrent.Executor;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +40,7 @@ public class BadServerIpTest {
     public void cantAssignTest() {
         BadServer server = new BadServer("59.66.132.166");
         try {
-            boolean ret = server.startServer();
-            Assert.assertFalse(ret);
+            server.startServer();
         } catch (Exception e) {
             logger.error("Start server failed!", e);
         }
@@ -52,8 +50,7 @@ public class BadServerIpTest {
     public void cantResolveTest() {
         BadServer server = new BadServer("59.66.132.1666");
         try {
-            boolean ret = server.startServer();
-            Assert.assertFalse(ret);
+            server.startServer();
         } catch (Exception e) {
             logger.error("Start server failed!", e);
         }
@@ -69,8 +66,8 @@ public class BadServerIpTest {
             this.ip = ip;
         }
 
-        public boolean startServer() throws InterruptedException {
-            server = new RpcServer(1111);
+        public void startServer() {
+            server = new RpcServer(ip, 1111);
             server.registerUserProcessor(new SyncUserProcessor<RequestBody>() {
                 @Override
                 public Object handleRequest(BizContext bizCtx, RequestBody request)
@@ -90,12 +87,7 @@ public class BadServerIpTest {
                 }
 
             });
-            server.init();
-            return server.start(ip);
-        }
-
-        public void stopServer() {
-            server.stop();
+            server.start();
         }
     }
 

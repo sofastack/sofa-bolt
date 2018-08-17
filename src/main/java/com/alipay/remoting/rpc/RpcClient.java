@@ -18,6 +18,7 @@ package com.alipay.remoting.rpc;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 
@@ -26,7 +27,6 @@ import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventProcessor;
 import com.alipay.remoting.ConnectionEventType;
-import com.alipay.remoting.ConnectionFactory;
 import com.alipay.remoting.ConnectionMonitorStrategy;
 import com.alipay.remoting.ConnectionPool;
 import com.alipay.remoting.ConnectionSelectStrategy;
@@ -39,10 +39,14 @@ import com.alipay.remoting.ReconnectManager;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.ScheduledDisconnectStrategy;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.config.AbstractConfigurableInstance;
+import com.alipay.remoting.config.configs.ConfigType;
+import com.alipay.remoting.config.switches.GlobalSwitch;
+import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
-import com.alipay.remoting.util.GlobalSwitch;
+import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
 
 /**
  * Client for Rpc.
@@ -50,58 +54,59 @@ import com.alipay.remoting.util.GlobalSwitch;
  * @author jiangping
  * @version $Id: RpcClient.java, v 0.1 2015-9-23 PM4:03:28 tao Exp $
  */
-public class RpcClient {
+public class RpcClient extends AbstractConfigurableInstance {
 
     /** logger */
-    private static final Logger       logger                   = BoltLoggerFactory
-                                                                   .getLogger("RpcRemoting");
+    private static final Logger                         logger                   = BoltLoggerFactory
+                                                                                     .getLogger("RpcRemoting");
 
-    /** global switch */
-    private GlobalSwitch              globalSwitch             = new GlobalSwitch();
-
+    private ConcurrentHashMap<String, UserProcessor<?>> userProcessors           = new ConcurrentHashMap<String, UserProcessor<?>>();
     /** connection factory */
-    private ConnectionFactory         connctionFactory         = new RpcConnectionFactory();
+    private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
+                                                                                     userProcessors,
+                                                                                     this);
 
     /** connection event handler */
-    private ConnectionEventHandler    connectionEventHandler   = new RpcConnectionEventHandler(
-                                                                   globalSwitch);
+    private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler(
+                                                                                     switches());
 
     /** reconnect manager */
-    private ReconnectManager          reconnectManager;
+    private ReconnectManager                            reconnectManager;
 
     /** connection event listener */
-    private ConnectionEventListener   connectionEventListener  = new ConnectionEventListener();
+    private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
 
     /** address parser to get custom args */
-    private RemotingAddressParser     addressParser;
+    private RemotingAddressParser                       addressParser;
 
     /** connection select strategy */
-    private ConnectionSelectStrategy  connectionSelectStrategy = new RandomSelectStrategy(
-                                                                   globalSwitch);
+    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy(
+                                                                                     switches());
 
     /** connection manager */
-    private DefaultConnectionManager  connectionManager        = new DefaultConnectionManager(
-                                                                   connectionSelectStrategy,
-                                                                   connctionFactory,
-                                                                   connectionEventHandler,
-                                                                   connectionEventListener,
-                                                                   globalSwitch);
+    private DefaultConnectionManager                    connectionManager        = new DefaultConnectionManager(
+                                                                                     connectionSelectStrategy,
+                                                                                     connectionFactory,
+                                                                                     connectionEventHandler,
+                                                                                     connectionEventListener,
+                                                                                     switches());
 
     /** rpc remoting */
-    protected RpcRemoting             rpcRemoting;
+    protected RpcRemoting                               rpcRemoting;
 
     /** task scanner */
-    private RpcTaskScanner            taskScanner              = new RpcTaskScanner();
+    private RpcTaskScanner                              taskScanner              = new RpcTaskScanner();
 
     /** connection monitor */
-    private DefaultConnectionMonitor  connectionMonitor;
+    private DefaultConnectionMonitor                    connectionMonitor;
 
     /** connection monitor strategy */
-    private ConnectionMonitorStrategy monitorStrategy;
+    private ConnectionMonitorStrategy                   monitorStrategy;
 
-    /**
-     * Initialization.
-     */
+    public RpcClient() {
+        super(ConfigType.CLIENT_SIDE);
+    }
+
     public void init() {
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
@@ -113,7 +118,7 @@ public class RpcClient {
         this.taskScanner.add(this.connectionManager);
         this.taskScanner.start();
 
-        if (globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
+        if (switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
             if (monitorStrategy == null) {
                 ScheduledDisconnectStrategy strategy = new ScheduledDisconnectStrategy();
                 connectionMonitor = new DefaultConnectionMonitor(strategy, this.connectionManager);
@@ -124,7 +129,7 @@ public class RpcClient {
             connectionMonitor.start();
             logger.warn("Switch on connection monitor");
         }
-        if (globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
+        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
             reconnectManager = new ReconnectManager(connectionManager);
             connectionEventHandler.setReconnectManager(reconnectManager);
             logger.warn("Switch on reconnect manager");
@@ -664,13 +669,14 @@ public class RpcClient {
     }
 
     /**
-     * Register user processor for client side.
-     * 
+     * Use UserProcessorRegisterHelper{@link UserProcessorRegisterHelper} to help register user processor for client side.
+     *
      * @param processor
      * @throws RemotingException 
      */
+
     public void registerUserProcessor(UserProcessor<?> processor) {
-        this.connectionManager.getConnectionFactory().registerUserProcessor(processor);
+        UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
     }
 
     /**
@@ -875,7 +881,16 @@ public class RpcClient {
      * Notice: This api should be called before {@link RpcClient#init()}
      */
     public void enableReconnectSwitch() {
-        this.globalSwitch.turnOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
+        this.switches().turnOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
+    }
+
+    /**
+     * disable connection reconnect switch off
+     * <p>
+     * Notice: This api should be called before {@link RpcClient#init()}
+     */
+    public void disableReconnectSwith() {
+        this.switches().turnOff(GlobalSwitch.CONN_RECONNECT_SWITCH);
     }
 
     /**
@@ -883,14 +898,23 @@ public class RpcClient {
      * @return
      */
     public boolean isReconnectSwitchOn() {
-        return this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
+        return this.switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
     }
 
     /**
      * enable connection monitor switch on
      */
     public void enableConnectionMonitorSwitch() {
-        this.globalSwitch.turnOn(GlobalSwitch.CONN_MONITOR_SWITCH);
+        this.switches().turnOn(GlobalSwitch.CONN_MONITOR_SWITCH);
+    }
+
+    /**
+     * disable connection monitor switch off
+     * <p>
+     * Notice: This api should be called before {@link RpcClient#init()}
+     */
+    public void disableConnectionMonitorSwitch() {
+        this.switches().turnOff(GlobalSwitch.CONN_MONITOR_SWITCH);
     }
 
     /**
@@ -898,7 +922,7 @@ public class RpcClient {
      * @return
      */
     public boolean isConnectionMonitorSwitchOn() {
-        return this.globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH);
+        return this.switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH);
     }
 
     // ~~~ getter and setter

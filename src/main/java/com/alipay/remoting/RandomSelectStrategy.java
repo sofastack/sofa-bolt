@@ -20,9 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.alipay.remoting.util.GlobalSwitch;
 import org.slf4j.Logger;
 
+import com.alipay.remoting.config.Configs;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.StringUtils;
 
@@ -75,7 +76,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
                         serviceStatusOnConns.add(conn);
                     }
                 }
-                if (serviceStatusOnConns.size() < 0) {
+                if (serviceStatusOnConns.size() == 0) {
                     throw new Exception(
                         "No available connection when select in RandomSelectStrategy.");
                 }
@@ -97,12 +98,17 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
      * @return
      */
     private Connection randomGet(List<Connection> conns) {
-        Connection result = null;
+        if (null == conns || conns.isEmpty()) {
+            return null;
+        }
+
         int size = conns.size();
         int tries = 0;
+        Connection result = null;
         while ((result == null || !result.isFine()) && tries++ < MAX_TIMES) {
             result = conns.get(this.random.nextInt(size));
         }
+
         if (result != null && !result.isFine()) {
             result = null;
         }

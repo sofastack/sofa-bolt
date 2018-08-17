@@ -53,6 +53,7 @@ public class NamedThreadFactory implements ThreadFactory {
      *
      * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
      */
+    @Override
     public Thread newThread(Runnable r) {
         Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
         t.setDaemon(isDaemon);

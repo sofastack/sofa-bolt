@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.config;
 
 /**
- * get configs from system properties
+ * get configs through system properties prior to default value
  *
  * @author tsui
- * @version $Id: SystemProperties.java, v 0.1 2017-08-03 19:21 tsui Exp $
+ * @version $Id: ConfigManager.java, v 0.1 2017-08-03 19:21 tsui Exp $
  */
-public class SystemProperties {
+public class ConfigManager {
     // ~~~ properties for bootstrap
     public static boolean tcp_nodelay() {
         return getBool(Configs.TCP_NODELAY, Configs.TCP_NODELAY_DEFAULT);
@@ -56,6 +56,14 @@ public class SystemProperties {
     public static int netty_buffer_high_watermark() {
         return getInt(Configs.NETTY_BUFFER_HIGH_WATERMARK,
             Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT);
+    }
+
+    public static boolean netty_epoll() {
+        return getBool(Configs.NETTY_EPOLL_SWITCH, Configs.NETTY_EPOLL_SWITCH_DEFAULT);
+    }
+
+    public static boolean netty_epoll_lt_enabled() {
+        return getBool(Configs.NETTY_EPOLL_LT, Configs.NETTY_EPOLL_LT_DEFAULT);
     }
 
     // ~~~ properties for idle

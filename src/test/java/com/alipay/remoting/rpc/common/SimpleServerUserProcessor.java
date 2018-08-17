@@ -99,6 +99,7 @@ public class SimpleServerUserProcessor extends SyncUserProcessor<RequestBody> {
 
         if (bizCtx.isRequestTimeout()) {
             String errMsg = "Stop process in server biz thread, already timeout!";
+            processTimes(request);
             logger.warn(errMsg);
             throw new Exception(errMsg);
         }

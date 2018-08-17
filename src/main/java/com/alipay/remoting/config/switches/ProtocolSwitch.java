@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.util;
+package com.alipay.remoting.config.switches;
 
 import java.util.BitSet;
 
 /**
- * Switches used in protocol
+ * Switches used in protocol, this is runtime switch.
  *
  * @author tsui
  * @version $Id: RpcProtocolSwitch.java, v 0.1 2017-09-31 15:50 tsui Exp $
@@ -38,13 +38,18 @@ public class ProtocolSwitch implements Switch {
     // ~~~ public methods
 
     @Override
-    public void turnOn(int switchIndex) {
-        this.bs.set(switchIndex);
+    public void turnOn(int index) {
+        this.bs.set(index);
     }
 
     @Override
-    public boolean isOn(int switchIndex) {
-        return this.bs.get(switchIndex);
+    public void turnOff(int index) {
+        this.bs.clear(index);
+    }
+
+    @Override
+    public boolean isOn(int index) {
+        return this.bs.get(index);
     }
 
     /**
