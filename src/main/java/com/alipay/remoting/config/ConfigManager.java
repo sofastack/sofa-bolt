@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
-
-import io.netty.channel.epoll.EpollMode;
+package com.alipay.remoting.config;
 
 /**
- * get configs from system properties
+ * get configs through system properties prior to default value
  *
  * @author tsui
- * @version $Id: SystemProperties.java, v 0.1 2017-08-03 19:21 tsui Exp $
+ * @version $Id: ConfigManager.java, v 0.1 2017-08-03 19:21 tsui Exp $
  */
-public class SystemProperties {
+public class ConfigManager {
     // ~~~ properties for bootstrap
     public static boolean tcp_nodelay() {
         return getBool(Configs.TCP_NODELAY, Configs.TCP_NODELAY_DEFAULT);

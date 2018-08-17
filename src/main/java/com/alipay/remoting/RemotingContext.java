@@ -230,7 +230,7 @@ public class RemotingContext {
     }
 
     public RemotingContext setTimeoutDiscard(boolean failFastEnabled) {
-        this.timeoutDiscard = timeoutDiscard;
+        this.timeoutDiscard = failFastEnabled;
         return this;
     }
 }

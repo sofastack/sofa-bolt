@@ -21,7 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.alipay.remoting.Configs;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.common.BoltServer;

@@ -180,7 +180,9 @@ public class ServerTimeoutSwitchTest {
         } catch (InterruptedException e) {
             logger.error("", e);
         }
-        Assert.assertEquals(1,
+        System.out.println(serverUserProcessor
+            .getInvokeTimesEachCallType(RequestBody.InvokeType.SYNC));
+        Assert.assertEquals(2,
             serverUserProcessor.getInvokeTimesEachCallType(RequestBody.InvokeType.SYNC));
     }
 
@@ -204,7 +206,7 @@ public class ServerTimeoutSwitchTest {
         } catch (InterruptedException e) {
             logger.error("", e);
         }
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
             clientUserProcessor.getInvokeTimesEachCallType(RequestBody.InvokeType.SYNC));
     }
 
@@ -228,7 +230,7 @@ public class ServerTimeoutSwitchTest {
         } catch (InterruptedException e) {
             logger.error("", e);
         }
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
             serverUserProcessor.getInvokeTimesEachCallType(RequestBody.InvokeType.FUTURE));
     }
 
@@ -252,7 +254,7 @@ public class ServerTimeoutSwitchTest {
         } catch (InterruptedException e) {
             logger.error("", e);
         }
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
             clientUserProcessor.getInvokeTimesEachCallType(RequestBody.InvokeType.FUTURE));
     }
 
@@ -276,7 +278,7 @@ public class ServerTimeoutSwitchTest {
         } catch (InterruptedException e) {
             logger.error("", e);
         }
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
             serverUserProcessor.getInvokeTimesEachCallType(RequestBody.InvokeType.CALLBACK));
     }
 
@@ -300,7 +302,7 @@ public class ServerTimeoutSwitchTest {
         } catch (InterruptedException e) {
             logger.error("", e);
         }
-        Assert.assertEquals(1,
+        Assert.assertEquals(2,
             clientUserProcessor.getInvokeTimesEachCallType(RequestBody.InvokeType.CALLBACK));
     }
 
