@@ -16,8 +16,6 @@
  */
 package com.alipay.remoting.rpc;
 
-import org.slf4j.Logger;
-
 import com.alipay.remoting.BaseRemoting;
 import com.alipay.remoting.CommandFactory;
 import com.alipay.remoting.Connection;
@@ -36,6 +34,7 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcRequestCommand;
 import com.alipay.remoting.util.ProtocolSwitch;
 import com.alipay.remoting.util.RemotingUtil;
+import org.slf4j.Logger;
 
 /**
  * Rpc remoting capability.
@@ -334,6 +333,12 @@ public abstract class RpcRemoting extends BaseRemoting {
                                 + "], the type of value should be [byte], but now is ["
                                 + clientCustomSerializer.getClass().getName() + "].");
                 }
+            }
+
+            // If user set request id from custom id generator
+            Integer id = invokeContext.get(InvokeContext.BOLT_INVOKE_REQUEST_ID);
+            if (id != null) {
+                command.setId(id);
             }
 
             // enable crc by default, user can disable by set invoke context `false` for key `InvokeContext.BOLT_CRC_SWITCH`
