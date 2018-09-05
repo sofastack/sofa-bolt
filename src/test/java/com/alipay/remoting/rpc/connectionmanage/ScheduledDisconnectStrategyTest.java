@@ -67,10 +67,13 @@ public class ScheduledDisconnectStrategyTest {
 
     @Before
     public void init() {
+
     }
 
     @After
     public void stop() {
+        client.shutdown();
+        server.stop();
     }
 
     @Test
