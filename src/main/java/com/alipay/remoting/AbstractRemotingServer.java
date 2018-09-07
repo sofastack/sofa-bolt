@@ -37,7 +37,6 @@ public abstract class AbstractRemotingServer extends AbstractConfigurableInstanc
     private static final Logger logger  = BoltLoggerFactory.getLogger("CommonDefault");
 
     private AtomicBoolean       started = new AtomicBoolean(false);
-    private AtomicBoolean       inited  = new AtomicBoolean(false);
     private String              ip;
     private int                 port;
 
@@ -53,25 +52,15 @@ public abstract class AbstractRemotingServer extends AbstractConfigurableInstanc
 
     @Override
     public void init() {
-        if (inited.compareAndSet(false, true)) {
-            try {
-                doInit();
-            } catch (Throwable t) {
-                inited.set(false);
-                this.stop(); // do stop to ensure close resources created during doInit()
-                throw new IllegalStateException("ERROR: Failed to init the Server!", t);
-            }
-        } else {
-            String warnMsg = "WARN: The server has already inited, you can call start() method to finish starting a server!";
-            logger.warn(warnMsg);
-        }
+        // Do not call this method, it will be removed in the next version
     }
 
     @Override
     public boolean start() {
         if (started.compareAndSet(false, true)) {
             try {
-                init(); // init server by default, so user can just call start method and complete two procedures: init and start.
+                doInit();
+
                 logger.warn("Prepare to start server on port {} ", port);
                 if (doStart()) {
                     logger.warn("Server started on port {}", port);
@@ -81,7 +70,6 @@ public abstract class AbstractRemotingServer extends AbstractConfigurableInstanc
                     return false;
                 }
             } catch (Throwable t) {
-                started.set(false);
                 this.stop();// do stop to ensure close resources created during doInit()
                 throw new IllegalStateException("ERROR: Failed to start the Server!", t);
             }
@@ -94,7 +82,7 @@ public abstract class AbstractRemotingServer extends AbstractConfigurableInstanc
 
     @Override
     public boolean stop() {
-        if (inited.compareAndSet(true, false) || started.compareAndSet(true, false)) {
+        if (started.compareAndSet(true, false)) {
             return this.doStop();
         } else {
             throw new IllegalStateException("ERROR: The server has already stopped!");
