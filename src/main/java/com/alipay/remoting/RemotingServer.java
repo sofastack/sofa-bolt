@@ -26,6 +26,12 @@ import com.alipay.remoting.rpc.protocol.UserProcessor;
 public interface RemotingServer {
 
     /**
+     * init the server
+     */
+    @Deprecated
+    void init();
+
+    /**
      * Start the server.
      */
     boolean start();

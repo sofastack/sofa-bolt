@@ -20,8 +20,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventType;
@@ -45,8 +43,6 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
  * @version $Id: ScheduledDisconnectStrategyTest.java, v 0.1 2017-03-16 AM11:32 yueliang Exp $
  */
 public class ScheduledDisconnectStrategyTest {
-    static Logger                 logger                    = LoggerFactory
-                                                                .getLogger(ScheduledDisconnectStrategyTest.class);
 
     BoltServer                    server;
     RpcClient                     client;

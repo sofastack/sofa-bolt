@@ -51,6 +51,11 @@ public abstract class AbstractRemotingServer extends AbstractConfigurableInstanc
     }
 
     @Override
+    public void init() {
+        // Do not call this method, it will be removed in the next version
+    }
+
+    @Override
     public boolean start() {
         if (started.compareAndSet(false, true)) {
             try {
