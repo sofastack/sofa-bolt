@@ -152,10 +152,8 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             command.setContent(content);
 
                             out.add(command);
-
                         } else {
                             in.resetReaderIndex();
-                            return;
                         }
                     } else if (type == RpcCommandType.RESPONSE) {
                         //decode response
@@ -227,7 +225,6 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             out.add(command);
                         } else {
                             in.resetReaderIndex();
-                            return;
                         }
                     } else {
                         String emsg = "Unknown command type: " + type;

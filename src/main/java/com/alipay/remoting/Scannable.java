@@ -26,5 +26,5 @@ public interface Scannable {
     /**
      * Scan it.
      */
-    public void scan();
+    void scan();
 }

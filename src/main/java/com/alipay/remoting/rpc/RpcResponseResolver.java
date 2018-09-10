@@ -44,11 +44,6 @@ public class RpcResponseResolver {
 
     /**
      * Analyze the response command and generate the response object.
-     * 
-     * @param responseCommand
-     * @param addr
-     * @return
-     * @throws RemotingException 
      */
     public static Object resolveResponseObject(ResponseCommand responseCommand, String addr)
                                                                                             throws RemotingException {
@@ -68,12 +63,6 @@ public class RpcResponseResolver {
 
     }
 
-    /**
-     * 
-     * @param responseCommand
-     * @param addr
-     * @throws RemotingException 
-     */
     private static void preProcess(ResponseCommand responseCommand, String addr)
                                                                                 throws RemotingException {
         RemotingException e = null;
@@ -144,10 +133,6 @@ public class RpcResponseResolver {
 
     /**
      * Convert remoting response command to application response object.
-     * 
-     * @param responseCommand
-     * @return
-     * @throws CodecException 
      */
     private static Object toResponseObject(ResponseCommand responseCommand) throws CodecException {
         RpcResponseCommand response = (RpcResponseCommand) responseCommand;
@@ -157,9 +142,6 @@ public class RpcResponseResolver {
 
     /**
      * Convert remoting response command to throwable if it is a throwable, otherwise return null.
-     * @param responseCommand
-     * @return
-     * @throws CodecException
      */
     private static Throwable toThrowable(ResponseCommand responseCommand) throws CodecException {
         RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
@@ -173,9 +155,6 @@ public class RpcResponseResolver {
 
     /**
      * Detail your error msg with the error msg returned from response command
-     * @param clientErrMsg
-     * @param responseCommand
-     * @return
      */
     private static String detailErrMsg(String clientErrMsg, ResponseCommand responseCommand) {
         RpcResponseCommand resp = (RpcResponseCommand) responseCommand;

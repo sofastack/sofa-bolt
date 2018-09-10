@@ -32,52 +32,33 @@ public interface UserProcessor<T> {
 
     /**
      * Pre handle request, to avoid expose {@link RemotingContext} directly to biz handle request logic.
-     * 
-     * @param remotingCtx
-     * @param request
-     * @return
      */
     BizContext preHandleRequest(RemotingContext remotingCtx, T request);
 
     /**
      * Handle request with {@link AsyncContext}.
-     * 
-     * @param bizCtx
-     * @param asyncCtx
-     * @param request
      */
     void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, T request);
 
     /**
      * Handle request in sync way.
-     * 
-     * @param bizCtx
-     * @param request
-     * @return
-     * @throws Exception
      */
     Object handleRequest(BizContext bizCtx, T request) throws Exception;
 
     /**
      * The class name of user request.
      * Use String type to avoid classloader problem.
-     * 
-     * @return
      */
     String interest();
 
     /**
      * Get user executor.
-     *
-     * @return
      */
     Executor getExecutor();
 
     /**
      * Whether deserialize and process biz logic in io thread.
      * Notice: If return true, this will have a strong impact on performance.
-     *
-     * @return
      */
     boolean processInIOThread();
 
@@ -94,15 +75,12 @@ public interface UserProcessor<T> {
     /**
      * Setter.
      * Use this method to provide a executor selector.
-     *
-     * @param executorSelector
      */
     void setExecutorSelector(ExecutorSelector executorSelector);
 
     /**
      * Getter.
-     *
-     * @return
+     * Use this method to get the executor selector.
      */
     ExecutorSelector getExecutorSelector();
 

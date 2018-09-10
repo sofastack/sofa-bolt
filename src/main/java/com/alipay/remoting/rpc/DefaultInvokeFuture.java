@@ -75,11 +75,6 @@ public class DefaultInvokeFuture implements InvokeFuture {
 
     /**
      * Constructor.
-     * 
-     * @param invokeId
-     * @param callbackListener
-     * @param callback
-     * @param protocol
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol, CommandFactory commandFactory) {
@@ -92,12 +87,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
     }
 
     /**
-     *
-     * @param invokeId
-     * @param callbackListener
-     * @param callback
-     * @param protocol
-     * @param invokeContext
+     * Constructor.
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol,
@@ -106,20 +96,12 @@ public class DefaultInvokeFuture implements InvokeFuture {
         this.invokeContext = invokeContext;
     }
 
-    /** 
-     * @throws InterruptedException 
-     * @see com.alipay.remoting.InvokeFuture#waitResponse(long)
-     */
     @Override
     public ResponseCommand waitResponse(long timeoutMillis) throws InterruptedException {
         this.countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
         return this.responseCommand;
     }
 
-    /**
-     * @throws InterruptedException
-     * @see com.alipay.remoting.InvokeFuture#waitResponse(long)
-     */
     @Override
     public ResponseCommand waitResponse() throws InterruptedException {
         this.countDownLatch.await();

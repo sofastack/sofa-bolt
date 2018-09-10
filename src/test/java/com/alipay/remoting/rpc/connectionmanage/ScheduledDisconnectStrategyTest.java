@@ -47,7 +47,7 @@ public class ScheduledDisconnectStrategyTest {
     BoltServer                    server;
     RpcClient                     client;
 
-    int                           port                      = 2014;
+    int                           port                      = 2018;
 
     SimpleServerUserProcessor     serverUserProcessor       = new SimpleServerUserProcessor();
     SimpleClientUserProcessor     clientUserProcessor       = new SimpleClientUserProcessor();
@@ -78,7 +78,7 @@ public class ScheduledDisconnectStrategyTest {
         System.setProperty(Configs.CONN_MONITOR_INITIAL_DELAY, "2000");
         System.setProperty(Configs.CONN_MONITOR_PERIOD, "100");
         doInit(true, false);
-        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=8&_CONNECTIONWARMUP=false";
+        String addr = "127.0.0.1:" + port + "?zone=RZONE&_CONNECTIONNUM=8&_CONNECTIONWARMUP=false";
         Url url = addressParser.parse(addr);
 
         for (int i = 0; i < 8; ++i) {
@@ -108,7 +108,7 @@ public class ScheduledDisconnectStrategyTest {
         System.setProperty(Configs.CONN_MONITOR_INITIAL_DELAY, "2000");
         System.setProperty(Configs.CONN_MONITOR_PERIOD, "100");
         doInit(false, true);
-        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=8&_CONNECTIONWARMUP=false";
+        String addr = "127.0.0.1:" + port + "?zone=RZONE&_CONNECTIONNUM=8&_CONNECTIONWARMUP=false";
         Url url = addressParser.parse(addr);
 
         for (int i = 0; i < 8; ++i) {
@@ -142,7 +142,7 @@ public class ScheduledDisconnectStrategyTest {
         System.setProperty(Configs.CONN_THRESHOLD, "0");
         doInit(true, false);
 
-        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=1";
+        String addr = "127.0.0.1:" + port + "?zone=RZONE&_CONNECTIONNUM=1";
         Url url = addressParser.parse(addr);
 
         final Connection connection = client.getConnection(url, 1000);
@@ -152,7 +152,7 @@ public class ScheduledDisconnectStrategyTest {
         Assert.assertTrue(0 == clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
         connection.removeInvokeFuture(1);
-        /** Monitor task sleep 500ms*/
+        /* Monitor task sleep 500ms*/
         Thread.sleep(100);
         Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
         Thread.sleep(500);
@@ -168,7 +168,7 @@ public class ScheduledDisconnectStrategyTest {
         System.setProperty(Configs.CONN_THRESHOLD, "0");
         doInit(false, true);
 
-        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=1";
+        String addr = "127.0.0.1:" + port + "?zone=RZONE&_CONNECTIONNUM=1";
         Url url = addressParser.parse(addr);
 
         final Connection connection = client.getConnection(url, 1000);
@@ -178,7 +178,7 @@ public class ScheduledDisconnectStrategyTest {
         Assert.assertTrue(0 == clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
         connection.removeInvokeFuture(1);
-        /** Monitor task sleep 500ms*/
+        /* Monitor task sleep 500ms*/
         Thread.sleep(100);
         Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
         Thread.sleep(500);
@@ -193,7 +193,7 @@ public class ScheduledDisconnectStrategyTest {
         System.setProperty(Configs.CONN_MONITOR_PERIOD, "100");
         System.setProperty(Configs.CONN_THRESHOLD, "0");
         doInit(true, false);
-        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=8";
+        String addr = "127.0.0.1:" + port + "?zone=RZONE&_CONNECTIONNUM=8";
         Url url = addressParser.parse(addr);
 
         for (int i = 0; i < 8; i++) {
@@ -221,7 +221,7 @@ public class ScheduledDisconnectStrategyTest {
         System.setProperty(Configs.CONN_MONITOR_PERIOD, "100");
         System.setProperty(Configs.CONN_THRESHOLD, "0");
         doInit(false, true);
-        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=8";
+        String addr = "127.0.0.1:" + port + "?zone=RZONE&_CONNECTIONNUM=8";
         Url url = addressParser.parse(addr);
 
         for (int i = 0; i < 8; i++) {

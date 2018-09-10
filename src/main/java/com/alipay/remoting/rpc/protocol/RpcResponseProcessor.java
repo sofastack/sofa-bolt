@@ -26,7 +26,6 @@ import com.alipay.remoting.InvokeFuture;
 import com.alipay.remoting.RemotingCommand;
 import com.alipay.remoting.RemotingContext;
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.rpc.ResponseCommand;
 import com.alipay.remoting.util.RemotingUtil;
 
 /**
@@ -47,7 +46,7 @@ public class RpcResponseProcessor extends AbstractRemotingProcessor<RemotingComm
     }
 
     /**
-     * @param executor
+     * Constructor.
      */
     public RpcResponseProcessor(ExecutorService executor) {
         super(executor);
@@ -68,7 +67,7 @@ public class RpcResponseProcessor extends AbstractRemotingProcessor<RemotingComm
                     oldClassLoader = Thread.currentThread().getContextClassLoader();
                     Thread.currentThread().setContextClassLoader(future.getAppClassLoader());
                 }
-                future.putResponse((ResponseCommand) cmd);
+                future.putResponse(cmd);
                 future.cancelTimeout();
                 try {
                     future.executeInvokeCallback();

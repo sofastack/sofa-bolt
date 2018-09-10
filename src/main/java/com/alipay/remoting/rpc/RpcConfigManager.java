@@ -21,8 +21,6 @@ import com.alipay.remoting.config.ConfigManager;
 /**
  * RPC framework config manager.
  * @author dennis
- * 
- *
  */
 public class RpcConfigManager {
     public static boolean dispatch_msg_list_in_default_executor() {

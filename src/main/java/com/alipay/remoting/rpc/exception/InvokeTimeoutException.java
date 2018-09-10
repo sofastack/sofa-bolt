@@ -36,14 +36,19 @@ public class InvokeTimeoutException extends RemotingException {
     }
 
     /**
-     * @param msg
+     * Constructor.
+     *
+     * @param msg the detail message
      */
     public InvokeTimeoutException(String msg) {
         super(msg);
     }
 
     /**
-     * @param msg
+     * Constructor.
+     *
+     * @param msg the detail message
+     * @param cause the cause
      */
     public InvokeTimeoutException(String msg, Throwable cause) {
         super(msg, cause);

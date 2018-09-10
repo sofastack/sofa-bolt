@@ -231,10 +231,6 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * This method has been modified to check the size of decoded msgs, which is represented by the
      * local variable {@code RecyclableArrayList out}. If has decoded more than one msg,
      * then construct an array list to submit all decoded msgs to the pipeline.
-     *
-     * @param ctx
-     * @param msg
-     * @throws Exception
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
