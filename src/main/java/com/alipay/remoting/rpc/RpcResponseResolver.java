@@ -44,6 +44,10 @@ public class RpcResponseResolver {
 
     /**
      * Analyze the response command and generate the response object.
+     *
+     * @param responseCommand response command
+     * @param addr response address
+     * @return response object
      */
     public static Object resolveResponseObject(ResponseCommand responseCommand, String addr)
                                                                                             throws RemotingException {

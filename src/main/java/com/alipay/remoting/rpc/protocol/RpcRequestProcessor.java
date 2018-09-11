@@ -148,6 +148,10 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
     /**
      * Send response using remoting context if necessary.<br>
      * If request type is oneway, no need to send any response nor exception.
+     *
+     * @param ctx remoting context
+     * @param type type code
+     * @param response remoting command
      */
     public void sendResponseIfNecessary(final RemotingContext ctx, byte type,
                                         final RemotingCommand response) {
@@ -207,6 +211,8 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
 
     /**
      * dispatch request command to user processor
+     * @param ctx remoting context
+     * @param cmd rpc request command
      */
     private void dispatchToUserProcessor(RemotingContext ctx, RpcRequestCommand cmd) {
         final int id = cmd.getId();
@@ -281,6 +287,10 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
 
     /**
      * pre process remoting context, initial some useful infos and pass to biz
+     *
+     * @param ctx remoting context
+     * @param cmd rpc request command
+     * @param currentTimestamp current timestamp
      */
     private void preProcessRemotingContext(RemotingContext ctx, RpcRequestCommand cmd,
                                            long currentTimestamp) {

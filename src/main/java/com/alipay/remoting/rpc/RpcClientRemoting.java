@@ -110,6 +110,10 @@ public class RpcClientRemoting extends RpcRemoting {
 
     /**
      * Get connection and set init invokeContext if invokeContext not {@code null}
+     *
+     * @param url target url
+     * @param invokeContext invoke context to set
+     * @return connection
      */
     protected Connection getConnectionAndInitInvokeContext(Url url, InvokeContext invokeContext)
                                                                                                 throws RemotingException,

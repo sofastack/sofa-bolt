@@ -29,26 +29,39 @@ import io.netty.util.Timeout;
 public interface InvokeFuture {
     /**
      * Wait response with timeout.
+     *
+     * @param timeoutMillis time out in millisecond
+     * @return remoting command
+     * @throws InterruptedException if interrupted
      */
     RemotingCommand waitResponse(final long timeoutMillis) throws InterruptedException;
 
     /**
      * Wait response with unlimit timeout
+     *
+     * @return remoting command
+     * @throws InterruptedException if interrupted
      */
     RemotingCommand waitResponse() throws InterruptedException;
 
     /**
      * Create a remoting command response when connection closed
+     *
+     * @param responseHost target host
+     * @return remoting command
      */
     RemotingCommand createConnectionClosedResponse(InetSocketAddress responseHost);
 
     /**
      * Put the response to the future.
+     *
+     * @param response remoting command
      */
     void putResponse(final RemotingCommand response);
 
     /**
      * Get the id of the invocation.
+     * @return invoke id
      */
     int invokeId();
 
@@ -69,11 +82,13 @@ public interface InvokeFuture {
 
     /**
      * Get the cause of exception of the future.
+     * @return the cause
      */
     Throwable getCause();
 
     /**
      * Get the application callback of the future.
+     * @return get invoke callback
      */
     InvokeCallback getInvokeCallback();
 
@@ -89,16 +104,19 @@ public interface InvokeFuture {
 
     /**
      * Whether the future is done.
+     * @return true if the future is done
      */
     boolean isDone();
 
     /**
      * Get application classloader.
+     * @return application classloader
      */
     ClassLoader getAppClassLoader();
 
     /**
      * Get the protocol code of command.
+     * @return protocol code
      */
     byte getProtocolCode();
 
@@ -108,7 +126,8 @@ public interface InvokeFuture {
     void setInvokeContext(InvokeContext invokeContext);
 
     /**
-     * get invoke context
+     * Get invoke context.
+     * @return the invoke context
      */
     InvokeContext getInvokeContext();
 }

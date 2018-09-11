@@ -75,6 +75,12 @@ public class DefaultInvokeFuture implements InvokeFuture {
 
     /**
      * Constructor.
+     *
+     * @param invokeId invoke id
+     * @param callbackListener callback listener
+     * @param callback callback
+     * @param protocol protocol code
+     * @param commandFactory command factory
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol, CommandFactory commandFactory) {
@@ -88,6 +94,13 @@ public class DefaultInvokeFuture implements InvokeFuture {
 
     /**
      * Constructor.
+     *
+     * @param invokeId invoke id
+     * @param callbackListener callback listener
+     * @param callback callback
+     * @param protocol protocol
+     * @param commandFactory command factory
+     * @param invokeContext invoke context
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol,
