@@ -56,26 +56,23 @@ import io.netty.handler.timeout.IdleStateHandler;
  */
 public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
-    private static final Logger        logger = BoltLoggerFactory
-                                                  .getLogger(AbstractConnectionFactory.class);
+    private static final Logger         logger      = BoltLoggerFactory
+                                                        .getLogger(AbstractConnectionFactory.class);
 
-    private final ConfigurableInstance confInstance;
-    private final Codec                codec;
-    private final ChannelHandler       heartbeatHandler;
-    private final ChannelHandler       handler;
+    private static final EventLoopGroup workerGroup = NettyEventLoopUtil.newEventLoopGroup(Runtime
+                                                        .getRuntime().availableProcessors() + 1,
+                                                        new NamedThreadFactory(
+                                                            "bolt-netty-client-worker", true));
 
-    protected EventLoopGroup           workerGroup;
-    protected Bootstrap                bootstrap;
+    private final ConfigurableInstance  confInstance;
+    private final Codec                 codec;
+    private final ChannelHandler        heartbeatHandler;
+    private final ChannelHandler        handler;
 
-    public AbstractConnectionFactory(int threads, NamedThreadFactory threadFactory, Codec codec,
-                                     ChannelHandler heartbeatHandler, ChannelHandler handler,
-                                     ConfigurableInstance confInstance) {
-        if (threads <= 0) {
-            throw new IllegalArgumentException("threads must be positive, given: " + threads);
-        }
-        if (threadFactory == null) {
-            throw new IllegalArgumentException("null threadFactory");
-        }
+    protected Bootstrap                 bootstrap;
+
+    public AbstractConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
+                                     ChannelHandler handler, ConfigurableInstance confInstance) {
         if (codec == null) {
             throw new IllegalArgumentException("null codec");
         }
@@ -87,7 +84,6 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         this.codec = codec;
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
-        this.workerGroup = NettyEventLoopUtil.newEventLoopGroup(threads, threadFactory);
     }
 
     @Override
