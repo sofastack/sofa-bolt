@@ -81,7 +81,6 @@ public abstract class AbstractUserProcessor<T> implements UserProcessor<T> {
 
     /**
      * By default, return true, means discard requests which timeout already.
-     * @return
      */
     @Override
     public boolean timeoutDiscard() {

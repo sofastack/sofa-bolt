@@ -232,9 +232,8 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * local variable {@code RecyclableArrayList out}. If has decoded more than one msg,
      * then construct an array list to submit all decoded msgs to the pipeline.
      *
-     * @param ctx
-     * @param msg
-     * @throws Exception
+     * @param ctx channel handler context
+     * @param msg data
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

@@ -37,6 +37,6 @@ public interface CommandEncoder {
      * @param out
      * @throws Exception
      */
-    public void encode(ChannelHandlerContext ctx, Serializable msg, ByteBuf out) throws Exception;
+    void encode(ChannelHandlerContext ctx, Serializable msg, ByteBuf out) throws Exception;
 
 }

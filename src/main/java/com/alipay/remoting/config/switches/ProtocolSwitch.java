@@ -54,8 +54,6 @@ public class ProtocolSwitch implements Switch {
 
     /**
      * generate byte value according to the bit set in ProtocolSwitchStatus
-     * 
-     * @return
      */
     public byte toByte() {
         return toByte(this.bs);
