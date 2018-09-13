@@ -51,7 +51,7 @@ public class ProtocolCodeBasedDecoder extends AbstractBatchDecoder {
     /**
      * decode the protocol code
      *
-     * @param in
+     * @param in input byte buf
      * @return an instance of ProtocolCode
      */
     protected ProtocolCode decodeProtocolCode(ByteBuf in) {
@@ -66,7 +66,7 @@ public class ProtocolCodeBasedDecoder extends AbstractBatchDecoder {
     /**
      * decode the protocol version
      *
-     * @param in
+     * @param in input byte buf
      * @return a byte to represent protocol version
      */
     protected byte decodeProtocolVersion(ByteBuf in) {

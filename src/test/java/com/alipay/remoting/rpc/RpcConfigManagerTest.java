@@ -14,22 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
+package com.alipay.remoting.rpc;
 
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.ConfigurableInstance;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
-import io.netty.channel.ChannelHandler;
+public class RpcConfigManagerTest {
+    @BeforeClass
+    public static void initClass() {
+    }
 
-/**
- * Default connection factory.
- *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
- */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+    @Before
+    public void init() {
+    }
 
-    public DefaultConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                    ChannelHandler handler, ConfigurableInstance configInstance) {
-        super(codec, heartbeatHandler, handler, configInstance);
+    @After
+    public void stop() {
+    }
+
+    @AfterClass
+    public static void afterClass() {
+    }
+
+    @Test
+    public void testSystemSettings() {
+        Assert.assertTrue(RpcConfigManager.dispatch_msg_list_in_default_executor());
     }
 }

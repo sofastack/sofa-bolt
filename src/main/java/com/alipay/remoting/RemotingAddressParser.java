@@ -31,7 +31,7 @@ public interface RemotingAddressParser {
      * @param url
      * @return parsed {@link Url}
      */
-    public Url parse(String url);
+    Url parse(String url);
 
     /**
      * Parse a simple string url to get a unique key of a certain address
@@ -39,7 +39,7 @@ public interface RemotingAddressParser {
      * @param url
      * @return
      */
-    public String parseUniqueKey(String url);
+    String parseUniqueKey(String url);
 
     /**
      * Parse to get property value according to specified property key
@@ -55,7 +55,7 @@ public interface RemotingAddressParser {
      * 
      * @param url
      */
-    public void initUrlArgs(Url url);
+    void initUrlArgs(Url url);
 
     /** symbol : */
     public static final char COLON = ':';

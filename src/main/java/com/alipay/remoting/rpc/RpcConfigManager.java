@@ -14,22 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
+package com.alipay.remoting.rpc;
 
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.ConfigurableInstance;
-
-import io.netty.channel.ChannelHandler;
+import com.alipay.remoting.config.ConfigManager;
 
 /**
- * Default connection factory.
- *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * RPC framework config manager.
+ * @author dennis
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
-
-    public DefaultConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                    ChannelHandler handler, ConfigurableInstance configInstance) {
-        super(codec, heartbeatHandler, handler, configInstance);
+public class RpcConfigManager {
+    public static boolean dispatch_msg_list_in_default_executor() {
+        return ConfigManager.getBool(RpcConfigs.DISPATCH_MSG_LIST_IN_DEFAULT_EXECUTOR,
+            RpcConfigs.DISPATCH_MSG_LIST_IN_DEFAULT_EXECUTOR_DEFAULT);
     }
 }

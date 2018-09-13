@@ -28,6 +28,7 @@ public interface RemotingServer {
     /**
      * init the server
      */
+    @Deprecated
     void init();
 
     /**

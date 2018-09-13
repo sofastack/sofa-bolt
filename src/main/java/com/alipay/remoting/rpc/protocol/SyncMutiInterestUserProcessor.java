@@ -25,7 +25,7 @@ import com.alipay.remoting.BizContext;
  * Extends this to process user defined request in SYNC way.<br>
  * If you want process reqeuest in ASYNC way, please extends {@link AsynMultiInterestUserProcessor}.
  *
- * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:19 AM
+ * @author muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:19 AM
  */
 public abstract class SyncMutiInterestUserProcessor<T> extends
                                                        AbstractMultiInterestUserProcessor<T> {

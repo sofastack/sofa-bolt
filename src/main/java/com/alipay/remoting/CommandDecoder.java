@@ -36,5 +36,5 @@ public interface CommandDecoder {
      * @param out
      * @throws Exception
      */
-    public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception;
+    void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception;
 }

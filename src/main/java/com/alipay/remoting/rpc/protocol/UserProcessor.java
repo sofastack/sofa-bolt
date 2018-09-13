@@ -32,52 +32,46 @@ public interface UserProcessor<T> {
 
     /**
      * Pre handle request, to avoid expose {@link RemotingContext} directly to biz handle request logic.
-     * 
-     * @param remotingCtx
-     * @param request
-     * @return
+     *
+     * @param remotingCtx remoting context
+     * @param request request
+     * @return BizContext
      */
     BizContext preHandleRequest(RemotingContext remotingCtx, T request);
 
     /**
      * Handle request with {@link AsyncContext}.
-     * 
-     * @param bizCtx
-     * @param asyncCtx
-     * @param request
+     * @param bizCtx biz context
+     * @param asyncCtx async context
+     * @param request request
      */
     void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, T request);
 
     /**
      * Handle request in sync way.
-     * 
-     * @param bizCtx
-     * @param request
-     * @return
-     * @throws Exception
+     * @param bizCtx biz context
+     * @param request request
      */
     Object handleRequest(BizContext bizCtx, T request) throws Exception;
 
     /**
      * The class name of user request.
      * Use String type to avoid classloader problem.
-     * 
-     * @return
+     *
+     * @return interested request's class name
      */
     String interest();
 
     /**
      * Get user executor.
-     *
-     * @return
+     * @return executor
      */
     Executor getExecutor();
 
     /**
      * Whether deserialize and process biz logic in io thread.
      * Notice: If return true, this will have a strong impact on performance.
-     *
-     * @return
+     * @return true for processing in io thread
      */
     boolean processInIOThread();
 
@@ -92,17 +86,14 @@ public interface UserProcessor<T> {
     boolean timeoutDiscard();
 
     /**
-     * Setter.
-     * Use this method to provide a executor selector.
-     *
-     * @param executorSelector
+     * Use this method to set executor selector.
+     * @param executorSelector executor selector
      */
     void setExecutorSelector(ExecutorSelector executorSelector);
 
     /**
-     * Getter.
-     *
-     * @return
+     * Use this method to get the executor selector.
+     * @return executor selector
      */
     ExecutorSelector getExecutorSelector();
 

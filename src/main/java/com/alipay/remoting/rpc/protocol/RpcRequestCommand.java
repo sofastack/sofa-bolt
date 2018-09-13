@@ -54,7 +54,7 @@ public class RpcRequestCommand extends RequestCommand {
 
     /**
      * create request command with id and request object
-     * @param request
+     * @param request request object
      */
     public RpcRequestCommand(Object request) {
         super(RpcCommandCode.RPC_REQUEST);
@@ -124,10 +124,10 @@ public class RpcRequestCommand extends RequestCommand {
                 if (this.getCustomSerializer() != null
                     && this.getCustomSerializer().serializeContent(this, invokeContext)) {
                     return;
-                } else {
-                    this.setContent(SerializerManager.getSerializer(this.getSerializer())
-                        .serialize(this.requestObject));
                 }
+
+                this.setContent(SerializerManager.getSerializer(this.getSerializer()).serialize(
+                    this.requestObject));
             } catch (SerializationException e) {
                 throw e;
             } catch (Exception e) {
@@ -135,7 +135,7 @@ public class RpcRequestCommand extends RequestCommand {
                     "Exception caught when serialize content of rpc request command!", e);
             }
         }
-    };
+    }
 
     @Override
     public void deserializeContent(InvokeContext invokeContext) throws DeserializationException {
