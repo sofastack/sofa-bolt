@@ -99,5 +99,5 @@ public interface RemotingCommand extends Serializable {
      * @param invokeContext
      * @throws DeserializationException
      */
-    void deserializeContent(InvokeContext invokeContext) throws DeserializationException;;
+    void deserializeContent(InvokeContext invokeContext) throws DeserializationException;
 }

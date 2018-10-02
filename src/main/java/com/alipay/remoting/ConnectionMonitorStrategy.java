@@ -34,7 +34,7 @@ public interface ConnectionMonitorStrategy {
      *
      * @param connections
      */
-    public Map<String, List<Connection>> filter(List<Connection> connections);
+    Map<String, List<Connection>> filter(List<Connection> connections);
 
     /**
      * Add a set of connections to monitor.
@@ -44,5 +44,5 @@ public interface ConnectionMonitorStrategy {
      *
      * @param connPools
      */
-    public void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools);
+    void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools);
 }
