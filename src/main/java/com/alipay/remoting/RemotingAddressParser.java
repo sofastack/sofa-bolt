@@ -58,14 +58,14 @@ public interface RemotingAddressParser {
     void initUrlArgs(Url url);
 
     /** symbol : */
-    public static final char COLON = ':';
+    char COLON = ':';
 
     /** symbol = */
-    public static final char EQUAL = '=';
+    char EQUAL = '=';
 
     /** symbol & */
-    public static final char AND   = '&';
+    char AND   = '&';
 
     /** symbol ? */
-    public static final char QUES  = '?';
+    char QUES  = '?';
 }
