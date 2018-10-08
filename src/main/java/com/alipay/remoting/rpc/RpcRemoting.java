@@ -317,8 +317,7 @@ public abstract class RpcRemoting extends BaseRemoting {
      * @return
      * @throws CodecException
      */
-    protected RemotingCommand toRemotingCommand(Object request,
-                                                @SuppressWarnings("unused") Connection conn,
+    protected RemotingCommand toRemotingCommand(Object request, Connection conn,
                                                 InvokeContext invokeContext, int timeoutMillis)
                                                                                                throws SerializationException {
         RpcRequestCommand command = this.getCommandFactory().createRequestCommand(request);
