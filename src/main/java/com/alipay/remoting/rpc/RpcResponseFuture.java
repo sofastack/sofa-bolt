@@ -54,7 +54,8 @@ public class RpcResponseFuture {
      * if request done, resolve normal responseObject
      * if request not done, throws InvokeTimeoutException
      */
-    public Object get(int timeoutMillis) throws RemotingException, InterruptedException {
+    public Object get(int timeoutMillis) throws InvokeTimeoutException, RemotingException,
+                                        InterruptedException {
         this.future.waitResponse(timeoutMillis);
         if (!isDone()) {
             throw new InvokeTimeoutException("Future get result timeout!");
