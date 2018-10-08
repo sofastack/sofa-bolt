@@ -208,7 +208,7 @@ public abstract class BaseRemoting {
                 RemotingUtil.parseRemoteAddress(conn.getChannel()), e);
         }
         return future;
-    };
+    }
 
     /**
      * Oneway invocation.
@@ -238,7 +238,7 @@ public abstract class BaseRemoting {
                     RemotingUtil.parseRemoteAddress(conn.getChannel()), e);
             }
         }
-    };
+    }
 
     /**
      * Create invoke future with {@link InvokeContext}.

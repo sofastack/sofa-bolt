@@ -81,7 +81,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
  */
-public class RpcServer extends AbstractRemotingServer implements RemotingServer {
+public class RpcServer extends AbstractRemotingServer {
 
     /** logger */
     private static final Logger                         logger                  = BoltLoggerFactory
