@@ -28,8 +28,6 @@ import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.protocol.RpcDeserializeLevel;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
-import com.alipay.remoting.rpc.protocol.RpcRequestCommand;
-import com.alipay.remoting.rpc.protocol.RpcResponseCommand;
 import com.alipay.remoting.util.ProtocolSwitch;
 
 /**
@@ -327,16 +325,12 @@ public abstract class RpcCommand implements RemotingCommand {
         return this.customSerializer;
     }
 
-
     /**
      * subClass need overwrite
-     * Example:
-     *    @see RpcRequestCommand#getClassName()
-     *    @see RpcResponseCommand#getClassName()
      *
      * @return serializer className
      */
-    protected String getClassName(){
+    protected String getClassName() {
         return null;
     }
 

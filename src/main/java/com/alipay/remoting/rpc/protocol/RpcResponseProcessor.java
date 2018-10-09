@@ -18,8 +18,6 @@ package com.alipay.remoting.rpc.protocol;
 
 import java.util.concurrent.ExecutorService;
 
-import org.slf4j.Logger;
-
 import com.alipay.remoting.AbstractRemotingProcessor;
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.InvokeFuture;
@@ -28,6 +26,8 @@ import com.alipay.remoting.RemotingContext;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.ResponseCommand;
 import com.alipay.remoting.util.RemotingUtil;
+
+import org.slf4j.Logger;
 
 /**
  * Processor to process RpcResponse.
