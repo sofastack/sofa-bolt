@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 
 import com.alipay.remoting.Configs;
 import com.alipay.remoting.CustomSerializer;
-import com.alipay.remoting.CustomSerializerManager;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
@@ -40,7 +39,6 @@ public class RpcRequestCommand extends RequestCommand {
     private Object            requestObject;
     private String            requestClass;
 
-    private CustomSerializer  customSerializer;
     private Object            requestHeader;
 
     private transient long    arriveTime       = -1;
@@ -213,24 +211,6 @@ public class RpcRequestCommand extends RequestCommand {
     }
 
     /**
-     * Getter method for property <tt>customSerializer</tt>.
-     * 
-     * @return property value of customSerializer
-     */
-    public CustomSerializer getCustomSerializer() {
-        if (this.customSerializer != null) {
-            return customSerializer;
-        }
-        if (this.requestClass != null) {
-            this.customSerializer = CustomSerializerManager.getCustomSerializer(this.requestClass);
-        }
-        if (this.customSerializer == null) {
-            this.customSerializer = CustomSerializerManager.getCustomSerializer(this.getCmdCode());
-        }
-        return this.customSerializer;
-    }
-
-    /**
      * Getter method for property <tt>arriveTime</tt>.
      * 
      * @return property value of arriveTime
@@ -246,5 +226,10 @@ public class RpcRequestCommand extends RequestCommand {
      */
     public void setArriveTime(long arriveTime) {
         this.arriveTime = arriveTime;
+    }
+
+    @Override
+    protected String getClassName() {
+        return getRequestClass();
     }
 }

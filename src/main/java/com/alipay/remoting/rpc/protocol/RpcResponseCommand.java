@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 
 import com.alipay.remoting.Configs;
 import com.alipay.remoting.CustomSerializer;
-import com.alipay.remoting.CustomSerializerManager;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
@@ -40,7 +39,6 @@ public class RpcResponseCommand extends ResponseCommand {
 
     private String            responseClass;
 
-    private CustomSerializer  customSerializer;
     private Object            responseHeader;
 
     private String            errorMsg;
@@ -211,24 +209,6 @@ public class RpcResponseCommand extends ResponseCommand {
     }
 
     /**
-     * Getter method for property <tt>customSerializer</tt>.
-     * 
-     * @return property value of customSerializer
-     */
-    public CustomSerializer getCustomSerializer() {
-        if (this.customSerializer != null) {
-            return customSerializer;
-        }
-        if (this.responseClass != null) {
-            this.customSerializer = CustomSerializerManager.getCustomSerializer(this.responseClass);
-        }
-        if (this.customSerializer == null) {
-            this.customSerializer = CustomSerializerManager.getCustomSerializer(this.getCmdCode());
-        }
-        return this.customSerializer;
-    }
-
-    /**
      * Getter method for property <tt>errorMsg</tt>.
      * 
      * @return property value of errorMsg
@@ -244,5 +224,10 @@ public class RpcResponseCommand extends ResponseCommand {
      */
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
+    }
+
+    @Override
+    protected String getClassName() {
+        return getResponseClass();
     }
 }

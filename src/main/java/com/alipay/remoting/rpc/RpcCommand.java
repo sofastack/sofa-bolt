@@ -17,6 +17,8 @@
 package com.alipay.remoting.rpc;
 
 import com.alipay.remoting.CommandCode;
+import com.alipay.remoting.CustomSerializer;
+import com.alipay.remoting.CustomSerializerManager;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.RemotingCommand;
@@ -26,6 +28,8 @@ import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.protocol.RpcDeserializeLevel;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
+import com.alipay.remoting.rpc.protocol.RpcRequestCommand;
+import com.alipay.remoting.rpc.protocol.RpcResponseCommand;
 import com.alipay.remoting.util.ProtocolSwitch;
 
 /**
@@ -69,6 +73,8 @@ public abstract class RpcCommand implements RemotingCommand {
     private byte[]            content;
     /** invoke context of each rpc command. */
     private InvokeContext     invokeContext;
+    /** custom serializer  */
+    private CustomSerializer  customSerializer;
 
     public RpcCommand() {
     }
@@ -211,6 +217,7 @@ public abstract class RpcCommand implements RemotingCommand {
         return serializer;
     }
 
+    @Override
     public ProtocolSwitch getProtocolSwitch() {
         return protocolSwitch;
     }
@@ -243,6 +250,7 @@ public abstract class RpcCommand implements RemotingCommand {
         this.protocolSwitch = protocolSwitch;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -299,4 +307,37 @@ public abstract class RpcCommand implements RemotingCommand {
     public void setInvokeContext(InvokeContext invokeContext) {
         this.invokeContext = invokeContext;
     }
+
+    /**
+     * Getter method for property <tt>customSerializer</tt>.
+     *
+     * @return property value of customSerializer
+     */
+    public CustomSerializer getCustomSerializer() {
+        if (this.customSerializer != null) {
+            return customSerializer;
+        }
+        String className = this.getClassName();
+        if (className != null) {
+            this.customSerializer = CustomSerializerManager.getCustomSerializer(className);
+        }
+        if (this.customSerializer == null) {
+            this.customSerializer = CustomSerializerManager.getCustomSerializer(this.getCmdCode());
+        }
+        return this.customSerializer;
+    }
+
+
+    /**
+     * subClass need overwrite
+     * Example:
+     *    @see RpcRequestCommand#getClassName()
+     *    @see RpcResponseCommand#getClassName()
+     *
+     * @return serializer className
+     */
+    protected String getClassName(){
+        return null;
+    }
+
 }
