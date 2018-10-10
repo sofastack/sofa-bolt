@@ -19,6 +19,7 @@ package com.alipay.remoting.inner.connection;
 import java.util.List;
 import java.util.Map;
 
+import com.alipay.remoting.util.GlobalSwitch;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -57,7 +58,8 @@ public class RpcConnectionManagerTest {
     private ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy();
     private RemotingAddressParser    addressParser            = new RpcAddressParser();
     private ConnectionFactory        connctionFactory         = new RpcConnectionFactory();
-    private ConnectionEventHandler   connectionEventHandler   = new RpcConnectionEventHandler();
+    private ConnectionEventHandler   connectionEventHandler   = new RpcConnectionEventHandler(
+                                                                  new GlobalSwitch());
     private ConnectionEventListener  connectionEventListener  = new ConnectionEventListener();
 
     private BoltServer               server;
@@ -347,7 +349,7 @@ public class RpcConnectionManagerTest {
         }
 
         Assert.assertEquals(1, cm.count(addr.getUniqueKey()));
-        conn.close();
+        cm.remove(conn);
         Thread.sleep(100);
         Assert.assertEquals(0, cm.count(addr.getUniqueKey()));
     }

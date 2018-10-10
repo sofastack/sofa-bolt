@@ -69,7 +69,9 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
         final Connection conn = ctx.channel().attr(Connection.CONNECTION).get();
         if (heartbeatTimes >= maxCount) {
             try {
-                conn.close();
+                // 这里标记为通过心跳关闭的
+                // 这样在channel inactive时会将对应的RunStateRecordedFutureTaskremove
+                conn.closeByHeartbeat();
                 logger.error(
                     "Heartbeat failed for {} times, close the connection from client side: {} ",
                     heartbeatTimes, RemotingUtil.parseRemoteAddress(ctx.channel()));

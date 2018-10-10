@@ -330,6 +330,29 @@ public class Connection {
         }
     }
 
+    public void closeByHeartbeat() {
+        try {
+            if (this.getChannel() != null) {
+                this.getChannel().close().addListener(new ChannelFutureListener() {
+
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (logger.isInfoEnabled()) {
+                            logger.info(
+                                "Close the connection to remote address={}, result={}, cause={}",
+                                RemotingUtil.parseRemoteAddress(Connection.this.getChannel()),
+                                future.isSuccess(), future.cause());
+                        }
+                    }
+
+                });
+            }
+        } catch (Exception e) {
+            logger.warn("Exception caught when closing connection {}",
+                RemotingUtil.parseRemoteAddress(Connection.this.getChannel()), e);
+        }
+    }
+
     /**
     * Whether invokeFutures is completed
     *
