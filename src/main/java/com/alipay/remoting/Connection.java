@@ -152,6 +152,14 @@ public class Connection {
     }
 
     /**
+     * Whether it is closed
+     * @return true for closed by {@link Connection#close()}
+     */
+    public boolean isClosed() {
+        return closed.get();
+    }
+
+    /**
      * to check whether the connection is fine to use
      *
      * @return

@@ -18,6 +18,7 @@ package com.alipay.remoting.rpc.protocol;
 
 import java.util.concurrent.TimeUnit;
 
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandFactory;
@@ -69,7 +70,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
         final Connection conn = ctx.channel().attr(Connection.CONNECTION).get();
         if (heartbeatTimes >= maxCount) {
             try {
-                conn.close();
+                closeChannel(conn);
                 logger.error(
                     "Heartbeat failed for {} times, close the connection from client side: {} ",
                     heartbeatTimes, RemotingUtil.parseRemoteAddress(ctx.channel()));
@@ -156,6 +157,36 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                 }
             }, heartbeatTimeoutMillis, TimeUnit.MILLISECONDS);
         }
+    }
 
+    private void closeChannel(Connection connection) {
+        if (connection == null) {
+            return;
+        }
+
+        final Channel channel = connection.getChannel();
+        try {
+            if (channel != null) {
+                channel.close().addListener(new ChannelFutureListener() {
+
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (logger.isInfoEnabled()) {
+                            logger
+                                .info(
+                                    "Close the connection by heartbeat loss, remote address={}, result={}, cause={}",
+                                    RemotingUtil.parseRemoteAddress(channel), future.isSuccess(),
+                                    future.cause());
+                        }
+                    }
+
+                });
+            }
+        } catch (Exception e) {
+            logger
+                .warn(
+                    "Exception caught when closing connection that cause by heartbeat loss, remote address: {}",
+                    RemotingUtil.parseRemoteAddress(channel), e);
+        }
     }
 }
