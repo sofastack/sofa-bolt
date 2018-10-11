@@ -173,7 +173,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                     public void operationComplete(ChannelFuture future) throws Exception {
                         if (logger.isInfoEnabled()) {
                             logger.info(
-                                "Close the connection to remote address={}, result={}, cause={}",
+                                "Close the connection by heartbeat loss, remote address={}, result={}, cause={}",
                                 RemotingUtil.parseRemoteAddress(channel), future.isSuccess(),
                                 future.cause());
                         }
@@ -182,7 +182,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                 });
             }
         } catch (Exception e) {
-            logger.warn("Exception caught when closing connection {}",
+            logger.warn("Exception caught when closing connection that cause by heartbeat loss, remote address: {}",
                 RemotingUtil.parseRemoteAddress(channel), e);
         }
     }
