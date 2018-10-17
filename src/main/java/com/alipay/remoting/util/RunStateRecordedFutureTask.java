@@ -39,10 +39,15 @@ public class RunStateRecordedFutureTask<V> extends FutureTask<V> {
     }
 
     public V getAfterRun() throws InterruptedException, ExecutionException,
-                          FutureTaskNotRunYetException {
+                          FutureTaskNotRunYetException, FutureTaskNotCompleted {
         if (!hasRun.get()) {
             throw new FutureTaskNotRunYetException();
         }
+
+        if (!isDone()) {
+            throw new FutureTaskNotCompleted();
+        }
+
         return super.get();
     }
 }
