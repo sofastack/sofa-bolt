@@ -50,10 +50,10 @@ public class ReconnectManager {
     private ConnectionManager                        connectionManager;
 
     public ReconnectManager(ConnectionManager connectionManager) {
+        this.started = true;
         this.connectionManager = connectionManager;
         this.healConnectionThreads = new Thread(new HealConnectionRunner());
         this.healConnectionThreads.start();
-        this.started = true;
     }
 
     private void doReconnectTask(ReconnectTask task) throws InterruptedException, RemotingException {
@@ -121,17 +121,10 @@ public class ReconnectManager {
                 long start = -1;
                 ReconnectTask task = null;
                 try {
-                    if (this.lastConnectTime > 0
-                        && this.lastConnectTime < ReconnectManager.this.healConnectionInterval
-                        || this.lastConnectTime < 0) {
+                    if (this.lastConnectTime < ReconnectManager.this.healConnectionInterval) {
                         Thread.sleep(ReconnectManager.this.healConnectionInterval);
                     }
-                    try {
-                        task = ReconnectManager.this.tasks.take();
-                    } catch (InterruptedException e) {
-                        // ignore
-                    }
-
+                    task = ReconnectManager.this.tasks.take();
                     start = System.currentTimeMillis();
                     if (ReconnectManager.this.isValidTask(task)) {
                         try {

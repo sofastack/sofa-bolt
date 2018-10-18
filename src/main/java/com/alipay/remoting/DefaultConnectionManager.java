@@ -49,8 +49,7 @@ import com.alipay.remoting.util.StringUtils;
  * @author xiaomin.cxm
  * @version $Id: DefaultConnectionManager.java, v 0.1 Mar 8, 2016 10:43:51 AM xiaomin.cxm Exp $
  */
-public class DefaultConnectionManager implements ConnectionManager, ConnectionHeartbeatManager,
-                                     Scannable {
+public class DefaultConnectionManager implements ConnectionManager, ConnectionHeartbeatManager {
 
     // ~~~ constants
     /**
