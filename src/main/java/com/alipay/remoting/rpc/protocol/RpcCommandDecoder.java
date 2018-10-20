@@ -63,7 +63,7 @@ public class RpcCommandDecoder implements CommandDecoder {
             in.resetReaderIndex();
             if (protocol == RpcProtocol.PROTOCOL_CODE) {
                 /*
-                 * ver: version for protocol
+                 * protocolCode: code for protocol
                  * type: request/response/request oneway
                  * cmdcode: code for remoting command
                  * ver2:version for remoting command
@@ -80,7 +80,7 @@ public class RpcCommandDecoder implements CommandDecoder {
                  */
                 if (in.readableBytes() > 2) {
                     in.markReaderIndex();
-                    in.readByte(); //version
+                    in.readByte(); //protocolCode
                     byte type = in.readByte(); //type
                     if (type == RpcCommandType.REQUEST || type == RpcCommandType.REQUEST_ONEWAY) {
                         //decode request

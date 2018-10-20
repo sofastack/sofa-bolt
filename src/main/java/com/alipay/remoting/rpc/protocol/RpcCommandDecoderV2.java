@@ -65,6 +65,7 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
             in.resetReaderIndex();
             if (protocol == RpcProtocolV2.PROTOCOL_CODE) {
                 /*
+                 * protocolCode: code for protocol
                  * ver: version for protocol
                  * type: request/response/request oneway
                  * cmdcode: code for remoting command
