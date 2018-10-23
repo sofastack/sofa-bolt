@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/alipay/sofa-bolt.svg?branch=master)](https://travis-ci.org/alipay/sofa-bolt)
 [![Coverage Status](https://codecov.io/gh/alipay/sofa-bolt/branch/master/graph/badge.svg)](https://codecov.io/gh/alipay/sofa-bolt)
 ![license](https://img.shields.io/badge/license-Apache--2.0-green.svg)
-![version](https://img.shields.io/badge/bolt-1.5.1-blue.svg)
+![version](https://img.shields.io/badge/bolt-1.5.2-blue.svg)
 
 # 1. 介绍
 SOFABolt 是蚂蚁金融服务集团开发的一套基于 Netty 实现的网络通信框架。
