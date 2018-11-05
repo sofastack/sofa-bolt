@@ -40,7 +40,7 @@ public class ReconnectManager {
 
     private final LinkedBlockingQueue<ReconnectTask> tasks                  = new LinkedBlockingQueue<ReconnectTask>();
 
-    protected final List<Url/* url */>              canceled               = new CopyOnWriteArrayList<Url>();
+    protected final List<Url>                        canceled               = new CopyOnWriteArrayList<Url>();
     private volatile boolean                         started;
 
     private int                                      healConnectionInterval = 1000;
@@ -75,22 +75,12 @@ public class ReconnectManager {
     /**
      * add reconnect task
      * 
-     * @param url
+     * @param url reconnected target url
      */
     public void addReconnectTask(Url url) {
         ReconnectTask task = new ReconnectTask();
         task.url = url;
         tasks.add(task);
-    }
-
-    /**
-     * Check task whether is valid, if canceled, is not valid
-     * 
-     * @param task
-     * @return
-     */
-    private boolean isValidTask(ReconnectTask task) {
-        return !canceled.contains(task.url);
     }
 
     /**
@@ -106,12 +96,6 @@ public class ReconnectManager {
         this.canceled.clear();
     }
 
-    /**
-     * heal connection thread
-     * 
-     * @author yunliang.shi
-     * @version $Id: ReconnectManager.java, v 0.1 Mar 11, 2016 5:24:08 PM yunliang.shi Exp $
-     */
     private final class HealConnectionRunner implements Runnable {
         private long lastConnectTime = -1;
 
@@ -121,24 +105,23 @@ public class ReconnectManager {
                 long start = -1;
                 ReconnectTask task = null;
                 try {
-                    if (this.lastConnectTime > 0
-                        && this.lastConnectTime < ReconnectManager.this.healConnectionInterval
-                        || this.lastConnectTime < 0) {
+                    if (this.lastConnectTime < ReconnectManager.this.healConnectionInterval) {
                         Thread.sleep(ReconnectManager.this.healConnectionInterval);
                     }
+
                     try {
                         task = ReconnectManager.this.tasks.take();
                     } catch (InterruptedException e) {
                         // ignore
                     }
 
+                    if (task == null) {
+                        continue;
+                    }
+
                     start = System.currentTimeMillis();
-                    if (ReconnectManager.this.isValidTask(task)) {
-                        try {
-                            ReconnectManager.this.doReconnectTask(task);
-                        } catch (InterruptedException e) {
-                            throw e;
-                        }
+                    if (!canceled.contains(task.url)) {
+                        doReconnectTask(task);
                     } else {
                         logger.warn("Invalid reconnect request task {}, cancel list size {}",
                             task.url, canceled.size());

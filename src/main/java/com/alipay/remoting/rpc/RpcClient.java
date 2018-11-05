@@ -797,6 +797,7 @@ public class RpcClient extends AbstractConfigurableInstance {
         try {
             this.connectionManager.check(conn);
         } catch (Exception e) {
+            logger.warn("check failed. connection: {}", conn, e);
             return false;
         }
         return true;

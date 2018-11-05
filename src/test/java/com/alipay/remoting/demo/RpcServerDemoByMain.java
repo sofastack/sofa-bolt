@@ -33,7 +33,7 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
  */
 public class RpcServerDemoByMain {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(BasicUsageDemoByJunit.class);
+                                                            .getLogger(RpcServerDemoByMain.class);
 
     BoltServer                server;
 
