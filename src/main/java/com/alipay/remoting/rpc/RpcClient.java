@@ -131,6 +131,8 @@ public class RpcClient extends AbstractConfigurableInstance {
         }
         if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
             reconnectManager = new ReconnectManager(connectionManager);
+            reconnectManager.startup();
+
             connectionEventHandler.setReconnectManager(reconnectManager);
             logger.warn("Switch on reconnect manager");
         }
@@ -149,7 +151,7 @@ public class RpcClient extends AbstractConfigurableInstance {
         this.taskScanner.shutdown();
         logger.warn("Rpc client shutdown!");
         if (reconnectManager != null) {
-            reconnectManager.stop();
+            reconnectManager.shutdown();
         }
         if (connectionMonitor != null) {
             connectionMonitor.destroy();
