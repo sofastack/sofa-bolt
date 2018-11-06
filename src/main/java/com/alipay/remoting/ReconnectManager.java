@@ -22,7 +22,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 
-import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**
@@ -31,69 +30,87 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @author yunliang.shi
  * @version $Id: ReconnectManager.java, v 0.1 Mar 11, 2016 5:20:50 PM yunliang.shi Exp $
  */
-public class ReconnectManager {
-    private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
+public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
 
-    class ReconnectTask {
-        Url url;
-    }
+    private static final Logger                      logger                   = BoltLoggerFactory
+                                                                                  .getLogger("CommonDefault");
 
-    private final LinkedBlockingQueue<ReconnectTask> tasks                  = new LinkedBlockingQueue<ReconnectTask>();
+    private static final int                         HEAL_CONNECTION_INTERVAL = 1000;
 
-    protected final List<Url>                        canceled               = new CopyOnWriteArrayList<Url>();
-    private volatile boolean                         started;
+    private final ConnectionManager                  connectionManager;
+    private final LinkedBlockingQueue<ReconnectTask> tasks;
+    private final List<Url>                          canceled;
 
-    private int                                      healConnectionInterval = 1000;
-
-    private final Thread                             healConnectionThreads;
-
-    private ConnectionManager                        connectionManager;
+    private Thread                                   healConnectionThreads;
 
     public ReconnectManager(ConnectionManager connectionManager) {
         this.connectionManager = connectionManager;
-        this.healConnectionThreads = new Thread(new HealConnectionRunner());
-        this.healConnectionThreads.start();
-        this.started = true;
+        this.tasks = new LinkedBlockingQueue<ReconnectTask>();
+        this.canceled = new CopyOnWriteArrayList<Url>();
     }
 
-    private void doReconnectTask(ReconnectTask task) throws InterruptedException, RemotingException {
-        connectionManager.createConnectionAndHealIfNeed(task.url);
+    @Override
+    public void reconnect(Url url) {
+        tasks.add(new ReconnectTask(url));
     }
 
-    private void addReconnectTask(ReconnectTask task) {
-        tasks.add(task);
-    }
-
-    public void addCancelUrl(Url url) {
+    @Override
+    public void disableReconnect(Url url) {
         canceled.add(url);
     }
 
-    public void removeCancelUrl(Url url) {
+    @Override
+    public void enableReconnect(Url url) {
         canceled.remove(url);
     }
 
-    /**
-     * add reconnect task
-     * 
-     * @param url reconnected target url
-     */
-    public void addReconnectTask(Url url) {
-        ReconnectTask task = new ReconnectTask();
-        task.url = url;
-        tasks.add(task);
+    @Override
+    public void startup() throws LifeCycleException {
+        super.startup();
+
+        this.healConnectionThreads = new Thread(new HealConnectionRunner());
+        this.healConnectionThreads.start();
     }
 
-    /**
-     * stop reconnect thread
-     */
-    public void stop() {
-        if (!this.started) {
-            return;
-        }
-        this.started = false;
+    @Override
+    public void shutdown() throws LifeCycleException {
+        super.shutdown();
+
         healConnectionThreads.interrupt();
         this.tasks.clear();
         this.canceled.clear();
+    }
+
+    /**
+     * please use {@link ReconnectManager#disableReconnect(Url)} instead
+     */
+    @Deprecated
+    public void addCancelUrl(Url url) {
+        disableReconnect(url);
+    }
+
+    /**
+     * please use {@link ReconnectManager#enableReconnect(Url)} instead
+     */
+    @Deprecated
+    public void removeCancelUrl(Url url) {
+        enableReconnect(url);
+    }
+
+    /**
+     * please use {@link ReconnectManager#reconnect(Url)} instead
+     */
+    @Deprecated
+    public void addReconnectTask(Url url) {
+        reconnect(url);
+    }
+
+    /**
+     * please use {@link ReconnectManager#shutdown()} instead
+     */
+    @Deprecated
+    public void stop() {
+        shutdown();
     }
 
     private final class HealConnectionRunner implements Runnable {
@@ -101,12 +118,12 @@ public class ReconnectManager {
 
         @Override
         public void run() {
-            while (ReconnectManager.this.started) {
+            while (isStarted()) {
                 long start = -1;
                 ReconnectTask task = null;
                 try {
-                    if (this.lastConnectTime < ReconnectManager.this.healConnectionInterval) {
-                        Thread.sleep(ReconnectManager.this.healConnectionInterval);
+                    if (this.lastConnectTime < HEAL_CONNECTION_INTERVAL) {
+                        Thread.sleep(HEAL_CONNECTION_INTERVAL);
                     }
 
                     try {
@@ -121,25 +138,39 @@ public class ReconnectManager {
 
                     start = System.currentTimeMillis();
                     if (!canceled.contains(task.url)) {
-                        doReconnectTask(task);
+                        task.run();
                     } else {
                         logger.warn("Invalid reconnect request task {}, cancel list size {}",
                             task.url, canceled.size());
                     }
                     this.lastConnectTime = System.currentTimeMillis() - start;
                 } catch (Exception e) {
-                    retryWhenException(start, task, e);
+                    if (start != -1) {
+                        this.lastConnectTime = System.currentTimeMillis() - start;
+                    }
+
+                    if (task != null) {
+                        logger.warn("reconnect target: {} failed.", task.url, e);
+                        tasks.add(task);
+                    }
                 }
             }
         }
+    }
 
-        private void retryWhenException(long start, ReconnectTask task, Exception e) {
-            if (start != -1) {
-                this.lastConnectTime = System.currentTimeMillis() - start;
-            }
-            if (task != null) {
-                logger.warn("reconnect target: {} failed.", task.url, e);
-                ReconnectManager.this.addReconnectTask(task);
+    private class ReconnectTask implements Runnable {
+        Url url;
+
+        public ReconnectTask(Url url) {
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            try {
+                connectionManager.createConnectionAndHealIfNeed(url);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
     }
