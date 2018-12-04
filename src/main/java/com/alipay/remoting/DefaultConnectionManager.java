@@ -205,17 +205,17 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
 
     /**
      * @param connectionSelectStrategy
-     * @param connctionFactory
+     * @param connectionFactory
      * @param connectionEventHandler
      * @param connectionEventListener
      * @param globalSwitch
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
-                                    ConnectionFactory connctionFactory,
+                                    ConnectionFactory connectionFactory,
                                     ConnectionEventHandler connectionEventHandler,
                                     ConnectionEventListener connectionEventListener,
                                     GlobalSwitch globalSwitch) {
-        this(connectionSelectStrategy, connctionFactory, connectionEventHandler,
+        this(connectionSelectStrategy, connectionFactory, connectionEventHandler,
             connectionEventListener);
         this.globalSwitch = globalSwitch;
     }
@@ -381,15 +381,13 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         if (null == this.connTasks || this.connTasks.isEmpty()) {
             return;
         }
-        if (null != this.connTasks && !this.connTasks.isEmpty()) {
-            Iterator<String> iter = this.connTasks.keySet().iterator();
-            while (iter.hasNext()) {
-                String poolKey = iter.next();
-                this.removeTask(poolKey);
-                iter.remove();
-            }
-            logger.warn("All connection pool and connections have been removed!");
+        Iterator<String> iter = this.connTasks.keySet().iterator();
+        while (iter.hasNext()) {
+            String poolKey = iter.next();
+            this.removeTask(poolKey);
+            iter.remove();
         }
+        logger.warn("All connection pool and connections have been removed!");
     }
 
     /**
@@ -592,10 +590,11 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         for (int i = 0; (i < retry) && (pool == null); ++i) {
             initialTask = this.connTasks.get(poolKey);
             if (null == initialTask) {
-                initialTask = new RunStateRecordedFutureTask<ConnectionPool>(callable);
-                initialTask = this.connTasks.putIfAbsent(poolKey, initialTask);
+                RunStateRecordedFutureTask<ConnectionPool> newTask = new RunStateRecordedFutureTask<ConnectionPool>(
+                    callable);
+                initialTask = this.connTasks.putIfAbsent(poolKey, newTask);
                 if (null == initialTask) {
-                    initialTask = this.connTasks.get(poolKey);
+                    initialTask = newTask;
                     initialTask.run();
                 }
             }
@@ -667,10 +666,11 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         if (pool.isAsyncCreationDone() && pool.size() < url.getConnNum()) {
             FutureTask<Integer> task = this.healTasks.get(poolKey);
             if (null == task) {
-                task = new FutureTask<Integer>(new HealConnectionCall(url, pool));
-                task = this.healTasks.putIfAbsent(poolKey, task);
+                FutureTask<Integer> newTask = new FutureTask<Integer>(new HealConnectionCall(url,
+                    pool));
+                task = this.healTasks.putIfAbsent(poolKey, newTask);
                 if (null == task) {
-                    task = this.healTasks.get(poolKey);
+                    task = newTask;
                     task.run();
                 }
             }
