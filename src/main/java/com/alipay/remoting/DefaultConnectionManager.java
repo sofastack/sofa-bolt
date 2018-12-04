@@ -590,7 +590,8 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         for (int i = 0; (i < retry) && (pool == null); ++i) {
             initialTask = this.connTasks.get(poolKey);
             if (null == initialTask) {
-                RunStateRecordedFutureTask<ConnectionPool> newTask = new RunStateRecordedFutureTask<ConnectionPool>(callable);
+                RunStateRecordedFutureTask<ConnectionPool> newTask = new RunStateRecordedFutureTask<ConnectionPool>(
+                    callable);
                 initialTask = this.connTasks.putIfAbsent(poolKey, newTask);
                 if (null == initialTask) {
                     initialTask = newTask;
@@ -665,7 +666,8 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         if (pool.isAsyncCreationDone() && pool.size() < url.getConnNum()) {
             FutureTask<Integer> task = this.healTasks.get(poolKey);
             if (null == task) {
-                FutureTask<Integer> newTask = new FutureTask<Integer>(new HealConnectionCall(url, pool));
+                FutureTask<Integer> newTask = new FutureTask<Integer>(new HealConnectionCall(url,
+                    pool));
                 task = this.healTasks.putIfAbsent(poolKey, newTask);
                 if (null == task) {
                     task = newTask;
