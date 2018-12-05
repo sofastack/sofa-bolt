@@ -75,11 +75,12 @@ public class DefaultInvokeFuture implements InvokeFuture {
 
     /**
      * Constructor.
-     * 
-     * @param invokeId
-     * @param callbackListener
-     * @param callback
-     * @param protocol
+     *
+     * @param invokeId invoke id
+     * @param callbackListener callback listener
+     * @param callback callback
+     * @param protocol protocol code
+     * @param commandFactory command factory
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol, CommandFactory commandFactory) {
@@ -92,12 +93,14 @@ public class DefaultInvokeFuture implements InvokeFuture {
     }
 
     /**
+     * Constructor.
      *
-     * @param invokeId
-     * @param callbackListener
-     * @param callback
-     * @param protocol
-     * @param invokeContext
+     * @param invokeId invoke id
+     * @param callbackListener callback listener
+     * @param callback callback
+     * @param protocol protocol
+     * @param commandFactory command factory
+     * @param invokeContext invoke context
      */
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol,
@@ -106,20 +109,12 @@ public class DefaultInvokeFuture implements InvokeFuture {
         this.invokeContext = invokeContext;
     }
 
-    /** 
-     * @throws InterruptedException 
-     * @see com.alipay.remoting.InvokeFuture#waitResponse(long)
-     */
     @Override
     public ResponseCommand waitResponse(long timeoutMillis) throws InterruptedException {
         this.countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
         return this.responseCommand;
     }
 
-    /**
-     * @throws InterruptedException
-     * @see com.alipay.remoting.InvokeFuture#waitResponse(long)
-     */
     @Override
     public ResponseCommand waitResponse() throws InterruptedException {
         this.countDownLatch.await();
@@ -248,7 +243,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
                 CommandHandler commandHandler = protocol.getCommandHandler();
                 if (null != commandHandler) {
                     ExecutorService executor = commandHandler.getDefaultExecutor();
-                    if (null != executor)
+                    if (null != executor) {
                         executor.execute(new Runnable() {
                             @Override
                             public void run() {
@@ -269,6 +264,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
                                 }
                             }
                         });
+                    }
                 } else {
                     logger.error("Executor null in commandHandler of protocolCode [{}].",
                         this.protocol);

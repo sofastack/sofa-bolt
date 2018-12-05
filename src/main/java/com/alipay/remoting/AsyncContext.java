@@ -28,5 +28,5 @@ public interface AsyncContext {
      * 
      * @param responseObject
      */
-    public void sendResponse(Object responseObject);
+    void sendResponse(Object responseObject);
 }

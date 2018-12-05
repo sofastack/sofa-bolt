@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.FutureTaskUtil;
 import com.alipay.remoting.util.RemotingUtil;
@@ -45,13 +47,13 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
                                                                .getLogger("CommonDefault");
 
     /** the connections threshold of each {@link Url#uniqueKey} */
-    private static final int        CONNECTION_THRESHOLD   = SystemProperties.conn_threshold();
+    private static final int        CONNECTION_THRESHOLD   = ConfigManager.conn_threshold();
 
     /** fresh select connections to be closed */
     private Map<String, Connection> freshSelectConnections = new ConcurrentHashMap<String, Connection>();
 
     /** Retry detect period for ScheduledDisconnectStrategy*/
-    private static int              RETRY_DETECT_PERIOD    = SystemProperties.retry_detect_period();
+    private static int              RETRY_DETECT_PERIOD    = ConfigManager.retry_detect_period();
 
     /** random */
     private Random                  random                 = new Random();

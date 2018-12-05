@@ -34,10 +34,7 @@ import com.alipay.remoting.util.RemotingUtil;
  * @version $Id: RpcClientRemoting.java, v 0.1 Apr 14, 2016 11:58:56 AM xiaomin.cxm Exp $
  */
 public class RpcClientRemoting extends RpcRemoting {
-    /**
-     * @param addressParser
-     * @param connectionManager
-     */
+
     public RpcClientRemoting(CommandFactory commandFactory, RemotingAddressParser addressParser,
                              DefaultConnectionManager connectionManager) {
         super(commandFactory, addressParser, connectionManager);
@@ -114,16 +111,15 @@ public class RpcClientRemoting extends RpcRemoting {
     /**
      * Get connection and set init invokeContext if invokeContext not {@code null}
      *
-     * @param url
-     * @param invokeContext
-     * @return
-     * @throws RemotingException
+     * @param url target url
+     * @param invokeContext invoke context to set
+     * @return connection
      */
     protected Connection getConnectionAndInitInvokeContext(Url url, InvokeContext invokeContext)
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
         long start = System.currentTimeMillis();
-        Connection conn = null;
+        Connection conn;
         try {
             conn = this.connectionManager.getAndCreateIfAbsent(url);
         } finally {

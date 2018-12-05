@@ -16,15 +16,16 @@
  */
 package com.alipay.remoting;
 
-import com.alipay.remoting.rpc.RpcServer;
+import static org.mockito.Mockito.when;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.mockito.Mockito.when;
+import com.alipay.remoting.rpc.RpcServer;
 
 /**
- * test {@link RemotingServer} apis
+ * test {@link AbstractRemotingServer} apis
  *
  * @author tsui
  * @version $Id: RemotingServerTest.java, v 0.1 May 16, 2018 10:00:48 AM tsui Exp $
@@ -36,7 +37,7 @@ public class RemotingServerTest {
         rpcServer.start();
 
         try {
-            Assert.assertTrue(rpcServer.start());
+            rpcServer.start();
             Assert.fail("Should not reach here!");
         } catch (Exception e) {
             // expect IllegalStateException
@@ -46,20 +47,17 @@ public class RemotingServerTest {
 
     @Test
     public void testStartFailed() throws InterruptedException {
-        RemotingServer remotingServer = Mockito.mock(RemotingServer.class);
+        AbstractRemotingServer remotingServer = Mockito.mock(AbstractRemotingServer.class);
         when(remotingServer.doStart()).thenThrow(new RuntimeException("start error"));
-        try {
-            Assert.assertFalse(remotingServer.start());
-        } catch (Exception e) {
-            Assert.fail("Should not reach here!");
-        }
+
+        Assert.assertFalse(remotingServer.start());
     }
 
     @Test
     public void testStopRepeatedly() {
         RpcServer rpcServer = new RpcServer(1111);
         try {
-            Assert.assertTrue(rpcServer.start());
+            rpcServer.start();
         } catch (Exception e) {
             Assert.fail("Should not reach here!");
             e.printStackTrace();

@@ -41,7 +41,7 @@ public class ReconnectManager {
     private final LinkedBlockingQueue<ReconnectTask> tasks                  = new LinkedBlockingQueue<ReconnectTask>();
 
     protected final List<Url/* url */>              canceled               = new CopyOnWriteArrayList<Url>();
-    private volatile boolean                         started                = false;
+    private volatile boolean                         started;
 
     private int                                      healConnectionInterval = 1000;
 
@@ -115,6 +115,7 @@ public class ReconnectManager {
     private final class HealConnectionRunner implements Runnable {
         private long lastConnectTime = -1;
 
+        @Override
         public void run() {
             while (ReconnectManager.this.started) {
                 long start = -1;

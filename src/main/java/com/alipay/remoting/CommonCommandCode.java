@@ -28,10 +28,11 @@ public enum CommonCommandCode implements CommandCode {
 
     private short value;
 
-    private CommonCommandCode(short value) {
+    CommonCommandCode(short value) {
         this.value = value;
     }
 
+    @Override
     public short value() {
         return this.value;
     }

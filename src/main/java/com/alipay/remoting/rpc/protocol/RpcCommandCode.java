@@ -33,6 +33,7 @@ public enum RpcCommandCode implements CommandCode {
         this.value = value;
     }
 
+    @Override
     public short value() {
         return this.value;
     }

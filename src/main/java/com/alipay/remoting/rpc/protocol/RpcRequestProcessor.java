@@ -63,7 +63,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
     }
 
     /**
-     * @param executor
+     * Constructor.
      */
     public RpcRequestProcessor(ExecutorService executor) {
         super(executor);
@@ -100,7 +100,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
             return;// end
         }
 
-        Executor executor = null;
+        Executor executor;
         // to check whether get executor using executor selector
         if (null == userProcessor.getExecutorSelector()) {
             executor = userProcessor.getExecutor();
@@ -130,14 +130,14 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void doProcess(final RemotingContext ctx, RpcRequestCommand cmd) throws Exception {
-        long currenTimestamp = System.currentTimeMillis();
+        long currentTimestamp = System.currentTimeMillis();
 
-        preProcessRemotingContext(ctx, cmd, currenTimestamp);
+        preProcessRemotingContext(ctx, cmd, currentTimestamp);
         if (ctx.isTimeoutDiscard() && ctx.isRequestTimeout()) {
-            timeoutLog(cmd, currenTimestamp, ctx);// do some log
+            timeoutLog(cmd, currentTimestamp, ctx);// do some log
             return;// then, discard this request
         }
-        debugLog(ctx, cmd, currenTimestamp);
+        debugLog(ctx, cmd, currentTimestamp);
         // decode request all
         if (!deserializeRequestCommand(ctx, cmd, RpcDeserializeLevel.DESERIALIZE_ALL)) {
             return;
@@ -149,8 +149,9 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
      * Send response using remoting context if necessary.<br>
      * If request type is oneway, no need to send any response nor exception.
      *
-     * @param ctx
-     * @param response
+     * @param ctx remoting context
+     * @param type type code
+     * @param response remoting command
      */
     public void sendResponseIfNecessary(final RemotingContext ctx, byte type,
                                         final RemotingCommand response) {
@@ -164,7 +165,13 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                                 + id;
                 logger.error(errMsg, e);
                 serializedResponse = this.getCommandFactory().createExceptionResponse(id,
-                    ResponseStatus.SERVER_SERIAL_EXCEPTION);
+                    ResponseStatus.SERVER_SERIAL_EXCEPTION, e);
+                try {
+                    serializedResponse.serialize();// serialize again for exception response
+                } catch (SerializationException e1) {
+                    // should not happen
+                    logger.error("serialize SerializationException response failed!");
+                }
             } catch (Throwable t) {
                 String errMsg = "Serialize RpcResponseCommand failed when sendResponseIfNecessary in RpcRequestProcessor, id="
                                 + id;
@@ -204,9 +211,8 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
 
     /**
      * dispatch request command to user processor
-     *
-     * @param ctx
-     * @param cmd
+     * @param ctx remoting context
+     * @param cmd rpc request command
      */
     private void dispatchToUserProcessor(RemotingContext ctx, RpcRequestCommand cmd) {
         final int id = cmd.getId();
@@ -252,14 +258,11 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
 
     /**
      * deserialize request command
-     * 
-     * @param ctx
-     * @param cmd
-     * @param level
+     *
      * @return true if deserialize success; false if exception catched
      */
     private boolean deserializeRequestCommand(RemotingContext ctx, RpcRequestCommand cmd, int level) {
-        boolean result = false;
+        boolean result;
         try {
             cmd.deserialize(level);
             result = true;
@@ -269,7 +272,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                     "DeserializationException occurred when process in RpcRequestProcessor, id={}, deserializeLevel={}",
                     cmd.getId(), RpcDeserializeLevel.valueOf(level), e);
             sendResponseIfNecessary(ctx, cmd.getType(), this.getCommandFactory()
-                .createExceptionResponse(cmd.getId(), ResponseStatus.SERVER_DESERIAL_EXCEPTION));
+                .createExceptionResponse(cmd.getId(), ResponseStatus.SERVER_DESERIAL_EXCEPTION, e));
             result = false;
         } catch (Throwable t) {
             String errMsg = "Deserialize RpcRequestCommand failed in RpcRequestProcessor, id="
@@ -284,34 +287,30 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
 
     /**
      * pre process remoting context, initial some useful infos and pass to biz
-     * 
-     * @param ctx
-     * @param cmd
-     * @param currenTimestamp
+     *
+     * @param ctx remoting context
+     * @param cmd rpc request command
+     * @param currentTimestamp current timestamp
      */
     private void preProcessRemotingContext(RemotingContext ctx, RpcRequestCommand cmd,
-                                           long currenTimestamp) {
+                                           long currentTimestamp) {
         ctx.setArriveTimestamp(cmd.getArriveTime());
         ctx.setTimeout(cmd.getTimeout());
         ctx.setRpcCommandType(cmd.getType());
         ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_WAIT_TIME,
-            currenTimestamp - cmd.getArriveTime());
+            currentTimestamp - cmd.getArriveTime());
     }
 
     /**
      * print some log when request timeout and discarded in io thread.
-     *
-     * @param cmd
-     * @param currenTimestamp
-     * @return true if request already timeout.
      */
-    private void timeoutLog(final RpcRequestCommand cmd, long currenTimestamp, RemotingContext ctx) {
+    private void timeoutLog(final RpcRequestCommand cmd, long currentTimestamp, RemotingContext ctx) {
         if (logger.isDebugEnabled()) {
             logger
                 .debug(
                     "request id [{}] currenTimestamp [{}] - arriveTime [{}] = server cost [{}] >= timeout value [{}].",
-                    cmd.getId(), currenTimestamp, cmd.getArriveTime(),
-                    (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
+                    cmd.getId(), currentTimestamp, cmd.getArriveTime(),
+                    (currentTimestamp - cmd.getArriveTime()), cmd.getTimeout());
         }
 
         String remoteAddr = "UNKNOWN";
@@ -325,24 +324,20 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         logger
             .warn(
                 "Rpc request id[{}], from remoteAddr[{}] stop process, total wait time in queue is [{}], client timeout setting is [{}].",
-                cmd.getId(), remoteAddr, (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
+                cmd.getId(), remoteAddr, (currentTimestamp - cmd.getArriveTime()), cmd.getTimeout());
     }
 
     /**
      * print some debug log when receive request
-     *
-     * @param ctx
-     * @param cmd
-     * @param currenTimestamp
      */
-    private void debugLog(RemotingContext ctx, RpcRequestCommand cmd, long currenTimestamp) {
+    private void debugLog(RemotingContext ctx, RpcRequestCommand cmd, long currentTimestamp) {
         if (logger.isDebugEnabled()) {
             logger.debug("Rpc request received! requestId={}, from {}", cmd.getId(),
                 RemotingUtil.parseRemoteAddress(ctx.getChannelContext().channel()));
             logger.debug(
                 "request id {} currenTimestamp {} - arriveTime {} = server cost {} < timeout {}.",
-                cmd.getId(), currenTimestamp, cmd.getArriveTime(),
-                (currenTimestamp - cmd.getArriveTime()), cmd.getTimeout());
+                cmd.getId(), currentTimestamp, cmd.getArriveTime(),
+                (currentTimestamp - cmd.getArriveTime()), cmd.getTimeout());
         }
     }
 

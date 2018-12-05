@@ -83,7 +83,6 @@ public class BoltLoggerFactory {
         if (name == null || name.isEmpty()) {
             return null;
         }
-        Logger logger = LoggerSpaceManager.getLoggerBySpace(name, BOLT_LOG_SPACE);
-        return logger;
+        return LoggerSpaceManager.getLoggerBySpace(name, BOLT_LOG_SPACE);
     }
 }

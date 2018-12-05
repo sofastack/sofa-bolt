@@ -23,11 +23,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/** 
+/**
  * test rpc server and stop logic
  *
  * @author tsui  
- * @version $Id: RpcServerTest.java, v 0.1 2018-05-29 15:27 tsui Exp $$  
+ * @version $Id: RpcServerTest.java, v 0.1 2018-05-29 15:27 tsui Exp $$ 
  */
 public class RpcServerTest {
     static Logger logger = LoggerFactory.getLogger(RpcServerTest.class);
@@ -49,20 +49,22 @@ public class RpcServerTest {
     private void doTestStartAndStop(boolean syncStop) {
         // 1. start a rpc server successfully
         RpcServer rpcServer1 = new RpcServer(1111, false, syncStop);
-        if (!rpcServer1.start()) {
-            Assert.fail("Should not reach here");
+        try {
+            rpcServer1.start();
+        } catch (Exception e) {
             logger.warn("start fail");
-        } else {
-            logger.warn("start success");
+            Assert.fail("Should not reach here");
         }
 
+        logger.warn("start success");
         // 2. start a rpc server with the same port number failed
         RpcServer rpcServer2 = new RpcServer(1111, false, syncStop);
-        if (!rpcServer2.start()) {
-            logger.warn("start fail");
-        } else {
+        try {
+            rpcServer2.start();
             Assert.fail("Should not reach here");
             logger.warn("start success");
+        } catch (Exception e) {
+            logger.warn("start fail");
         }
 
         // 3. stop the first rpc server successfully

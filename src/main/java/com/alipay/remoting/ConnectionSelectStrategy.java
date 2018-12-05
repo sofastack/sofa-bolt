@@ -31,5 +31,5 @@ public interface ConnectionSelectStrategy {
      * @param conns
      * @return
      */
-    public Connection select(List<Connection> conns);
+    Connection select(List<Connection> conns);
 }

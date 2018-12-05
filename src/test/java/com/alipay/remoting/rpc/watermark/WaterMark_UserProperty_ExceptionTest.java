@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.Configs;
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.exception.RemotingException;
@@ -40,14 +39,14 @@ import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
 import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
 
 /**
- * water mark exception test, set a small buffer mark, and trigger write over flow.
+ * water mark exception test, set a small buffer mark by system property, and trigger write over flow.
  * 
  * @author xiaomin.cxm
- * @version $Id: WaterMark_ExceptionTest.java, v 0.1 Apr 6, 2016 8:58:36 PM xiaomin.cxm Exp $
+ * @version $Id: WaterMark_SystemProperty_ExceptionTest.java, v 0.1 Apr 6, 2016 8:58:36 PM xiaomin.cxm Exp $
  */
-public class WaterMark_ExceptionTest {
+public class WaterMark_UserProperty_ExceptionTest {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(WaterMark_ExceptionTest.class);
+                                                            .getLogger(WaterMark_UserProperty_ExceptionTest.class);
 
     BoltServer                server;
     RpcClient                 client;
@@ -69,10 +68,8 @@ public class WaterMark_ExceptionTest {
 
     @Before
     public void init() {
-        System.setProperty(Configs.NETTY_BUFFER_HIGH_WATERMARK, Integer.toString(2));
-        System.setProperty(Configs.NETTY_BUFFER_LOW_WATERMARK, Integer.toString(1));
-
         server = new BoltServer(port, true);
+        server.getRpcServer().initWriteBufferWaterMark(1, 2);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);
@@ -82,6 +79,7 @@ public class WaterMark_ExceptionTest {
         client.addConnectionEventProcessor(ConnectionEventType.CONNECT, clientConnectProcessor);
         client.addConnectionEventProcessor(ConnectionEventType.CLOSE, clientDisConnectProcessor);
         client.registerUserProcessor(clientUserProcessor);
+        client.initWriteBufferWaterMark(1, 2);
         client.init();
     }
 

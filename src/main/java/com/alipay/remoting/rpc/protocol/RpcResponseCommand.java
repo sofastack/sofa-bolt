@@ -18,10 +18,10 @@ package com.alipay.remoting.rpc.protocol;
 
 import java.io.UnsupportedEncodingException;
 
-import com.alipay.remoting.Configs;
 import com.alipay.remoting.CustomSerializer;
 import com.alipay.remoting.CustomSerializerManager;
 import com.alipay.remoting.InvokeContext;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.ResponseCommand;
@@ -109,10 +109,10 @@ public class RpcResponseCommand extends ResponseCommand {
                 if (this.getCustomSerializer() != null
                     && this.getCustomSerializer().serializeContent(this)) {
                     return;
-                } else {
-                    this.setContent(SerializerManager.getSerializer(this.getSerializer())
-                        .serialize(this.responseObject));
                 }
+
+                this.setContent(SerializerManager.getSerializer(this.getSerializer()).serialize(
+                    this.responseObject));
             } catch (SerializationException e) {
                 throw e;
             } catch (Exception e) {
@@ -120,7 +120,7 @@ public class RpcResponseCommand extends ResponseCommand {
                     "Exception caught when serialize content of rpc response command!", e);
             }
         }
-    };
+    }
 
     @Override
     public void deserializeContent(InvokeContext invokeContext) throws DeserializationException {

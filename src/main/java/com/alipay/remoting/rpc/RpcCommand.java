@@ -20,13 +20,13 @@ import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.RemotingCommand;
-import com.alipay.remoting.SystemProperties;
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.protocol.RpcDeserializeLevel;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
-import com.alipay.remoting.util.ProtocolSwitch;
 
 /**
  * Remoting command. <br>
@@ -51,7 +51,7 @@ public abstract class RpcCommand implements RemotingCommand {
      * Serializer, see the Configs.SERIALIZER_DEFAULT for the default serializer.
      * Notice: this can not be changed after initialized at runtime.
      */
-    private byte              serializer       = SystemProperties.serializer;
+    private byte              serializer       = ConfigManager.serializer;
     /**
      * protocol switches
      */
@@ -211,6 +211,7 @@ public abstract class RpcCommand implements RemotingCommand {
         return serializer;
     }
 
+    @Override
     public ProtocolSwitch getProtocolSwitch() {
         return protocolSwitch;
     }
@@ -243,6 +244,7 @@ public abstract class RpcCommand implements RemotingCommand {
         this.protocolSwitch = protocolSwitch;
     }
 
+    @Override
     public int getId() {
         return id;
     }

@@ -31,20 +31,20 @@ public interface InvokeCallback {
      * 
      * @param result
      */
-    public void onResponse(final Object result);
+    void onResponse(final Object result);
 
     /**
      * Exception caught.
      * 
      * @param e
      */
-    public void onException(final Throwable e);
+    void onException(final Throwable e);
 
     /**
      * User defined executor.
      * 
      * @return
      */
-    public Executor getExecutor();
+    Executor getExecutor();
 
 }

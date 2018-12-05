@@ -44,101 +44,89 @@ public class RpcResponseResolver {
 
     /**
      * Analyze the response command and generate the response object.
-     * 
-     * @param responseCommand
-     * @param addr
-     * @return
-     * @throws RemotingException 
+     *
+     * @param responseCommand response command
+     * @param addr response address
+     * @return response object
      */
     public static Object resolveResponseObject(ResponseCommand responseCommand, String addr)
                                                                                             throws RemotingException {
-
         preProcess(responseCommand, addr);
-
         if (responseCommand.getResponseStatus() == ResponseStatus.SUCCESS) {
             return toResponseObject(responseCommand);
         } else {
-            String msg = "Rpc invocation exception:" + responseCommand.getResponseStatus()
-                         + ", the address is " + addr + ", id=" + responseCommand.getId();
+            String msg = String.format("Rpc invocation exception: %s, the address is %s, id=%s",
+                responseCommand.getResponseStatus(), addr, responseCommand.getId());
             logger.warn(msg);
             if (responseCommand.getCause() != null) {
                 throw new InvokeException(msg, responseCommand.getCause());
             } else {
-                throw new InvokeException(msg + ", please check the server log.");
+                throw new InvokeException(msg + ", please check the server log for more.");
             }
         }
 
     }
 
-    /**
-     * 
-     * @param responseCommand
-     * @param addr
-     * @throws RemotingException 
-     */
     private static void preProcess(ResponseCommand responseCommand, String addr)
                                                                                 throws RemotingException {
-
         RemotingException e = null;
         String msg = null;
         if (responseCommand == null) {
-            msg = "Rpc invocation timeout[responseCommand null]! the address is " + addr;
+            msg = String.format("Rpc invocation timeout[responseCommand null]! the address is %s",
+                addr);
             e = new InvokeTimeoutException(msg);
         } else {
             switch (responseCommand.getResponseStatus()) {
                 case TIMEOUT:
-                    msg = "Rpc invocation timeout[responseCommand TIMEOUT]! the address is " + addr;
+                    msg = String.format(
+                        "Rpc invocation timeout[responseCommand TIMEOUT]! the address is %s", addr);
                     e = new InvokeTimeoutException(msg);
                     break;
                 case CLIENT_SEND_ERROR:
-                    msg = "Rpc invocation send failed! the address is " + addr;
+                    msg = String.format("Rpc invocation send failed! the address is %s", addr);
                     e = new InvokeSendFailedException(msg, responseCommand.getCause());
                     break;
                 case CONNECTION_CLOSED:
-                    msg = "Connection closed! the address is " + addr;
+                    msg = String.format("Connection closed! the address is %s", addr);
                     e = new ConnectionClosedException(msg);
                     break;
                 case SERVER_THREADPOOL_BUSY:
-                    msg = "Server thread pool busy! the address is " + addr + ", id="
-                          + responseCommand.getId();
+                    msg = String.format("Server thread pool busy! the address is %s, id=%s", addr,
+                        responseCommand.getId());
                     e = new InvokeServerBusyException(msg);
                     break;
                 case CODEC_EXCEPTION:
-                    msg = "Codec exception! the address is " + addr + ", id="
-                          + responseCommand.getId();
+                    msg = String.format("Codec exception! the address is %s, id=%s", addr,
+                        responseCommand.getId());
                     e = new CodecException(msg);
                     break;
                 case SERVER_SERIAL_EXCEPTION:
-                    msg = "Server serialize response exception! the address is " + addr + ", id="
-                          + responseCommand.getId() + ", serverSide=true";
-                    e = new SerializationException(msg, true);
+                    msg = String
+                        .format(
+                            "Server serialize response exception! the address is %s, id=%s, serverSide=true",
+                            addr, responseCommand.getId());
+                    e = new SerializationException(detailErrMsg(msg, responseCommand),
+                        toThrowable(responseCommand), true);
                     break;
                 case SERVER_DESERIAL_EXCEPTION:
-                    msg = "Server deserialize request exception! the address is " + addr + ", id="
-                          + responseCommand.getId() + ", serverSide=true";
-                    e = new DeserializationException(msg, true);
+                    msg = String
+                        .format(
+                            "Server deserialize request exception! the address is %s, id=%s, serverSide=true",
+                            addr, responseCommand.getId());
+                    e = new DeserializationException(detailErrMsg(msg, responseCommand),
+                        toThrowable(responseCommand), true);
                     break;
                 case SERVER_EXCEPTION:
-                    msg = "Server exception! Please check the server log, the address is " + addr
-                          + ", id=" + responseCommand.getId();
-                    RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
-                    if (resp.getErrorMsg() != null) {
-                        msg = msg + ".ErrorMsg: " + resp.getErrorMsg();
-                    }
-                    resp.deserialize();
-                    Object ex = resp.getResponseObject();
-                    if (ex != null && ex instanceof Throwable) {
-                        e = new InvokeServerException(msg, (Throwable) ex);
-                    } else {
-                        e = new InvokeServerException(msg);
-                    }
+                    msg = String.format(
+                        "Server exception! Please check the server log, the address is %s, id=%s",
+                        addr, responseCommand.getId());
+                    e = new InvokeServerException(detailErrMsg(msg, responseCommand),
+                        toThrowable(responseCommand));
                     break;
                 default:
                     break;
             }
-
         }
-
         if (StringUtils.isNotBlank(msg)) {
             logger.warn(msg);
         }
@@ -149,14 +137,35 @@ public class RpcResponseResolver {
 
     /**
      * Convert remoting response command to application response object.
-     * 
-     * @param responseCommand
-     * @return
-     * @throws CodecException 
      */
     private static Object toResponseObject(ResponseCommand responseCommand) throws CodecException {
         RpcResponseCommand response = (RpcResponseCommand) responseCommand;
         response.deserialize();
         return response.getResponseObject();
+    }
+
+    /**
+     * Convert remoting response command to throwable if it is a throwable, otherwise return null.
+     */
+    private static Throwable toThrowable(ResponseCommand responseCommand) throws CodecException {
+        RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
+        resp.deserialize();
+        Object ex = resp.getResponseObject();
+        if (ex != null && ex instanceof Throwable) {
+            return (Throwable) ex;
+        }
+        return null;
+    }
+
+    /**
+     * Detail your error msg with the error msg returned from response command
+     */
+    private static String detailErrMsg(String clientErrMsg, ResponseCommand responseCommand) {
+        RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
+        if (StringUtils.isNotBlank(resp.getErrorMsg())) {
+            return String.format("%s, ServerErrorMsg:%s", clientErrMsg, resp.getErrorMsg());
+        } else {
+            return String.format("%s, ServerErrorMsg:null", clientErrMsg);
+        }
     }
 }
