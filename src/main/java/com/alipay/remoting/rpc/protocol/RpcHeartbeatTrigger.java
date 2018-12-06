@@ -16,41 +16,40 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-
 import com.alipay.remoting.CommandFactory;
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.HeartbeatTrigger;
 import com.alipay.remoting.InvokeCallbackListener;
 import com.alipay.remoting.InvokeFuture;
 import com.alipay.remoting.ResponseStatus;
+import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.TimerHolder;
-import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.DefaultInvokeFuture;
 import com.alipay.remoting.rpc.HeartbeatCommand;
 import com.alipay.remoting.rpc.ResponseCommand;
 import com.alipay.remoting.util.RemotingUtil;
-
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.slf4j.Logger;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Handler for heart beat.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcHeartbeatTrigger.java, v 0.1 2015-9-29 PM3:17:45 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcHeartbeatTrigger implements HeartbeatTrigger {
     private static final Logger logger                 = BoltLoggerFactory.getLogger("RpcRemoting");
 
     /** max trigger times */
-    public static final Integer maxCount               = ConfigManager.tcp_idle_maxtimes();
+    public static final Integer maxCount               = SystemProperties.tcp_idle_maxtimes();
 
     private static final long   heartbeatTimeoutMillis = 1000;
 
@@ -63,6 +62,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
     /**
      * @see com.alipay.remoting.HeartbeatTrigger#heartbeatTriggered(io.netty.channel.ChannelHandlerContext)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void heartbeatTriggered(final ChannelHandlerContext ctx) throws Exception {
         Integer heartbeatTimes = ctx.channel().attr(Connection.HEARTBEAT_COUNT).get();
@@ -74,7 +74,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                     "Heartbeat failed for {} times, close the connection from client side: {} ",
                     heartbeatTimes, RemotingUtil.parseRemoteAddress(ctx.channel()));
             } catch (Exception e) {
-                logger.warn("Exception caught when closing connection in SharableHandler.", e);
+                logger.warn("Exception caught when closing connection in HeartbeatHandler.", e);
             }
         } else {
             boolean heartbeatSwitch = ctx.channel().attr(Connection.HEARTBEAT_SWITCH).get();
@@ -87,7 +87,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                 new InvokeCallbackListener() {
                     @Override
                     public void onResponse(InvokeFuture future) {
-                        ResponseCommand response;
+                        ResponseCommand response = null;
                         try {
                             response = (ResponseCommand) future.waitResponse(0);
                         } catch (InterruptedException e) {
@@ -103,7 +103,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                                     response.getId(),
                                     RemotingUtil.parseRemoteAddress(ctx.channel()));
                             }
-                            ctx.channel().attr(Connection.HEARTBEAT_COUNT).set(0);
+                            ctx.channel().attr(Connection.HEARTBEAT_COUNT).set(new Integer(0));
                         } else {
                             if (response == null) {
                                 logger.error("Heartbeat timeout! The address is {}",

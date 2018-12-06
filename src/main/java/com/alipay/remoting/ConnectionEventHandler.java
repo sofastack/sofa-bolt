@@ -16,50 +16,57 @@
  */
 package com.alipay.remoting;
 
-import java.net.SocketAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.util.GlobalSwitch;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 import io.netty.util.Attribute;
+import org.slf4j.Logger;
+
+import java.net.SocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Log the channel status event.
- * 
+ *
  * @author jiangping
  * @version $Id: ConnectionEventHandler.java, v 0.1 Oct 10, 2016 2:07:24 PM tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 @Sharable
 public class ConnectionEventHandler extends ChannelDuplexHandler {
+    //日志
     private static final Logger     logger = BoltLoggerFactory.getLogger("ConnectionEvent");
 
+    //连接管理器
     private ConnectionManager       connectionManager;
 
+    //连接事件监听器
     private ConnectionEventListener eventListener;
 
+    //连接事件执行器
     private ConnectionEventExecutor eventExecutor;
 
+    //重连管理器
     private ReconnectManager        reconnectManager;
 
+    //开关
     private GlobalSwitch            globalSwitch;
 
+    // TODO: 2018/4/23 by zmyer
     public ConnectionEventHandler() {
 
     }
 
+    // TODO: 2018/4/23 by zmyer
     public ConnectionEventHandler(GlobalSwitch globalSwitch) {
         this.globalSwitch = globalSwitch;
     }
@@ -67,6 +74,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     /**
      * @see io.netty.channel.ChannelDuplexHandler#connect(io.netty.channel.ChannelHandlerContext, java.net.SocketAddress, java.net.SocketAddress, io.netty.channel.ChannelPromise)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void connect(ChannelHandlerContext ctx, SocketAddress remoteAddress,
                         SocketAddress localAddress, ChannelPromise promise) throws Exception {
@@ -91,6 +99,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     /**
      * @see io.netty.channel.ChannelDuplexHandler#disconnect(io.netty.channel.ChannelHandlerContext, io.netty.channel.ChannelPromise)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void disconnect(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
         infoLog("Connection disconnect to {}", RemotingUtil.parseRemoteAddress(ctx.channel()));
@@ -100,6 +109,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     /**
      * @see io.netty.channel.ChannelDuplexHandler#close(io.netty.channel.ChannelHandlerContext, io.netty.channel.ChannelPromise)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void close(ChannelHandlerContext ctx, ChannelPromise promise) throws Exception {
         infoLog("Connection closed: {}", RemotingUtil.parseRemoteAddress(ctx.channel()));
@@ -113,12 +123,14 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     /**
      * @see io.netty.channel.ChannelInboundHandlerAdapter#channelRegistered(io.netty.channel.ChannelHandlerContext)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         infoLog("Connection channel registered: {}", RemotingUtil.parseRemoteAddress(ctx.channel()));
         super.channelRegistered(ctx);
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         infoLog("Connection channel unregistered: {}",
@@ -126,32 +138,39 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         super.channelUnregistered(ctx);
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         infoLog("Connection channel active: {}", RemotingUtil.parseRemoteAddress(ctx.channel()));
         super.channelActive(ctx);
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        //解析远程地址
         String remoteAddress = RemotingUtil.parseRemoteAddress(ctx.channel());
         infoLog("Connection channel inactive: {}", remoteAddress);
         super.channelInactive(ctx);
+        //从连接对象中读取属性信息
         Attribute attr = ctx.channel().attr(Connection.CONNECTION);
         if (null != attr) {
             // add reconnect task
-            if (this.globalSwitch != null
-                && this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
+            if (this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
+                //获取连接对象
                 Connection conn = (Connection) attr.get();
                 if (reconnectManager != null) {
+                    //开始重连
                     reconnectManager.addReconnectTask(conn.getUrl());
                 }
             }
             // trigger close connection event
+            //触发关闭连接事件
             onEvent((Connection) attr.get(), remoteAddress, ConnectionEventType.CLOSE);
         }
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
         if (event instanceof ConnectionEventType) {
@@ -160,6 +179,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                     Channel channel = ctx.channel();
                     if (null != channel) {
                         Connection connection = channel.attr(Connection.CONNECTION).get();
+                        //触发连接事件
                         this.onEvent(connection, connection.getUrl().getOriginUrl(),
                             ConnectionEventType.CONNECT);
                     } else {
@@ -175,6 +195,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         }
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         final String remoteAddress = RemotingUtil.parseRemoteAddress(ctx.channel());
@@ -192,9 +213,11 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
      * @param remoteAddress
      * @param type
      */
+    // TODO: 2018/4/23 by zmyer
     private void onEvent(final Connection conn, final String remoteAddress,
                          final ConnectionEventType type) {
         if (this.eventListener != null) {
+            //开始在事件执行器中处理接收到的事件
             this.eventExecutor.onEvent(new Runnable() {
                 @Override
                 public void run() {
@@ -206,7 +229,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     /**
      * Getter method for property <tt>listener</tt>.
-     * 
+     *
      * @return property value of listener
      */
     public ConnectionEventListener getConnectionEventListener() {
@@ -215,13 +238,15 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     /**
      * Setter method for property <tt>listener</tt>.
-     * 
+     *
      * @param listener value to be assigned to property listener
      */
+    // TODO: 2018/4/23 by zmyer
     public void setConnectionEventListener(ConnectionEventListener listener) {
         if (listener != null) {
             this.eventListener = listener;
             if (this.eventExecutor == null) {
+                //如果事件执行器为空，则初始化
                 this.eventExecutor = new ConnectionEventExecutor();
             }
         }
@@ -229,7 +254,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     /**
      * Getter method for property <tt>connectionManager</tt>.
-     * 
+     *
      * @return property value of connectionManager
      */
     public ConnectionManager getConnectionManager() {
@@ -238,7 +263,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     /**
      * Setter method for property <tt>connectionManager</tt>.
-     * 
+     *
      * @param connectionManager value to be assigned to property connectionManager
      */
     public void setConnectionManager(ConnectionManager connectionManager) {
@@ -256,23 +281,26 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     /**
      * Dispatch connection event.
-     * 
+     *
      * @author jiangping
      * @version $Id: ConnectionEventExecutor.java, v 0.1 Mar 4, 2016 9:20:15 PM tao Exp $
      */
+    // TODO: 2018/4/23 by zmyer
     public class ConnectionEventExecutor {
         Logger          logger   = BoltLoggerFactory.getLogger("CommonDefault");
         ExecutorService executor = new ThreadPoolExecutor(1, 1, 60L, TimeUnit.SECONDS,
                                      new LinkedBlockingQueue<Runnable>(10000),
-                                     new NamedThreadFactory("Bolt-conn-event-executor", true));
+                                     new NamedThreadFactory("Bolt-conn-event-executor"));
 
         /**
          * Process event.
-         * 
+         *
          * @param event
          */
+        // TODO: 2018/4/23 by zmyer
         public void onEvent(Runnable event) {
             try {
+                //开始执行事件
                 executor.execute(event);
             } catch (Throwable t) {
                 logger.error("Exception caught when execute connection event!", t);
@@ -285,6 +313,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
      * @param format
      * @param addr
      */
+    // TODO: 2018/4/23 by zmyer
     private void infoLog(String format, String addr) {
         if (logger.isInfoEnabled()) {
             if (StringUtils.isNotEmpty(addr)) {

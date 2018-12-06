@@ -18,22 +18,23 @@ package com.alipay.remoting.rpc;
 
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.config.switches.GlobalSwitch;
-
+import com.alipay.remoting.util.GlobalSwitch;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
  * ConnectionEventHandler for Rpc.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcConnectionEventHandler.java, v 0.1 2015-10-16 PM4:41:29 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcConnectionEventHandler extends ConnectionEventHandler {
 
     public RpcConnectionEventHandler() {
         super();
     }
 
+    // TODO: 2018/4/23 by zmyer
     public RpcConnectionEventHandler(GlobalSwitch globalSwitch) {
         super(globalSwitch);
     }
@@ -41,10 +42,13 @@ public class RpcConnectionEventHandler extends ConnectionEventHandler {
     /**
      * @see com.alipay.remoting.ConnectionEventHandler#channelInactive(io.netty.channel.ChannelHandlerContext)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        //获取连接对象
         Connection conn = ctx.channel().attr(Connection.CONNECTION).get();
         if (conn != null) {
+            //从连接管理器中删除
             this.getConnectionManager().remove(conn);
         }
         super.channelInactive(ctx);

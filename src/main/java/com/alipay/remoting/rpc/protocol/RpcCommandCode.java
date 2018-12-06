@@ -23,6 +23,7 @@ import com.alipay.remoting.CommandCode;
  * @author jiangping
  * @version $Id: RpcCommandCode.java, v 0.1 2015-9-21 PM5:05:59 tao Exp $
  */
+// TODO: 2018/4/24 by zmyer
 public enum RpcCommandCode implements CommandCode {
 
     RPC_REQUEST((short) 1), RPC_RESPONSE((short) 2);
@@ -33,7 +34,6 @@ public enum RpcCommandCode implements CommandCode {
         this.value = value;
     }
 
-    @Override
     public short value() {
         return this.value;
     }
@@ -44,6 +44,8 @@ public enum RpcCommandCode implements CommandCode {
                 return RPC_REQUEST;
             case 2:
                 return RPC_RESPONSE;
+            default:
+                break;
         }
         throw new IllegalArgumentException("Unknown Rpc command code value: " + value);
     }

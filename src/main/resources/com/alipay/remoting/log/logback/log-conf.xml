@@ -200,9 +200,4 @@
         <appender-ref ref="HttpRemotingAppender"/>
         <appender-ref ref="ERROR-APPENDER"/>
     </logger>
-
-    <root level="${LOG_LEVEL}">
-        <appender-ref ref="CommonDefaultAppender"/>
-        <appender-ref ref="ERROR-APPENDER"/>
-    </root>
 </configuration>

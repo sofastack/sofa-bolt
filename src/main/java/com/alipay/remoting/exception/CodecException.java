@@ -18,10 +18,11 @@ package com.alipay.remoting.exception;
 
 /**
  * Exception when codec problems occur
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: CodecException.java, v 0.1 2016-1-3 PM 6:26:12 xiaomin.cxm Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class CodecException extends RemotingException {
 
     /** For serialization */
@@ -36,7 +37,7 @@ public class CodecException extends RemotingException {
     /**
      * Constructor.
      *
-     * @param message the detail message.
+     * @param message
      */
     public CodecException(String message) {
         super(message);
@@ -45,8 +46,8 @@ public class CodecException extends RemotingException {
     /**
      * Constructor.
      *
-     * @param message the detail message
-     * @param cause the cause
+     * @param message
+     * @param cause
      */
     public CodecException(String message, Throwable cause) {
         super(message, cause);

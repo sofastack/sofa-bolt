@@ -14,22 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
-
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.ConfigurableInstance;
-
-import io.netty.channel.ChannelHandler;
+package com.alipay.remoting.util;
 
 /**
- * Default connection factory.
+ * switch interface
  *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
+ * @author tsui
+ * @version $Id: Switch.java, v 0.1 2018-04-08 11:26 tsui Exp $
  */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+// TODO: 2018/6/11 by zmyer
+public interface Switch {
+    /**
+     * api for user to turn on a feature
+     *
+     * @param index the switch index of feature
+     */
+    void turnOn(int index);
 
-    public DefaultConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                    ChannelHandler handler, ConfigurableInstance configInstance) {
-        super(codec, heartbeatHandler, handler, configInstance);
-    }
+    /**
+     * check switch whether on
+     *
+     * @param index
+     * @return true if either system setting is on or user setting is on
+     */
+    boolean isOn(int index);
 }

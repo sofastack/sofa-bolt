@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentMap;
  * @author tsui
  * @version $Id: ProtocolManager.java, v 0.1 2018-03-27 15:18 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class ProtocolManager {
 
     private static final ConcurrentMap<ProtocolCode, Protocol> protocols = new ConcurrentHashMap<ProtocolCode, Protocol>();
@@ -33,10 +34,12 @@ public class ProtocolManager {
         return protocols.get(protocolCode);
     }
 
+    // TODO: 2018/4/23 by zmyer
     public static void registerProtocol(Protocol protocol, byte... protocolCodeBytes) {
         registerProtocol(protocol, ProtocolCode.fromBytes(protocolCodeBytes));
     }
 
+    // TODO: 2018/4/23 by zmyer
     public static void registerProtocol(Protocol protocol, ProtocolCode protocolCode) {
         if (null == protocolCode || null == protocol) {
             throw new RuntimeException("Protocol: " + protocol + " and protocol code:"
@@ -48,6 +51,7 @@ public class ProtocolManager {
         }
     }
 
+    // TODO: 2018/4/23 by zmyer
     public static Protocol unRegisterProtocol(byte protocolCode) {
         return ProtocolManager.protocols.remove(ProtocolCode.fromBytes(protocolCode));
     }

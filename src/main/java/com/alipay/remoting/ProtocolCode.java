@@ -25,6 +25,7 @@ import java.util.Arrays;
  * @author tsui
  * @version $Id: ProtocolCode.java, v 0.1 2018-03-27 17:23 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class ProtocolCode {
     /** bytes to represent protocol code */
     byte[] version;
@@ -33,6 +34,7 @@ public class ProtocolCode {
         this.version = version;
     }
 
+    // TODO: 2018/4/23 by zmyer
     public static ProtocolCode fromBytes(byte... version) {
         return new ProtocolCode(version);
     }

@@ -16,21 +16,18 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.util.FutureTaskUtil;
+import com.alipay.remoting.util.RemotingUtil;
+import com.alipay.remoting.util.RunStateRecordedFutureTask;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-
-import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.Configs;
-import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.util.FutureTaskUtil;
-import com.alipay.remoting.util.RemotingUtil;
-import com.alipay.remoting.util.RunStateRecordedFutureTask;
 
 /**
  * An implemented strategy to monitor connections:
@@ -42,18 +39,19 @@ import com.alipay.remoting.util.RunStateRecordedFutureTask;
  * @author tsui
  * @version $Id: ScheduledDisconnectStrategy.java, v 0.1 2017-02-21 14:14 tsui Exp $
  */
+// TODO: 2018/6/22 by zmyer
 public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
     private static final Logger     logger                 = BoltLoggerFactory
                                                                .getLogger("CommonDefault");
 
     /** the connections threshold of each {@link Url#uniqueKey} */
-    private static final int        CONNECTION_THRESHOLD   = ConfigManager.conn_threshold();
+    private static final int        CONNECTION_THRESHOLD   = SystemProperties.conn_threshold();
 
     /** fresh select connections to be closed */
     private Map<String, Connection> freshSelectConnections = new ConcurrentHashMap<String, Connection>();
 
     /** Retry detect period for ScheduledDisconnectStrategy*/
-    private static int              RETRY_DETECT_PERIOD    = ConfigManager.retry_detect_period();
+    private static int              RETRY_DETECT_PERIOD    = SystemProperties.retry_detect_period();
 
     /** random */
     private Random                  random                 = new Random();
@@ -91,6 +89,7 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
      *
      * @param connPools
      */
+    // TODO: 2018/6/22 by zmyer
     @Override
     public void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools) {
         try {

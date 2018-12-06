@@ -20,24 +20,28 @@ import com.alipay.remoting.exception.CodecException;
 
 /**
  * Serializer for serialize and deserialize.
- * 
+ *
  * @author jiangping
  * @version $Id: Serializer.java, v 0.1 2015-10-4 PM9:37:57 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public interface Serializer {
     /**
      * Encode object into bytes.
-     * 
-     * @param obj target object
-     * @return serialized result
+     *
+     * @param obj
+     * @return
+     * @throws CodecException
      */
-    byte[] serialize(final Object obj) throws CodecException;
+    public byte[] serialize(final Object obj) throws CodecException;
 
     /**
      * Decode bytes into Object.
-     * 
-     * @param data serialized data
-     * @param classOfT class of original data
+     *
+     * @param data
+     * @param classOfT
+     * @return
+     * @throws CodecException
      */
-    <T> T deserialize(final byte[] data, String classOfT) throws CodecException;
+    public <T> T deserialize(final byte[] data, String classOfT) throws CodecException;
 }

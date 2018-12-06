@@ -16,10 +16,10 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.util.RunStateRecordedFutureTask;
+
 import java.util.List;
 import java.util.Map;
-
-import com.alipay.remoting.util.RunStateRecordedFutureTask;
 
 /**
  * The strategy of connection monitor
@@ -27,6 +27,7 @@ import com.alipay.remoting.util.RunStateRecordedFutureTask;
  * @author tsui
  * @version $Id: ConnectionMonitorStrategy.java, v 0.1 2017-02-21 12:06 tsui Exp $
  */
+// TODO: 2018/6/22 by zmyer
 public interface ConnectionMonitorStrategy {
 
     /**
@@ -34,7 +35,7 @@ public interface ConnectionMonitorStrategy {
      *
      * @param connections
      */
-    Map<String, List<Connection>> filter(List<Connection> connections);
+    public Map<String, List<Connection>> filter(List<Connection> connections);
 
     /**
      * Add a set of connections to monitor.
@@ -44,5 +45,5 @@ public interface ConnectionMonitorStrategy {
      *
      * @param connPools
      */
-    void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools);
+    public void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools);
 }

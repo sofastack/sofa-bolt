@@ -25,7 +25,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alipay.remoting.config.switches.ProtocolSwitch;
+import com.alipay.remoting.util.ProtocolSwitch;
 
 /**
  *

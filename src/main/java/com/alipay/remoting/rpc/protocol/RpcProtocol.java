@@ -36,7 +36,7 @@ import com.alipay.remoting.rpc.RpcCommandFactory;
  * +                                                                                               +
  * |                               ... ...                                                         |
  * +-----------------------------------------------------------------------------------------------+
- * 
+ *
  * proto: code for protocol
  * type: request/response/request oneway
  * cmdcode: code for remoting command
@@ -45,7 +45,7 @@ import com.alipay.remoting.rpc.RpcCommandFactory;
  * codec: code for codec
  * headerLen: length of header
  * contentLen: length of content
- * 
+ *
  * Response command protocol for v1
  * 0     1     2     3     4           6           8          10           12          14         16
  * +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+
@@ -58,10 +58,11 @@ import com.alipay.remoting.rpc.RpcCommandFactory;
  * |                               ... ...                                                         |
  * +-----------------------------------------------------------------------------------------------+
  * respstatus: response status
- * 
+ *
  * @author jiangping
  * @version $Id: RpcProtocol.java, v 0.1 2015-9-28 PM7:04:04 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcProtocol implements Protocol {
     public static final byte PROTOCOL_CODE       = (byte) 1;
     private static final int REQUEST_HEADER_LEN  = 22;
@@ -82,6 +83,8 @@ public class RpcProtocol implements Protocol {
 
     /**
      * Get the length of request header.
+     *
+     * @return
      */
     public static int getRequestHeaderLength() {
         return RpcProtocol.REQUEST_HEADER_LEN;
@@ -89,11 +92,14 @@ public class RpcProtocol implements Protocol {
 
     /**
      * Get the length of response header.
+     *
+     * @return
      */
     public static int getResponseHeaderLength() {
         return RpcProtocol.RESPONSE_HEADER_LEN;
     }
 
+    // TODO: 2018/4/25 by zmyer
     @Override
     public CommandEncoder getEncoder() {
         return this.encoder;
@@ -104,6 +110,7 @@ public class RpcProtocol implements Protocol {
         return this.decoder;
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public HeartbeatTrigger getHeartbeatTrigger() {
         return this.heartbeatTrigger;

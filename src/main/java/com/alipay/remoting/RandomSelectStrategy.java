@@ -16,16 +16,14 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.util.GlobalSwitch;
+import com.alipay.remoting.util.StringUtils;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import org.slf4j.Logger;
-
-import com.alipay.remoting.config.Configs;
-import com.alipay.remoting.config.switches.GlobalSwitch;
-import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.util.StringUtils;
 
 /**
  * Select a connection randomly
@@ -33,6 +31,7 @@ import com.alipay.remoting.util.StringUtils;
  * @author yunliang.shi
  * @version $Id: RandomSelectStrategy.java, v 0.1 Mar 30, 2016 8:38:40 PM yunliang.shi Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RandomSelectStrategy implements ConnectionSelectStrategy {
     /** logger */
     private static final Logger logger    = BoltLoggerFactory.getLogger("CommonDefault");
@@ -43,11 +42,14 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
     /** random */
     private final Random        random    = new Random();
 
+    //开关
     private GlobalSwitch        globalSwitch;
 
+    // TODO: 2018/6/22 by zmyer
     public RandomSelectStrategy() {
     }
 
+    // TODO: 2018/4/23 by zmyer
     public RandomSelectStrategy(GlobalSwitch globalSwitch) {
         this.globalSwitch = globalSwitch;
     }
@@ -55,6 +57,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
     /**
      * @see com.alipay.remoting.ConnectionSelectStrategy#select(java.util.List)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public Connection select(List<Connection> conns) {
         try {
@@ -71,15 +74,17 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
                 && this.globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
                 List<Connection> serviceStatusOnConns = new ArrayList<Connection>();
                 for (Connection conn : conns) {
+                    //读取连接状态信息
                     String serviceStatus = (String) conn.getAttribute(Configs.CONN_SERVICE_STATUS);
                     if (!StringUtils.equals(serviceStatus, Configs.CONN_SERVICE_STATUS_OFF)) {
                         serviceStatusOnConns.add(conn);
                     }
                 }
-                if (serviceStatusOnConns.size() == 0) {
+                if (serviceStatusOnConns.size() < 0) {
                     throw new Exception(
                         "No available connection when select in RandomSelectStrategy.");
                 }
+                //随机选择
                 result = randomGet(serviceStatusOnConns);
             } else {
                 result = randomGet(conns);
@@ -93,22 +98,19 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
 
     /**
      * get one connection randomly
-     * 
+     *
      * @param conns
      * @return
      */
+    // TODO: 2018/4/23 by zmyer
     private Connection randomGet(List<Connection> conns) {
-        if (null == conns || conns.isEmpty()) {
-            return null;
-        }
-
+        Connection result = null;
         int size = conns.size();
         int tries = 0;
-        Connection result = null;
         while ((result == null || !result.isFine()) && tries++ < MAX_TIMES) {
+            //随机选择
             result = conns.get(this.random.nextInt(size));
         }
-
         if (result != null && !result.isFine()) {
             result = null;
         }

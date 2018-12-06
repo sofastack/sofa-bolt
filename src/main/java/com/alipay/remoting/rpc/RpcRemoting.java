@@ -16,8 +16,6 @@
  */
 package com.alipay.remoting.rpc;
 
-import org.slf4j.Logger;
-
 import com.alipay.remoting.BaseRemoting;
 import com.alipay.remoting.CommandFactory;
 import com.alipay.remoting.Connection;
@@ -28,25 +26,28 @@ import com.alipay.remoting.InvokeFuture;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.RemotingCommand;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
 import com.alipay.remoting.rpc.protocol.RpcRequestCommand;
+import com.alipay.remoting.util.ProtocolSwitch;
 import com.alipay.remoting.util.RemotingUtil;
+import org.slf4j.Logger;
 
 /**
  * Rpc remoting capability.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcRemoting.java, v 0.1 Mar 6, 2016 9:09:48 PM tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public abstract class RpcRemoting extends BaseRemoting {
     static {
         RpcProtocolManager.initProtocols();
     }
+
     /** logger */
     private static final Logger        logger = BoltLoggerFactory.getLogger("RpcRemoting");
 
@@ -59,6 +60,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * default constructor
      */
+    // TODO: 2018/4/23 by zmyer
     public RpcRemoting(CommandFactory commandFactory) {
         super(commandFactory);
     }
@@ -67,6 +69,7 @@ public abstract class RpcRemoting extends BaseRemoting {
      * @param addressParser
      * @param connectionManager
      */
+    // TODO: 2018/4/23 by zmyer
     public RpcRemoting(CommandFactory commandFactory, RemotingAddressParser addressParser,
                        DefaultConnectionManager connectionManager) {
         this(commandFactory);
@@ -77,13 +80,14 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Oneway rpc invocation.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param addr
      * @param request
      * @param invokeContext
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public void oneway(final String addr, final Object request, final InvokeContext invokeContext)
                                                                                                   throws RemotingException,
                                                                                                   InterruptedException {
@@ -94,13 +98,14 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Oneway rpc invocation.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param url
      * @param request
      * @param invokeContext
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public abstract void oneway(final Url url, final Object request,
                                 final InvokeContext invokeContext) throws RemotingException,
                                                                   InterruptedException;
@@ -108,17 +113,21 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Oneway rpc invocation.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param conn
      * @param request
-     * @param invokeContext 
+     * @param invokeContext
      * @throws RemotingException
      */
+    // TODO: 2018/4/23 by zmyer
     public void oneway(final Connection conn, final Object request,
                        final InvokeContext invokeContext) throws RemotingException {
+        //创建请求指令
         RequestCommand requestCommand = (RequestCommand) toRemotingCommand(request, conn,
             invokeContext, -1);
+        //设置请求类型
         requestCommand.setType(RpcCommandType.REQUEST_ONEWAY);
+        //初始化调用上下文对象
         preProcessInvokeContext(invokeContext, requestCommand, conn);
         super.oneway(conn, requestCommand);
     }
@@ -126,15 +135,16 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Synchronous rpc invocation.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param addr
      * @param request
      * @param invokeContext
      * @param timeoutMillis
      * @return
-     * @throws RemotingException 
-     * @throws InterruptedException 
+     * @throws RemotingException
+     * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public Object invokeSync(final String addr, final Object request,
                              final InvokeContext invokeContext, final int timeoutMillis)
                                                                                         throws RemotingException,
@@ -146,15 +156,16 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Synchronous rpc invocation.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param url
      * @param request
-     * @param invokeContext 
+     * @param invokeContext
      * @param timeoutMillis
      * @return
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public abstract Object invokeSync(final Url url, final Object request,
                                       final InvokeContext invokeContext, final int timeoutMillis)
                                                                                                  throws RemotingException,
@@ -163,43 +174,50 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Synchronous rpc invocation.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param conn
      * @param request
-     * @param invokeContext 
+     * @param invokeContext
      * @param timeoutMillis
      * @return
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public Object invokeSync(final Connection conn, final Object request,
                              final InvokeContext invokeContext, final int timeoutMillis)
                                                                                         throws RemotingException,
                                                                                         InterruptedException {
+        //创建请求指令
         RemotingCommand requestCommand = toRemotingCommand(request, conn, invokeContext,
             timeoutMillis);
+        //准备调用上下文对象
         preProcessInvokeContext(invokeContext, requestCommand, conn);
+        //开始同步调用
         ResponseCommand responseCommand = (ResponseCommand) super.invokeSync(conn, requestCommand,
             timeoutMillis);
+        //设置应答指令上下文对象
         responseCommand.setInvokeContext(invokeContext);
-
+        //反序列化结果
         Object responseObject = RpcResponseResolver.resolveResponseObject(responseCommand,
             RemotingUtil.parseRemoteAddress(conn.getChannel()));
+        //返回结果
         return responseObject;
     }
 
     /**
      * Rpc invocation with future returned.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param addr
      * @param request
-     * @param invokeContext 
+     * @param invokeContext
      * @param timeoutMillis
      * @return
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public RpcResponseFuture invokeWithFuture(final String addr, final Object request,
                                               final InvokeContext invokeContext, int timeoutMillis)
                                                                                                    throws RemotingException,
@@ -211,7 +229,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Rpc invocation with future returned.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param url
      * @param request
      * @param invokeContext
@@ -220,6 +238,7 @@ public abstract class RpcRemoting extends BaseRemoting {
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public abstract RpcResponseFuture invokeWithFuture(final Url url, final Object request,
                                                        final InvokeContext invokeContext,
                                                        final int timeoutMillis)
@@ -229,7 +248,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Rpc invocation with future returned.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param conn
      * @param request
      * @param invokeContext
@@ -237,30 +256,35 @@ public abstract class RpcRemoting extends BaseRemoting {
      * @return
      * @throws RemotingException
      */
+    // TODO: 2018/4/23 by zmyer
     public RpcResponseFuture invokeWithFuture(final Connection conn, final Object request,
                                               final InvokeContext invokeContext,
                                               final int timeoutMillis) throws RemotingException {
-
+        //创建请求指令
         RemotingCommand requestCommand = toRemotingCommand(request, conn, invokeContext,
             timeoutMillis);
 
+        //调用上下文预处理
         preProcessInvokeContext(invokeContext, requestCommand, conn);
+        //开始调用
         InvokeFuture future = super.invokeWithFuture(conn, requestCommand, timeoutMillis);
+        //返回应答结果
         return new RpcResponseFuture(RemotingUtil.parseRemoteAddress(conn.getChannel()), future);
     }
 
     /**
      * Rpc invocation with callback.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param addr
      * @param request
-     * @param invokeContext 
+     * @param invokeContext
      * @param invokeCallback
      * @param timeoutMillis
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public void invokeWithCallback(String addr, Object request, final InvokeContext invokeContext,
                                    InvokeCallback invokeCallback, int timeoutMillis)
                                                                                     throws RemotingException,
@@ -272,7 +296,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Rpc invocation with callback.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param url
      * @param request
      * @param invokeContext
@@ -281,6 +305,7 @@ public abstract class RpcRemoting extends BaseRemoting {
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public abstract void invokeWithCallback(final Url url, final Object request,
                                             final InvokeContext invokeContext,
                                             final InvokeCallback invokeCallback,
@@ -290,14 +315,15 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * Rpc invocation with callback.<br>
      * Notice! DO NOT modify the request object concurrently when this method is called.
-     * 
+     *
      * @param conn
      * @param request
-     * @param invokeContext 
+     * @param invokeContext
      * @param invokeCallback
      * @param timeoutMillis
      * @throws RemotingException
      */
+    // TODO: 2018/4/23 by zmyer
     public void invokeWithCallback(final Connection conn, final Object request,
                                    final InvokeContext invokeContext,
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
@@ -310,23 +336,27 @@ public abstract class RpcRemoting extends BaseRemoting {
 
     /**
      * Convert application request object to remoting request command.
-     * 
+     *
      * @param request
      * @param conn
      * @param timeoutMillis
      * @return
      * @throws CodecException
      */
+    // TODO: 2018/4/23 by zmyer
     protected RemotingCommand toRemotingCommand(Object request, Connection conn,
                                                 InvokeContext invokeContext, int timeoutMillis)
                                                                                                throws SerializationException {
+        //创建请求指令
         RpcRequestCommand command = this.getCommandFactory().createRequestCommand(request);
 
         if (null != invokeContext) {
             // set client custom serializer for request command if not null
+            //从调用上下文中读取序列化对象
             Object clientCustomSerializer = invokeContext.get(InvokeContext.BOLT_CUSTOM_SERIALIZER);
             if (null != clientCustomSerializer) {
                 try {
+                    //设置序列化类型
                     command.setSerializer((Byte) clientCustomSerializer);
                 } catch (ClassCastException e) {
                     throw new IllegalArgumentException(
@@ -348,20 +378,27 @@ public abstract class RpcRemoting extends BaseRemoting {
             command.setProtocolSwitch(ProtocolSwitch
                 .create(new int[] { ProtocolSwitch.CRC_SWITCH_INDEX }));
         }
+        //设置超时
         command.setTimeout(timeoutMillis);
+        //设置请求类对象
         command.setRequestClass(request.getClass().getName());
+        //设置调用上下文
         command.setInvokeContext(invokeContext);
+        //序列化指令
         command.serialize();
         logDebugInfo(command);
+        //返回结果
         return command;
     }
 
+    // TODO: 2018/4/23 by zmyer
     protected abstract void preProcessInvokeContext(InvokeContext invokeContext,
                                                     RemotingCommand cmd, Connection connection);
 
     /**
      * @param requestCommand
      */
+    // TODO: 2018/4/23 by zmyer
     private void logDebugInfo(RemotingCommand requestCommand) {
         if (logger.isDebugEnabled()) {
             logger.debug("Send request, requestId=" + requestCommand.getId());
@@ -371,6 +408,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * @see com.alipay.remoting.BaseRemoting#createInvokeFuture(com.alipay.remoting.RemotingCommand, com.alipay.remoting.InvokeContext)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     protected InvokeFuture createInvokeFuture(RemotingCommand request, InvokeContext invokeContext) {
         return new DefaultInvokeFuture(request.getId(), null, null, request.getProtocolCode()
@@ -380,6 +418,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     /**
      * @see com.alipay.remoting.BaseRemoting#createInvokeFuture(Connection, RemotingCommand, InvokeContext, InvokeCallback)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     protected InvokeFuture createInvokeFuture(Connection conn, RemotingCommand request,
                                               InvokeContext invokeContext,

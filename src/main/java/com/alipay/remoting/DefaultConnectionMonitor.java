@@ -16,16 +16,14 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.util.RunStateRecordedFutureTask;
+import org.slf4j.Logger;
+
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-
-import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.util.RunStateRecordedFutureTask;
 
 /**
  *  A default connection monitor that handle connections with strategies
@@ -33,6 +31,7 @@ import com.alipay.remoting.util.RunStateRecordedFutureTask;
  * @author tsui
  * @version $Id: DefaultConnectionMonitor.java, v 0.1 2017-02-21 12:09 tsui Exp $
  */
+// TODO: 2018/6/22 by zmyer
 public class DefaultConnectionMonitor {
 
     private static final Logger         logger = BoltLoggerFactory.getLogger("CommonDefault");
@@ -55,15 +54,16 @@ public class DefaultConnectionMonitor {
      * Start schedule task
      *
      */
+    // TODO: 2018/6/22 by zmyer
     public void start() {
         /** initial delay to execute schedule task, unit: ms */
-        long initialDelay = ConfigManager.conn_monitor_initial_delay();
+        long initialDelay = SystemProperties.conn_monitor_initial_delay();
 
         /** period of schedule task, unit: ms*/
-        long period = ConfigManager.conn_monitor_period();
+        long period = SystemProperties.conn_monitor_period();
 
         this.executor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory(
-            "ConnectionMonitorThread", true), new ThreadPoolExecutor.AbortPolicy());
+            "ConnectionMonitorThread"), new ThreadPoolExecutor.AbortPolicy());
         MonitorTask monitorTask = new MonitorTask();
         this.executor.scheduleAtFixedRate(monitorTask, initialDelay, period, TimeUnit.MILLISECONDS);
     }
@@ -84,6 +84,7 @@ public class DefaultConnectionMonitor {
      * @author tsui
      * @version $Id: DefaultConnectionMonitor.java, v 0.1 2017-02-21 12:09 tsui Exp $
      */
+    // TODO: 2018/6/22 by zmyer
     private class MonitorTask implements Runnable {
         /**
          * @see java.lang.Runnable#run()

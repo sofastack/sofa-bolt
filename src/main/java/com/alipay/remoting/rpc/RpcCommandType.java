@@ -18,7 +18,7 @@ package com.alipay.remoting.rpc;
 
 /**
  * The type of command in the request/response model.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcCommandType.java, v 0.1 2015-9-25 AM10:58:16 tao Exp $
  */

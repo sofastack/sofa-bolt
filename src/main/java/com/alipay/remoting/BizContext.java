@@ -18,28 +18,29 @@ package com.alipay.remoting;
 
 /**
  * basic info for biz
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: BizContext.java, v 0.1 Jan 6, 2016 10:35:04 PM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public interface BizContext {
     /**
      * get remote address
-     * 
+     *
      * @return
      */
     String getRemoteAddress();
 
     /**
      * get remote host ip
-     * 
+     *
      * @return
      */
     String getRemoteHost();
 
     /**
      * get remote port
-     * 
+     *
      * @return
      */
     int getRemotePort();
@@ -74,14 +75,14 @@ public interface BizContext {
 
     /**
      * put a key and value
-     * 
+     *
      * @return
      */
     void put(String key, String value);
 
     /**
      * get value
-     * 
+     *
      * @param key
      * @return
      */

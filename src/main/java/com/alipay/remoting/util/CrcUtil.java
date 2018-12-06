@@ -23,6 +23,7 @@ import java.util.zip.CRC32;
  * @author jiangping
  * @version $Id: CrcUtil2, v 0.1 2017-06-05 11:29 Timo Exp $
  */
+// TODO: 2018/6/12 by zmyer
 public class CrcUtil {
 
     private static final ThreadLocal<CRC32> CRC_32_THREAD_LOCAL = new ThreadLocal<CRC32>() {

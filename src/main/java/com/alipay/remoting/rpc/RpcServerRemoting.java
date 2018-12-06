@@ -29,15 +29,17 @@ import com.alipay.remoting.util.RemotingUtil;
 
 /**
  * Rpc server remoting
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: RpcServerRemoting.java, v 0.1 Apr 14, 2016 12:00:39 PM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcServerRemoting extends RpcRemoting {
 
     /**
      * default constructor
      */
+    // TODO: 2018/4/23 by zmyer
     public RpcServerRemoting(CommandFactory commandFactory) {
         super(commandFactory);
     }
@@ -46,6 +48,7 @@ public class RpcServerRemoting extends RpcRemoting {
      * @param addressParser
      * @param connectionManager
      */
+    // TODO: 2018/4/23 by zmyer
     public RpcServerRemoting(CommandFactory commandFactory, RemotingAddressParser addressParser,
                              DefaultConnectionManager connectionManager) {
         super(commandFactory, addressParser, connectionManager);
@@ -54,22 +57,27 @@ public class RpcServerRemoting extends RpcRemoting {
     /**
      * @see com.alipay.remoting.rpc.RpcRemoting#invokeSync(com.alipay.remoting.Url, java.lang.Object, InvokeContext, int)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public Object invokeSync(Url url, Object request, InvokeContext invokeContext, int timeoutMillis)
                                                                                                      throws RemotingException,
                                                                                                      InterruptedException {
+        //获取连接对象
         Connection conn = this.connectionManager.get(url.getUniqueKey());
         if (null == conn) {
             throw new RemotingException("Client address [" + url.getUniqueKey()
                                         + "] not connected yet!");
         }
+        //检查连接对象
         this.connectionManager.check(conn);
+        //同步调用
         return this.invokeSync(conn, request, invokeContext, timeoutMillis);
     }
 
     /**
      * @see com.alipay.remoting.rpc.RpcRemoting#oneway(com.alipay.remoting.Url, java.lang.Object, InvokeContext)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void oneway(Url url, Object request, InvokeContext invokeContext)
                                                                             throws RemotingException {
@@ -85,6 +93,7 @@ public class RpcServerRemoting extends RpcRemoting {
     /**
      * @see com.alipay.remoting.rpc.RpcRemoting#invokeWithFuture(com.alipay.remoting.Url, java.lang.Object, InvokeContext, int)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public RpcResponseFuture invokeWithFuture(Url url, Object request, InvokeContext invokeContext,
                                               int timeoutMillis) throws RemotingException {
@@ -100,6 +109,7 @@ public class RpcServerRemoting extends RpcRemoting {
     /**
      * @see com.alipay.remoting.rpc.RpcRemoting#invokeWithCallback(com.alipay.remoting.Url, java.lang.Object, InvokeContext, com.alipay.remoting.InvokeCallback, int)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void invokeWithCallback(Url url, Object request, InvokeContext invokeContext,
                                    InvokeCallback invokeCallback, int timeoutMillis)
@@ -113,6 +123,7 @@ public class RpcServerRemoting extends RpcRemoting {
         this.invokeWithCallback(conn, request, invokeContext, invokeCallback, timeoutMillis);
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     protected void preProcessInvokeContext(InvokeContext invokeContext, RemotingCommand cmd,
                                            Connection connection) {

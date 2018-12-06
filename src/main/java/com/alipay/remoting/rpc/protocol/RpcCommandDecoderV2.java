@@ -16,32 +16,31 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.CommandDecoder;
 import com.alipay.remoting.ResponseStatus;
-import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.rpc.HeartbeatAckCommand;
 import com.alipay.remoting.rpc.HeartbeatCommand;
 import com.alipay.remoting.rpc.RequestCommand;
 import com.alipay.remoting.rpc.ResponseCommand;
 import com.alipay.remoting.rpc.RpcCommandType;
 import com.alipay.remoting.util.CrcUtil;
-
+import com.alipay.remoting.util.ProtocolSwitch;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * Command decoder for Rpc v2.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcCommandDecoderV2.java, v 0.1 2017-05-27 PM5:15:26 tao Exp $
  */
+// TODO: 2018/6/22 by zmyer
 public class RpcCommandDecoderV2 implements CommandDecoder {
 
     private static final Logger logger = LoggerFactory.getLogger("RpcRemoting");
@@ -152,8 +151,10 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             command.setContent(content);
 
                             out.add(command);
+
                         } else {
                             in.resetReaderIndex();
+                            return;
                         }
                     } else if (type == RpcCommandType.RESPONSE) {
                         //decode response
@@ -225,6 +226,7 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             out.add(command);
                         } else {
                             in.resetReaderIndex();
+                            return;
                         }
                     } else {
                         String emsg = "Unknown command type: " + type;

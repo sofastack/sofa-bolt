@@ -16,57 +16,64 @@
  */
 package com.alipay.remoting;
 
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.RemotingUtil;
-
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.slf4j.Logger;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Base remoting capability.
- * 
+ *
  * @author jiangping
  * @version $Id: BaseRemoting.java, v 0.1 Mar 4, 2016 12:09:56 AM tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public abstract class BaseRemoting {
     /** logger */
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
 
-    protected CommandFactory    commandFactory;
+    //命令工厂
+    private CommandFactory      commandFactory;
 
+    // TODO: 2018/4/23 by zmyer
     public BaseRemoting(CommandFactory commandFactory) {
         this.commandFactory = commandFactory;
     }
 
     /**
      * Synchronous invocation
-     * 
+     *
      * @param conn
      * @param request
      * @param timeoutMillis
      * @return
-     * @throws InterruptedException 
+     * @throws InterruptedException
      * @throws RemotingException
      */
+    // TODO: 2018/4/23 by zmyer
     protected RemotingCommand invokeSync(final Connection conn, final RemotingCommand request,
                                          final int timeoutMillis) throws RemotingException,
                                                                  InterruptedException {
+        //创建异步调用对象
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
+        //将当前调用注册到连接对象中
         conn.addInvokeFuture(future);
         try {
+            //开始发送请求
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
                 @Override
                 public void operationComplete(ChannelFuture f) throws Exception {
                     if (!f.isSuccess()) {
+                        //如果请求发送失败，则需要将当前调用从连接对象中删除
                         conn.removeInvokeFuture(request.getId());
+                        //返回发送失败应答
                         future.putResponse(commandFactory.createSendFailedResponse(
                             conn.getRemoteAddress(), f.cause()));
                         logger.error("Invoke send failed, id={}", request.getId(), f.cause());
@@ -82,30 +89,36 @@ public abstract class BaseRemoting {
             }
             logger.error("Exception caught when sending invocation, id={}", request.getId(), e);
         }
+        //等待应答
         RemotingCommand response = future.waitResponse(timeoutMillis);
 
         if (response == null) {
+            //请求发送超时，直接删除当前请求
             conn.removeInvokeFuture(request.getId());
+            //返回超时应答
             response = this.commandFactory.createTimeoutResponse(conn.getRemoteAddress());
             logger.warn("Wait response, request id={} timeout!", request.getId());
         }
-
+        //返回结果
         return response;
     }
 
     /**
      * Invocation with callback.
-     * 
+     *
      * @param conn
      * @param request
      * @param invokeCallback
      * @param timeoutMillis
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     protected void invokeWithCallback(final Connection conn, final RemotingCommand request,
                                       final InvokeCallback invokeCallback, final int timeoutMillis) {
+        //创建调用异步对象
         final InvokeFuture future = createInvokeFuture(conn, request, request.getInvokeContext(),
             invokeCallback);
+        //将当前调用插入到连接对象中
         conn.addInvokeFuture(future);
 
         try {
@@ -113,26 +126,35 @@ public abstract class BaseRemoting {
             Timeout timeout = TimerHolder.getTimer().newTimeout(new TimerTask() {
                 @Override
                 public void run(Timeout timeout) throws Exception {
+                    //如果超时，则直接从连接中删除当前调用对象
                     InvokeFuture future = conn.removeInvokeFuture(request.getId());
                     if (future != null) {
+                        //返回超时应答
                         future.putResponse(commandFactory.createTimeoutResponse(conn
                             .getRemoteAddress()));
+                        //开始执行future回调
                         future.tryAsyncExecuteInvokeCallbackAbnormally();
                     }
                 }
 
             }, timeoutMillis, TimeUnit.MILLISECONDS);
+            //设置超时定时器
             future.addTimeout(timeout);
+            //开始写入请求
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
                 @Override
                 public void operationComplete(ChannelFuture cf) throws Exception {
                     if (!cf.isSuccess()) {
+                        //如果发送失败，则从连接对象中删除调用对象
                         InvokeFuture f = conn.removeInvokeFuture(request.getId());
                         if (f != null) {
+                            //取消超时机制
                             f.cancelTimeout();
+                            //应答发送失败消息
                             f.putResponse(commandFactory.createSendFailedResponse(
                                 conn.getRemoteAddress(), cf.cause()));
+                            //回调
                             f.tryAsyncExecuteInvokeCallbackAbnormally();
                         }
                         logger.error("Invoke send failed. The address is {}",
@@ -155,19 +177,22 @@ public abstract class BaseRemoting {
 
     /**
      * Invocation with future returned.
-     * 
+     *
      * @param conn
      * @param request
      * @param timeoutMillis
      * @return
      */
+    // TODO: 2018/4/23 by zmyer
     protected InvokeFuture invokeWithFuture(final Connection conn, final RemotingCommand request,
                                             final int timeoutMillis) {
-
+        //创建调用对象
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
+        //注册调用对象
         conn.addInvokeFuture(future);
         try {
             //add timeout
+            //创建超时定时器
             Timeout timeout = TimerHolder.getTimer().newTimeout(new TimerTask() {
                 @Override
                 public void run(Timeout timeout) throws Exception {
@@ -179,8 +204,10 @@ public abstract class BaseRemoting {
                 }
 
             }, timeoutMillis, TimeUnit.MILLISECONDS);
+            //设置超时定时器
             future.addTimeout(timeout);
 
+            //写入请求
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
                 @Override
@@ -212,13 +239,15 @@ public abstract class BaseRemoting {
 
     /**
      * Oneway invocation.
-     * 
+     *
      * @param conn
      * @param request
      * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     protected void oneway(final Connection conn, final RemotingCommand request) {
         try {
+            //直接写入请求
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
                 @Override
@@ -246,6 +275,7 @@ public abstract class BaseRemoting {
      * @param invokeContext
      * @return
      */
+    // TODO: 2018/4/23 by zmyer
     protected abstract InvokeFuture createInvokeFuture(final RemotingCommand request,
                                                        final InvokeContext invokeContext);
 
@@ -257,11 +287,13 @@ public abstract class BaseRemoting {
      * @param invokeCallback
      * @return
      */
+    // TODO: 2018/4/23 by zmyer
     protected abstract InvokeFuture createInvokeFuture(final Connection conn,
                                                        final RemotingCommand request,
                                                        final InvokeContext invokeContext,
                                                        final InvokeCallback invokeCallback);
 
+    // TODO: 2018/4/23 by zmyer
     protected CommandFactory getCommandFactory() {
         return commandFactory;
     }

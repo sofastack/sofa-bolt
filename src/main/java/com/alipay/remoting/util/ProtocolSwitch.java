@@ -14,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.config.switches;
+package com.alipay.remoting.util;
 
 import java.util.BitSet;
 
 /**
- * Switches used in protocol, this is runtime switch.
+ * Switches used in protocol
  *
  * @author tsui
  * @version $Id: RpcProtocolSwitch.java, v 0.1 2017-09-31 15:50 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class ProtocolSwitch implements Switch {
 
     // switche index
@@ -38,22 +39,19 @@ public class ProtocolSwitch implements Switch {
     // ~~~ public methods
 
     @Override
-    public void turnOn(int index) {
-        this.bs.set(index);
+    public void turnOn(int switchIndex) {
+        this.bs.set(switchIndex);
     }
 
     @Override
-    public void turnOff(int index) {
-        this.bs.clear(index);
-    }
-
-    @Override
-    public boolean isOn(int index) {
-        return this.bs.get(index);
+    public boolean isOn(int switchIndex) {
+        return this.bs.get(switchIndex);
     }
 
     /**
      * generate byte value according to the bit set in ProtocolSwitchStatus
+     *
+     * @return
      */
     public byte toByte() {
         return toByte(this.bs);
@@ -74,7 +72,7 @@ public class ProtocolSwitch implements Switch {
 
     /**
      * create an instance of {@link ProtocolSwitch} according to byte value
-     * 
+     *
      * @param value
      * @return ProtocolSwitchStatus with initialized bit set.
      */
@@ -90,6 +88,7 @@ public class ProtocolSwitch implements Switch {
      * @param index the switch index which you want to set true
      * @return ProtocolSwitchStatus with initialized bit set.
      */
+    // TODO: 2018/4/23 by zmyer
     public static ProtocolSwitch create(int[] index) {
         ProtocolSwitch status = new ProtocolSwitch();
         for (int i = 0; i < index.length; ++i) {

@@ -16,22 +16,20 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
-import java.io.Serializable;
-
-import org.slf4j.Logger;
-
 import com.alipay.remoting.CommandEncoder;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.RequestCommand;
 import com.alipay.remoting.rpc.ResponseCommand;
 import com.alipay.remoting.rpc.RpcCommand;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+
+import java.io.Serializable;
 
 /**
  * Encode remoting command into ByteBuf.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcCommandEncoder.java, v 0.1 2015-8-31 PM8:11:27 tao Exp $
  */

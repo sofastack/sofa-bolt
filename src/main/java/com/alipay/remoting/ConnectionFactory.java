@@ -14,56 +14,64 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
+package com.alipay.remoting;
 
-import com.alipay.remoting.Connection;
-import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.Url;
+import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 /**
  * Factory that creates connections.
- * 
+ *
  * @author jiangping
  * @version $Id: ConnectionFactory.java, v 0.1 2015-9-21 PM7:47:46 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public interface ConnectionFactory {
-
     /**
      * Initialize the factory.
      */
-    void init(ConnectionEventHandler connectionEventHandler);
+    public void init(ConnectionEventHandler connectionEventHandler);
 
     /**
      * Create a connection use #BoltUrl
-     * 
-     * @param url target url
-     * @return connection
+     *
+     * @param url
+     * @return
+     * @throws Exception
      */
-    Connection createConnection(Url url) throws Exception;
+    public Connection createConnection(Url url) throws Exception;
 
     /**
      * Create a connection according to the IP and port.
      * Note: The default protocol is RpcProtocol.
-     * 
-     * @param targetIP target ip
-     * @param targetPort target port
-     * @param connectTimeout connect timeout in millisecond
-     * @return connection
+     *
+     * @param targetIP
+     * @param targetPort
+     * @param connectTimeout
+     * @return
+     * @throws Exception
      */
-    Connection createConnection(String targetIP, int targetPort, int connectTimeout)
-                                                                                    throws Exception;
+    public Connection createConnection(String targetIP, int targetPort, int connectTimeout)
+                                                                                           throws Exception;
 
     /**
      * Create a connection according to the IP and port.
      *
      * Note: The default protocol is RpcProtocolV2, and you can specify the version
      *
-     * @param targetIP target ip
-     * @param targetPort target port
-     * @param version protocol version
-     * @param connectTimeout connect timeout in millisecond
-     * @return connection
+     * @param targetIP
+     * @param targetPort
+     * @param version
+     * @param connectTimeout
+     * @return
+     * @throws Exception
      */
-    Connection createConnection(String targetIP, int targetPort, byte version, int connectTimeout)
-                                                                                                  throws Exception;
+    public Connection createConnection(String targetIP, int targetPort, byte version,
+                                       int connectTimeout) throws Exception;
+
+    /**
+     * Register User processor
+     *
+     * @param processor
+     */
+    public void registerUserProcessor(UserProcessor<?> processor);
 }

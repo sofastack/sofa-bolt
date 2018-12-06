@@ -20,21 +20,22 @@ import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.RemotingCommand;
-import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.switches.ProtocolSwitch;
+import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.protocol.RpcDeserializeLevel;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
+import com.alipay.remoting.util.ProtocolSwitch;
 
 /**
  * Remoting command. <br>
  * A remoting command stands for a kind of transfer object in the network communication layer.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcCommand.java, v 0.1 2015-9-6 PM5:26:31 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public abstract class RpcCommand implements RemotingCommand {
 
     /** For serialization  */
@@ -51,7 +52,7 @@ public abstract class RpcCommand implements RemotingCommand {
      * Serializer, see the Configs.SERIALIZER_DEFAULT for the default serializer.
      * Notice: this can not be changed after initialized at runtime.
      */
-    private byte              serializer       = ConfigManager.serializer;
+    private byte              serializer       = SystemProperties.serializer;
     /**
      * protocol switches
      */
@@ -95,9 +96,10 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Serialize  the class header and content.
-     * 
+     *
      * @throws Exception
      */
+    // TODO: 2018/4/24 by zmyer
     @Override
     public void serialize() throws SerializationException {
         this.serializeClazz();
@@ -107,9 +109,10 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Deserialize the class header and content.
-     * 
+     *
      * @throws Exception
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void deserialize() throws DeserializationException {
         this.deserializeClazz();
@@ -141,7 +144,7 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Serialize content class.
-     * 
+     *
      * @throws Exception
      */
     public void serializeClazz() throws SerializationException {
@@ -150,7 +153,7 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Deserialize the content class.
-     * 
+     *
      * @throws Exception
      */
     public void deserializeClazz() throws DeserializationException {
@@ -159,7 +162,7 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Serialize the header.
-     * 
+     *
      * @throws Exception
      */
     public void serializeHeader(InvokeContext invokeContext) throws SerializationException {
@@ -167,7 +170,7 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Serialize the content.
-     * 
+     *
      * @throws Exception
      */
     @Override
@@ -176,7 +179,7 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Deserialize the header.
-     * 
+     *
      * @throws Exception
      */
     public void deserializeHeader(InvokeContext invokeContext) throws DeserializationException {
@@ -184,7 +187,7 @@ public abstract class RpcCommand implements RemotingCommand {
 
     /**
      * Deserialize the content.
-     * 
+     *
      * @throws Exception
      */
     @Override
@@ -211,7 +214,6 @@ public abstract class RpcCommand implements RemotingCommand {
         return serializer;
     }
 
-    @Override
     public ProtocolSwitch getProtocolSwitch() {
         return protocolSwitch;
     }
@@ -244,7 +246,6 @@ public abstract class RpcCommand implements RemotingCommand {
         this.protocolSwitch = protocolSwitch;
     }
 
-    @Override
     public int getId() {
         return id;
     }

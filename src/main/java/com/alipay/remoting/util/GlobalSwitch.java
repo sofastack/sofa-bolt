@@ -14,11 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.config.switches;
+package com.alipay.remoting.util;
+
+import com.alipay.remoting.SystemProperties;
 
 import java.util.BitSet;
-
-import com.alipay.remoting.config.ConfigManager;
 
 /**
  * Global switches used in client or server
@@ -31,6 +31,7 @@ import com.alipay.remoting.config.ConfigManager;
  * @author tsui
  * @version $Id: GlobalSwitch.java, v 0.1 2017-08-03 15:50 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class GlobalSwitch implements Switch {
 
     // switches
@@ -39,42 +40,51 @@ public class GlobalSwitch implements Switch {
     public static final int SERVER_MANAGE_CONNECTION_SWITCH = 2;
     public static final int SERVER_SYNC_STOP                = 3;
 
+    /** system settings */
+    private static BitSet   systemSettings                  = new BitSet();
+
     /** user settings */
     private BitSet          userSettings                    = new BitSet();
 
     /**
-     * Init with system default value
-     *   if settings exist by system property then use system property at first;
-     *   if no settings exist by system property then use default value in {@link com.alipay.remoting.config.Configs}
-     * All these settings can be overwrite by user api settings.
+     * init system switch status according to system properties
      */
-    public GlobalSwitch() {
-        if (ConfigManager.conn_reconnect_switch()) {
-            userSettings.set(CONN_RECONNECT_SWITCH);
+    static {
+        init();
+    }
+
+    private static void init() {
+        if (SystemProperties.conn_reconnect_switch()) {
+            systemSettings.set(CONN_RECONNECT_SWITCH);
         } else {
-            userSettings.clear(CONN_RECONNECT_SWITCH);
+            systemSettings.clear(CONN_RECONNECT_SWITCH);
         }
 
-        if (ConfigManager.conn_monitor_switch()) {
-            userSettings.set(CONN_MONITOR_SWITCH);
+        if (SystemProperties.conn_monitor_switch()) {
+            systemSettings.set(CONN_MONITOR_SWITCH);
         } else {
-            userSettings.clear(CONN_MONITOR_SWITCH);
+            systemSettings.clear(CONN_MONITOR_SWITCH);
         }
     }
 
     // ~~~ public methods
+
     @Override
-    public void turnOn(int index) {
-        this.userSettings.set(index);
+    public void turnOn(int switchIndex) {
+        this.userSettings.set(switchIndex);
     }
 
     @Override
-    public void turnOff(int index) {
-        this.userSettings.clear(index);
+    public boolean isOn(int switchIndex) {
+        return systemSettings.get(switchIndex) || this.userSettings.get(switchIndex);
     }
 
-    @Override
-    public boolean isOn(int index) {
-        return this.userSettings.get(index);
+    // ~~~ test case use only
+
+    /**
+     * Reinit system settings. For test case use only
+     */
+    public static void reinit() {
+        init();
     }
 }

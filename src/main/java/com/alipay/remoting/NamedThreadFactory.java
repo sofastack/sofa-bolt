@@ -25,11 +25,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author jiangping
  * @version $Id: NamedThreadFactory.java, v 0.1 Sept 5, 2016 10:17:10 PM tao Exp $
  */
+// TODO: 2018/4/24 by zmyer
 public class NamedThreadFactory implements ThreadFactory {
-
+    //池编号
     private static final AtomicInteger poolNumber   = new AtomicInteger(1);
+    //线程数目
     private final AtomicInteger        threadNumber = new AtomicInteger(1);
+    //线程组
     private final ThreadGroup          group;
+    //线程名前缀
     private final String               namePrefix;
     private final boolean              isDaemon;
 
@@ -41,6 +45,7 @@ public class NamedThreadFactory implements ThreadFactory {
         this(name, false);
     }
 
+    // TODO: 2018/4/24 by zmyer
     public NamedThreadFactory(String preffix, boolean daemon) {
         SecurityManager s = System.getSecurityManager();
         group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
@@ -53,7 +58,7 @@ public class NamedThreadFactory implements ThreadFactory {
      *
      * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
      */
-    @Override
+    // TODO: 2018/4/24 by zmyer
     public Thread newThread(Runnable r) {
         Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
         t.setDaemon(isDaemon);

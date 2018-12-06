@@ -15,9 +15,6 @@
  */
 package com.alipay.remoting.codec;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
@@ -28,6 +25,9 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.DecoderException;
 import io.netty.util.internal.RecyclableArrayList;
 import io.netty.util.internal.StringUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class mainly hack the {@link io.netty.handler.codec.ByteToMessageDecoder} to provide batch submission capability.
@@ -51,10 +51,12 @@ import io.netty.util.internal.StringUtil;
  * You can check the method {@link AbstractBatchDecoder#channelRead(ChannelHandlerContext, Object)} ()}
  *   to know the detail modification.
  */
+// TODO: 2018/4/23 by zmyer
 public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter {
     /**
      * Cumulate {@link ByteBuf}s by merge them into one {@link ByteBuf}'s, using memory copies.
      */
+    // TODO: 2018/4/23 by zmyer
     public static final Cumulator MERGE_CUMULATOR     = new Cumulator() {
                                                           @Override
                                                           public ByteBuf cumulate(ByteBufAllocator alloc,
@@ -89,6 +91,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * Be aware that {@link CompositeByteBuf} use a more complex indexing implementation so depending on your use-case
      * and the decoder implementation this may be slower then just use the {@link #MERGE_CUMULATOR}.
      */
+    // TODO: 2018/4/23 by zmyer
     public static final Cumulator COMPOSITE_CUMULATOR = new Cumulator() {
                                                           @Override
                                                           public ByteBuf cumulate(ByteBufAllocator alloc,
@@ -203,6 +206,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
         }
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public final void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         ByteBuf buf = internalBuffer();
@@ -224,6 +228,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * Gets called after the {@link ByteToMessageDecoder} was removed from the actual context and it doesn't handle
      * events anymore.
      */
+    // TODO: 2018/4/23 by zmyer
     protected void handlerRemoved0(ChannelHandlerContext ctx) throws Exception {
     }
 
@@ -232,9 +237,11 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * local variable {@code RecyclableArrayList out}. If has decoded more than one msg,
      * then construct an array list to submit all decoded msgs to the pipeline.
      *
-     * @param ctx channel handler context
-     * @param msg data
+     * @param ctx
+     * @param msg
+     * @throws Exception
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof ByteBuf) {
@@ -284,6 +291,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
         }
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         numReads = 0;
@@ -297,6 +305,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
         ctx.fireChannelReadComplete();
     }
 
+    // TODO: 2018/4/23 by zmyer
     protected final void discardSomeReadBytes() {
         if (cumulation != null && !first && cumulation.refCnt() == 1) {
             // discard some bytes if possible to make more room in the
@@ -310,6 +319,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
         }
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         RecyclableArrayList out = RecyclableArrayList.newInstance();
@@ -354,6 +364,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * @param in            the {@link ByteBuf} from which to read data
      * @param out           the {@link List} to which decoded messages should be added
      */
+    // TODO: 2018/4/25 by zmyer
     protected void callDecode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         try {
             while (in.isReadable()) {
@@ -406,6 +417,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
         decode(ctx, in, out);
     }
 
+    // TODO: 2018/4/24 by zmyer
     static ByteBuf expandCumulation(ByteBufAllocator alloc, ByteBuf cumulation, int readable) {
         ByteBuf oldCumulation = cumulation;
         cumulation = alloc.buffer(oldCumulation.readableBytes() + readable);
@@ -417,6 +429,7 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
     /**
      * Cumulate {@link ByteBuf}s.
      */
+    // TODO: 2018/4/24 by zmyer
     public interface Cumulator {
         /**
          * Cumulate the given {@link ByteBuf}s and return the {@link ByteBuf} that holds the cumulated bytes.

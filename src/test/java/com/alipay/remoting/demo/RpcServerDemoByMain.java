@@ -33,7 +33,7 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
  */
 public class RpcServerDemoByMain {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(RpcServerDemoByMain.class);
+                                                            .getLogger(BasicUsageDemoByJunit.class);
 
     BoltServer                server;
 
@@ -52,12 +52,8 @@ public class RpcServerDemoByMain {
         // 3. register user processor for client request
         server.registerUserProcessor(serverUserProcessor);
         // 4. server start
-        if (server.start()) {
-            System.out.println("server start ok!");
-        } else {
-            System.out.println("server start failed!");
-        }
-        // server.getRpcServer().stop();
+        server.start();
+        System.out.println("server start ok!");
     }
 
     public static void main(String[] args) {

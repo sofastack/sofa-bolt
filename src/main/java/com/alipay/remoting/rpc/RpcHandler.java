@@ -16,8 +16,6 @@
  */
 package com.alipay.remoting.rpc;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.Protocol;
@@ -25,41 +23,51 @@ import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.ProtocolManager;
 import com.alipay.remoting.RemotingContext;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
-
-import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Dispatch messages to corresponding protocol.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcHandler.java, v 0.1 2015-12-14 PM4:01:37 tao Exp $
  */
-@ChannelHandler.Sharable
+// TODO: 2018/4/23 by zmyer
+@Sharable
 public class RpcHandler extends ChannelInboundHandlerAdapter {
+    //是否是服务器
     private boolean                                     serverSide;
-
+    //用户自定义处理器
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors;
 
+    // TODO: 2018/4/23 by zmyer
     public RpcHandler() {
         serverSide = false;
     }
 
+    // TODO: 2018/4/23 by zmyer
     public RpcHandler(ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
         serverSide = false;
         this.userProcessors = userProcessors;
     }
 
+    // TODO: 2018/4/23 by zmyer
     public RpcHandler(boolean serverSide, ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
         this.serverSide = serverSide;
         this.userProcessors = userProcessors;
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        //读取协议编码
         ProtocolCode protocolCode = ctx.channel().attr(Connection.PROTOCOL).get();
+        //根据协议编码，查找具体的协议对象
         Protocol protocol = ProtocolManager.getProtocol(protocolCode);
+        //开始使用具体的协议处理器来处理当前消息
         protocol.getCommandHandler().handleCommand(
             new RemotingContext(ctx, new InvokeContext(), serverSide, userProcessors), msg);
     }

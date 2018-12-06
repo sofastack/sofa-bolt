@@ -20,7 +20,6 @@ import com.alipay.remoting.Connection;
 import com.alipay.remoting.Protocol;
 import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.ProtocolManager;
-
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
@@ -28,17 +27,19 @@ import io.netty.handler.timeout.IdleStateEvent;
 
 /**
  * Heart beat triggerd.
- * 
+ *
  * @author jiangping
- * @version $Id: SharableHandler.java, v 0.1 2015-12-14 PM3:16:00 tao Exp $
+ * @version $Id: HeartbeatHandler.java, v 0.1 2015-12-14 PM3:16:00 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 @Sharable
 public class HeartbeatHandler extends ChannelDuplexHandler {
 
     /**
-     * 
+     *
      * @see io.netty.channel.ChannelInboundHandlerAdapter#userEventTriggered(io.netty.channel.ChannelHandlerContext, java.lang.Object)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void userEventTriggered(final ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent) {

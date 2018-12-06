@@ -16,6 +16,16 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
+import com.alipay.remoting.util.ConcurrentHashSet;
+import com.alipay.remoting.util.RemotingUtil;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.util.AttributeKey;
+import org.slf4j.Logger;
+
 import java.net.InetSocketAddress;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -25,29 +35,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.slf4j.Logger;
-
-import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
-import com.alipay.remoting.util.ConcurrentHashSet;
-import com.alipay.remoting.util.RemotingUtil;
-
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.util.AttributeKey;
-
 /**
  * An abstraction of socket channel.
  *
  * @author yunliang.shi
  * @version $Id: Connection.java, v 0.1 Mar 10, 2016 11:30:54 AM yunliang.shi Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class Connection {
-
+    //日志
     private static final Logger                                                   logger           = BoltLoggerFactory
                                                                                                        .getLogger("CommonDefault");
 
+    //通道对象
     private Channel                                                               channel;
 
     private final ConcurrentHashMap<Integer, InvokeFuture>                        invokeFutureMap  = new ConcurrentHashMap<Integer, InvokeFuture>(
@@ -108,6 +108,7 @@ public class Connection {
      * @param channel
      * @param url
      */
+    // TODO: 2018/6/22 by zmyer
     public Connection(Channel channel, Url url) {
         this(channel);
         this.url = url;
@@ -134,6 +135,7 @@ public class Connection {
      * @param protocolCode
      * @param url
      */
+    // TODO: 2018/4/23 by zmyer
     public Connection(Channel channel, ProtocolCode protocolCode, byte version, Url url) {
         this(channel, url);
         this.protocolCode = protocolCode;
@@ -262,6 +264,7 @@ public class Connection {
      * @param future
      * @return
      */
+    // TODO: 2018/4/23 by zmyer
     public InvokeFuture addInvokeFuture(InvokeFuture future) {
         return this.invokeFutureMap.putIfAbsent(future.invokeId(), future);
     }
@@ -272,6 +275,7 @@ public class Connection {
      * @param id
      * @return
      */
+    // TODO: 2018/4/24 by zmyer
     public InvokeFuture removeInvokeFuture(int id) {
         return this.invokeFutureMap.remove(id);
     }
@@ -323,9 +327,9 @@ public class Connection {
     }
 
     /**
-    * Whether invokeFutures is completed
-    *
-    */
+     * Whether invokeFutures is completed
+     *
+     */
     public boolean isInvokeFutureMapFinish() {
         return invokeFutureMap.isEmpty();
     }
@@ -342,6 +346,7 @@ public class Connection {
     /**
      * get all pool keys
      */
+    // TODO: 2018/4/23 by zmyer
     public Set<String> getPoolKeys() {
         return new HashSet<String>(poolKeys);
     }

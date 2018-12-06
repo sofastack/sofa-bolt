@@ -72,7 +72,7 @@ public class SpecificClientUserProcessor extends SyncUserProcessor<RequestBody> 
     @Override
     public Object handleRequest(BizContext bizCtx, RequestBody request) throws Exception {
         String threadName = Thread.currentThread().getName();
-        Assert.assertTrue(threadName.contains("bolt-netty-client-worker"));
+        Assert.assertTrue(threadName.contains("Rpc-netty-client-worker"));
 
         logger.warn("Request received:" + request);
         Assert.assertEquals(RequestBody.class, request.getClass());

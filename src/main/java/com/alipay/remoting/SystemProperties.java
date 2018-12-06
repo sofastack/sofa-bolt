@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.config;
+package com.alipay.remoting;
 
 /**
- * get configs through system properties prior to default value
+ * get configs from system properties
  *
  * @author tsui
- * @version $Id: ConfigManager.java, v 0.1 2017-08-03 19:21 tsui Exp $
+ * @version $Id: SystemProperties.java, v 0.1 2017-08-03 19:21 tsui Exp $
  */
-public class ConfigManager {
+// TODO: 2018/4/23 by zmyer
+public class SystemProperties {
     // ~~~ properties for bootstrap
     public static boolean tcp_nodelay() {
         return getBool(Configs.TCP_NODELAY, Configs.TCP_NODELAY_DEFAULT);
@@ -56,14 +57,6 @@ public class ConfigManager {
     public static int netty_buffer_high_watermark() {
         return getInt(Configs.NETTY_BUFFER_HIGH_WATERMARK,
             Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT);
-    }
-
-    public static boolean netty_epoll() {
-        return getBool(Configs.NETTY_EPOLL_SWITCH, Configs.NETTY_EPOLL_SWITCH_DEFAULT);
-    }
-
-    public static boolean netty_epoll_lt_enabled() {
-        return getBool(Configs.NETTY_EPOLL_LT, Configs.NETTY_EPOLL_LT_DEFAULT);
     }
 
     // ~~~ properties for idle
@@ -152,20 +145,21 @@ public class ConfigManager {
         return getByte(Configs.SERIALIZER, Configs.SERIALIZER_DEFAULT);
     }
 
-    // ~~~ public helper methods to retrieve system property
-    public static boolean getBool(String key, String defaultValue) {
+    // ~~~ private methods
+    protected static boolean getBool(String key, String defaultValue) {
         return Boolean.parseBoolean(System.getProperty(key, defaultValue));
     }
 
-    public static int getInt(String key, String defaultValue) {
+    // TODO: 2018/4/23 by zmyer
+    protected static int getInt(String key, String defaultValue) {
         return Integer.parseInt(System.getProperty(key, defaultValue));
     }
 
-    public static byte getByte(String key, String defaultValue) {
+    protected static byte getByte(String key, String defaultValue) {
         return Byte.parseByte(System.getProperty(key, defaultValue));
     }
 
-    public static long getLong(String key, String defaultValue) {
+    protected static long getLong(String key, String defaultValue) {
         return Long.parseLong(System.getProperty(key, defaultValue));
     }
 }

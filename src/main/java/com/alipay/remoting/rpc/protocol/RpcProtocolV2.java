@@ -36,7 +36,7 @@ import com.alipay.remoting.rpc.RpcCommandFactory;
  * +                                                                                                +
  * |                               ... ...                                  | CRC32(optional)       |
  * +------------------------------------------------------------------------------------------------+
- * 
+ *
  * proto: code for protocol
  * ver1: version for protocol
  * type: request/response/request oneway
@@ -61,12 +61,14 @@ import com.alipay.remoting.rpc.RpcCommandFactory;
  * |                               ... ...                                  | CRC32(optional)       |
  * +------------------------------------------------------------------------------------------------+
  * respstatus: response status
- * 
+ *
  * @author jiangping
  * @version $Id: RpcProtocolV2.java, v 0.1 2017-05-27 PM7:04:04 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcProtocolV2 implements Protocol {
-    /* because the design defect, the version is neglected in RpcProtocol, so we design RpcProtocolV2 and add protocol version. */
+    /* because the design defect, the version is neglected in RpcProtocol,
+    so we design RpcProtocolV2 and add protocol version. */
     public static final byte PROTOCOL_CODE       = (byte) 2;
     /** version 1, is the same with RpcProtocol */
     public static final byte PROTOCOL_VERSION_1  = (byte) 1;

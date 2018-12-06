@@ -25,22 +25,26 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author jiangping
  * @version $Id: DefaultConnectionEventListener.java, v 0.1 Mar 5, 2016 10:56:20 AM tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class ConnectionEventListener {
-
+    //连接事件处理器集合
     private ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>> processors = new ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>>(
                                                                                                   3);
 
     /**
      * Dispatch events.
-     * 
+     *
      * @param type
      * @param remoteAddr
      * @param conn
      */
+    // TODO: 2018/4/23 by zmyer
     public void onEvent(ConnectionEventType type, String remoteAddr, Connection conn) {
+        //根据连接事件，获取处理器列表
         List<ConnectionEventProcessor> processorList = this.processors.get(type);
         if (processorList != null) {
             for (ConnectionEventProcessor processor : processorList) {
+                //开始处理每个事件
                 processor.onEvent(remoteAddr, conn);
             }
         }
@@ -48,10 +52,11 @@ public class ConnectionEventListener {
 
     /**
      * Add event processor.
-     * 
+     *
      * @param type
      * @param processor
      */
+    // TODO: 2018/4/23 by zmyer
     public void addConnectionEventProcessor(ConnectionEventType type,
                                             ConnectionEventProcessor processor) {
         List<ConnectionEventProcessor> processorList = this.processors.get(type);

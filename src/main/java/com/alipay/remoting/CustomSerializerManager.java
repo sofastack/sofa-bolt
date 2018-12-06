@@ -20,10 +20,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manage the custom serializer according to the class name.
- * 
+ *
  * @author jiangping
  * @version $Id: CustomSerializerManager.java, v 0.1 2015-10-20 AM10:46:39 tao Exp $
  */
+// TODO: 2018/6/12 by zmyer
 public class CustomSerializerManager {
 
     /** For rpc */
@@ -34,7 +35,7 @@ public class CustomSerializerManager {
 
     /**
      * Register custom serializer for class name.
-     * 
+     *
      * @param className
      * @param serializer
      * @return
@@ -50,7 +51,7 @@ public class CustomSerializerManager {
 
     /**
      * Get the custom serializer for class name.
-     * 
+     *
      * @param className
      * @return
      */
@@ -63,7 +64,7 @@ public class CustomSerializerManager {
 
     /**
      * Register custom serializer for command code.
-     * 
+     *
      * @param code
      * @param serializer
      * @return
@@ -79,7 +80,7 @@ public class CustomSerializerManager {
 
     /**
      * Get the custom serializer for command code.
-     * 
+     *
      * @param code
      * @return
      */

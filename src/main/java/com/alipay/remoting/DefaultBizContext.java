@@ -17,7 +17,6 @@
 package com.alipay.remoting;
 
 import com.alipay.remoting.util.RemotingUtil;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -27,6 +26,7 @@ import io.netty.channel.ChannelHandlerContext;
  * @author xiaomin.cxm
  * @version $Id: DefaultBizContext.java, v 0.1 Jan 7, 2016 10:42:30 AM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/24 by zmyer
 public class DefaultBizContext implements BizContext {
     /**
      * remoting context

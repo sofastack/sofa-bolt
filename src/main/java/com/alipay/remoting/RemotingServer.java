@@ -16,71 +16,164 @@
  */
 package com.alipay.remoting;
 
-import java.util.concurrent.ExecutorService;
-
+import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
+import org.slf4j.Logger;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * @author chengyi (mark.lx@antfin.com) 2018-06-16 06:55
+ * Server template for remoting.
+ *
+ * @author jiangping
+ * @version $Id: RemotingServer.java, v 0.1 2015-9-5 PM7:37:48 tao Exp $
  */
-public interface RemotingServer {
+// TODO: 2018/4/23 by zmyer
+public abstract class RemotingServer {
+    private static final Logger logger  = BoltLoggerFactory.getLogger("CommonDefault");
+
+    protected int               port;
+
+    /** server init status */
+    private AtomicBoolean       inited  = new AtomicBoolean(false);
+
+    /** server start status */
+    private AtomicBoolean       started = new AtomicBoolean(false);
 
     /**
-     * init the server
+     * @param port
      */
-    @Deprecated
-    void init();
+    // TODO: 2018/7/6 by zmyer
+    public RemotingServer(int port) {
+        this.port = port;
+    }
+
+    /**
+     * Initialize.
+     */
+    public void init() {
+        if (inited.compareAndSet(false, true)) {
+            logger.warn("Initialize the server.");
+            this.doInit();
+        } else {
+            logger.warn("Server has been inited already.");
+        }
+    }
 
     /**
      * Start the server.
      */
-    boolean start();
+    public boolean start() {
+        this.init();
+        if (started.compareAndSet(false, true)) {
+            try {
+                logger.warn("Server started on port: " + port);
+                return this.doStart();
+            } catch (Throwable t) {
+                started.set(false);
+                logger.error("ERROR: Failed to start the Server!", t);
+                return false;
+            }
+        } else {
+            logger.error("ERROR: The server has already started!");
+            return false;
+        }
+    }
+
+    /**
+     * Start the server with ip and port.
+     */
+    // TODO: 2018/6/22 by zmyer
+    public boolean start(String ip) {
+        this.init();
+        if (started.compareAndSet(false, true)) {
+            try {
+                logger.warn("Server started on " + ip + ":" + port);
+                return this.doStart(ip);
+            } catch (Throwable t) {
+                started.set(false);
+                logger.error("ERROR: Failed to start the Server!", t);
+                return false;
+            }
+        } else {
+            logger.error("ERROR: The server has already started!");
+            return false;
+        }
+    }
 
     /**
      * Stop the server.
-     *
-     * Remoting server can not be used any more after stop.
-     * If you need, you should destroy it, and instantiate another one.
+     * <p>
+     * Notice:<br>
+     *   <li>Remoting server can not be used any more after shutdown.
+     *   <li>If you need, you should destroy it, and instantiate another one.
      */
-    boolean stop();
-
-    /**
-     * Get the ip of the server.
-     *
-     * @return ip
-     */
-    String ip();
+    // TODO: 2018/7/9 by zmyer
+    public void stop() {
+        if (started.compareAndSet(true, false)) {
+            this.doStop();
+        } else {
+            throw new IllegalStateException("ERROR: The server has already stopped!");
+        }
+    }
 
     /**
      * Get the port of the server.
      *
-     * @return listened port
+     * @return
      */
-    int port();
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Inject initialize logic here.
+     */
+    protected abstract void doInit();
+
+    /**
+     * Inject start logic here.
+     *
+     * @throws InterruptedException
+     */
+    protected abstract boolean doStart() throws InterruptedException;
+
+    /**
+     * Inject start logic here.
+     *
+     * @param ip
+     * @throws InterruptedException
+     */
+    protected abstract boolean doStart(String ip) throws InterruptedException;
+
+    /**
+     * Inject stop logic here.
+     */
+    protected abstract void doStop();
 
     /**
      * Register processor for command with the command code.
      *
-     * @param protocolCode protocol code
-     * @param commandCode command code
-     * @param processor processor
+     * @param commandCode
+     * @param processor
      */
-    void registerProcessor(byte protocolCode, CommandCode commandCode,
-                           RemotingProcessor<?> processor);
+    public abstract void registerProcessor(byte protocolCode, CommandCode commandCode,
+                                           RemotingProcessor<?> processor);
 
     /**
      * Register default executor service for server.
      *
-     * @param protocolCode protocol code
-     * @param executor the executor service for the protocol code
+     * @param protocolCode
+     * @param executor
      */
-    void registerDefaultExecutor(byte protocolCode, ExecutorService executor);
+    public abstract void registerDefaultExecutor(byte protocolCode, ExecutorService executor);
 
     /**
      * Register user processor.
      *
-     * @param processor user processor which can be a single-interest processor or a multi-interest processor
+     * @param processor
      */
-    void registerUserProcessor(UserProcessor<?> processor);
+    public abstract void registerUserProcessor(UserProcessor<?> processor);
 
 }

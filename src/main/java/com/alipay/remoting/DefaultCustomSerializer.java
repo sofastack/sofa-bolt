@@ -24,13 +24,14 @@ import com.alipay.remoting.rpc.ResponseCommand;
 /**
  * The default custom serializer, which does nothing. 
  * Extend this class and override the methods you want to custom.
- * 
+ *
  * @author jiangping
  * @version $Id: DefaultCustomSerializer.java, v 0.1 2015-10-8 AM11:09:49 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class DefaultCustomSerializer implements CustomSerializer {
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#serializeHeader(com.alipay.remoting.rpc.RequestCommand, InvokeContext)
      */
     @Override
@@ -39,7 +40,7 @@ public class DefaultCustomSerializer implements CustomSerializer {
         return false;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#serializeHeader(com.alipay.remoting.rpc.ResponseCommand)
      */
     @Override
@@ -48,7 +49,7 @@ public class DefaultCustomSerializer implements CustomSerializer {
         return false;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#deserializeHeader(com.alipay.remoting.rpc.RequestCommand)
      */
     @Override
@@ -57,7 +58,7 @@ public class DefaultCustomSerializer implements CustomSerializer {
         return false;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#deserializeHeader(com.alipay.remoting.rpc.ResponseCommand, InvokeContext)
      */
     @Override
@@ -67,7 +68,7 @@ public class DefaultCustomSerializer implements CustomSerializer {
         return false;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#serializeContent(com.alipay.remoting.rpc.RequestCommand, InvokeContext)
      */
     @Override
@@ -77,7 +78,7 @@ public class DefaultCustomSerializer implements CustomSerializer {
         return false;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#serializeContent(com.alipay.remoting.rpc.ResponseCommand)
      */
     @Override
@@ -86,7 +87,7 @@ public class DefaultCustomSerializer implements CustomSerializer {
         return false;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#deserializeContent(com.alipay.remoting.rpc.RequestCommand)
      */
     @Override
@@ -95,7 +96,7 @@ public class DefaultCustomSerializer implements CustomSerializer {
         return false;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.CustomSerializer#deserializeContent(com.alipay.remoting.rpc.ResponseCommand, InvokeContext)
      */
     @Override

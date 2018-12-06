@@ -16,24 +16,24 @@
  */
 package com.alipay.remoting.rpc;
 
-import java.lang.ref.SoftReference;
-import java.util.Properties;
-
+import com.alipay.remoting.Configs;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.util.StringUtils;
+
+import java.lang.ref.SoftReference;
+import java.util.Properties;
 
 /**
  * This is address parser for RPC.
  * <h3>Normal format</h3>
  * <pre>host:port?paramkey1=paramvalue1&amp;paramkey2=paramvalue2</pre>
- * 
+ *
  * <h4>Normal format example</h4>
  * <pre>127.0.0.1:12200?KEY1=VALUE1&KEY2=VALUE2</pre>
- * 
+ *
  * <h4>Illegal format example</h4>
  * <pre>
  * 127.0.0.1
@@ -42,16 +42,17 @@ import com.alipay.remoting.util.StringUtils;
  * 127.0.0.1:12200?key1=
  * 127.0.0.1:12200?key1=value1&
  * </pre>
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: RpcAddressParser.java, v 0.1 Mar 11, 2016 5:56:45 PM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcAddressParser implements RemotingAddressParser {
 
     /**
      * @see com.alipay.remoting.RemotingAddressParser#parse(java.lang.String)
      */
-    @Override
+    // TODO: 2018/4/23 by zmyer
     public Url parse(String url) {
         if (StringUtils.isBlank(url)) {
             throw new IllegalArgumentException("Illegal format address string [" + url
@@ -156,7 +157,7 @@ public class RpcAddressParser implements RemotingAddressParser {
     /**
      * @see com.alipay.remoting.RemotingAddressParser#parseUniqueKey(java.lang.String)
      */
-    @Override
+    // TODO: 2018/4/23 by zmyer
     public String parseUniqueKey(String url) {
         boolean illegal = false;
         if (StringUtils.isBlank(url)) {
@@ -199,7 +200,6 @@ public class RpcAddressParser implements RemotingAddressParser {
     /**
      * @see com.alipay.remoting.RemotingAddressParser#initUrlArgs(Url)
      */
-    @Override
     public void initUrlArgs(Url url) {
         String connTimeoutStr = url.getProperty(RpcConfigs.CONNECT_TIMEOUT_KEY);
         int connTimeout = Configs.DEFAULT_CONNECT_TIMEOUT;
@@ -267,7 +267,7 @@ public class RpcAddressParser implements RemotingAddressParser {
 
     /**
      * try get from cache
-     * 
+     *
      * @param url
      * @return
      */

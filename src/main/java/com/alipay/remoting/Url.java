@@ -16,22 +16,21 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.ref.SoftReference;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.alipay.remoting.config.Configs;
-import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
-
 /**
  * URL definition.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: Url.java, v 0.1 Mar 11, 2016 6:01:59 PM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class Url {
     /** origin url */
     private String     originUrl;
@@ -65,7 +64,7 @@ public class Url {
 
     /**
      * Constructor with originUrl
-     * 
+     *
      * @param originUrl
      */
     protected Url(String originUrl) {
@@ -78,7 +77,7 @@ public class Url {
      * <li>Initialize ip:port as {@link Url#originUrl} </li>
      * <li>Initialize {@link Url#originUrl} as {@link Url#uniqueKey} </li>
      * </ul> 
-     * 
+     *
      * @param ip
      * @param port
      */
@@ -91,12 +90,12 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip and port
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize ip:port as {@link Url#uniqueKey} </li>
      * </ul> 
-     * 
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -110,13 +109,13 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip, port and properties
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize ip:port as {@link Url#uniqueKey} </li>
      * <li>Initialize @param properties as {@link Url#properties} </li>
      * </ul> 
-     * 
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -129,13 +128,13 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip, port, uniqueKey and properties
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize @param uniqueKey as {@link Url#uniqueKey} </li>
      * <li>Initialize @param properties as {@link Url#properties} </li>
      * </ul>
-     * 
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -150,7 +149,7 @@ public class Url {
 
     /**
      * Get property value according to property key
-     * 
+     *
      * @param key
      * @return property value
      */
@@ -211,6 +210,7 @@ public class Url {
         this.connNum = connNum;
     }
 
+    // TODO: 2018/4/23 by zmyer
     public boolean isConnWarmup() {
         return connWarmup;
     }

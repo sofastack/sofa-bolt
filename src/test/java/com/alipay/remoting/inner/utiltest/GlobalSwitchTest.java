@@ -23,8 +23,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.alipay.remoting.config.Configs;
+import com.alipay.remoting.Configs;
 import com.alipay.remoting.rpc.RpcClient;
+import com.alipay.remoting.util.GlobalSwitch;
 
 /**
  *
@@ -41,6 +42,8 @@ public class GlobalSwitchTest {
 
     @Before
     public void init() {
+        client1 = new RpcClient();
+        client2 = new RpcClient();
     }
 
     @After
@@ -52,24 +55,13 @@ public class GlobalSwitchTest {
     }
 
     @Test
-    public void testDefaultvalue() {
-        System.clearProperty(Configs.CONN_RECONNECT_SWITCH);
-        System.clearProperty(Configs.CONN_MONITOR_SWITCH);
-        client1 = new RpcClient();
-        client2 = new RpcClient();
-
-        Assert.assertFalse(client1.isConnectionMonitorSwitchOn());
-        Assert.assertFalse(client1.isReconnectSwitchOn());
-        Assert.assertFalse(client2.isConnectionMonitorSwitchOn());
-        Assert.assertFalse(client2.isReconnectSwitchOn());
-    }
-
-    @Test
-    public void testSystemSettings_takesEffect_before_defaultvalue() {
+    public void testSystemSettingsTrue_UserSettingsTrue() {
         System.setProperty(Configs.CONN_RECONNECT_SWITCH, "true");
         System.setProperty(Configs.CONN_MONITOR_SWITCH, "true");
-        client1 = new RpcClient();
-        client2 = new RpcClient();
+        GlobalSwitch.reinit();
+
+        client1.enableConnectionMonitorSwitch();
+        client1.enableReconnectSwitch();
 
         Assert.assertTrue(client1.isConnectionMonitorSwitchOn());
         Assert.assertTrue(client1.isReconnectSwitchOn());
@@ -78,51 +70,40 @@ public class GlobalSwitchTest {
     }
 
     @Test
-    public void testUserSettings_takesEffect_before_SystemSettingsFalse() {
-        System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
-        System.setProperty(Configs.CONN_MONITOR_SWITCH, "false");
-        client1 = new RpcClient();
-        client2 = new RpcClient();
+    public void testSystemSettingsTrue_UserSettingsFalse() {
+        System.setProperty(Configs.CONN_RECONNECT_SWITCH, "true");
+        System.setProperty(Configs.CONN_MONITOR_SWITCH, "true");
+        GlobalSwitch.reinit();
 
-        client1.enableConnectionMonitorSwitch();
-        client1.enableReconnectSwitch();
         Assert.assertTrue(client1.isConnectionMonitorSwitchOn());
         Assert.assertTrue(client1.isReconnectSwitchOn());
-        Assert.assertFalse(client2.isConnectionMonitorSwitchOn());
-        Assert.assertFalse(client2.isReconnectSwitchOn());
+        Assert.assertTrue(client2.isConnectionMonitorSwitchOn());
+        Assert.assertTrue(client2.isReconnectSwitchOn());
+    }
 
-        client1.disableConnectionMonitorSwitch();
-        client1.disableReconnectSwith();
+    @Test
+    public void testSystemSettingsFlase_UserSettingsTrue() {
+        System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
+        System.setProperty(Configs.CONN_MONITOR_SWITCH, "false");
+        GlobalSwitch.reinit();
+
         client2.enableConnectionMonitorSwitch();
         client2.enableReconnectSwitch();
         Assert.assertFalse(client1.isConnectionMonitorSwitchOn());
         Assert.assertFalse(client1.isReconnectSwitchOn());
-        Assert.assertTrue(client2.isReconnectSwitchOn());
         Assert.assertTrue(client2.isConnectionMonitorSwitchOn());
+        Assert.assertTrue(client2.isReconnectSwitchOn());
     }
 
     @Test
-    public void testUserSettings_takesEffect_before_SystemSettingsTrue() {
-        System.setProperty(Configs.CONN_RECONNECT_SWITCH, "true");
-        System.setProperty(Configs.CONN_MONITOR_SWITCH, "true");
-        client1 = new RpcClient();
-        client2 = new RpcClient();
+    public void testSystemSettingsFalse_UserSettingsFalse() {
+        System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
+        System.setProperty(Configs.CONN_MONITOR_SWITCH, "false");
+        GlobalSwitch.reinit();
 
-        client1.enableConnectionMonitorSwitch();
-        client1.enableReconnectSwitch();
-
-        Assert.assertTrue(client1.isConnectionMonitorSwitchOn());
-        Assert.assertTrue(client1.isReconnectSwitchOn());
-        Assert.assertTrue(client2.isConnectionMonitorSwitchOn());
-        Assert.assertTrue(client2.isReconnectSwitchOn());
-
-        client1.disableConnectionMonitorSwitch();
-        client1.disableReconnectSwith();
-        client2.disableReconnectSwith();
-        client2.disableConnectionMonitorSwitch();
         Assert.assertFalse(client1.isConnectionMonitorSwitchOn());
         Assert.assertFalse(client1.isReconnectSwitchOn());
-        Assert.assertFalse(client2.isReconnectSwitchOn());
         Assert.assertFalse(client2.isConnectionMonitorSwitchOn());
+        Assert.assertFalse(client2.isReconnectSwitchOn());
     }
 }

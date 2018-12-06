@@ -16,41 +16,46 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
-import java.util.concurrent.Executor;
-
 import com.alipay.remoting.AsyncContext;
 import com.alipay.remoting.BizContext;
 import com.alipay.remoting.RemotingContext;
 
+import java.util.concurrent.Executor;
+
 /**
  * Defined all functions for biz to process user defined request.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: UserProcessor.java, v 0.1 May 19, 2016 2:16:13 PM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public interface UserProcessor<T> {
 
     /**
      * Pre handle request, to avoid expose {@link RemotingContext} directly to biz handle request logic.
      *
-     * @param remotingCtx remoting context
-     * @param request request
-     * @return BizContext
+     * @param remotingCtx
+     * @param request
+     * @return
      */
     BizContext preHandleRequest(RemotingContext remotingCtx, T request);
 
     /**
      * Handle request with {@link AsyncContext}.
-     * @param bizCtx biz context
-     * @param asyncCtx async context
-     * @param request request
+     *
+     * @param bizCtx
+     * @param asyncCtx
+     * @param request
      */
     void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, T request);
 
     /**
      * Handle request in sync way.
-     * @param bizCtx biz context
-     * @param request request
+     *
+     * @param bizCtx
+     * @param request
+     * @return
+     * @throws Exception
      */
     Object handleRequest(BizContext bizCtx, T request) throws Exception;
 
@@ -58,20 +63,22 @@ public interface UserProcessor<T> {
      * The class name of user request.
      * Use String type to avoid classloader problem.
      *
-     * @return interested request's class name
+     * @return
      */
     String interest();
 
     /**
      * Get user executor.
-     * @return executor
+     *
+     * @return
      */
     Executor getExecutor();
 
     /**
      * Whether deserialize and process biz logic in io thread.
      * Notice: If return true, this will have a strong impact on performance.
-     * @return true for processing in io thread
+     *
+     * @return
      */
     boolean processInIOThread();
 
@@ -86,14 +93,17 @@ public interface UserProcessor<T> {
     boolean timeoutDiscard();
 
     /**
-     * Use this method to set executor selector.
-     * @param executorSelector executor selector
+     * Setter.
+     * Use this method to provide a executor selector.
+     *
+     * @param executorSelector
      */
     void setExecutorSelector(ExecutorSelector executorSelector);
 
     /**
-     * Use this method to get the executor selector.
-     * @return executor selector
+     * Getter.
+     *
+     * @return
      */
     ExecutorSelector getExecutorSelector();
 
@@ -104,6 +114,7 @@ public interface UserProcessor<T> {
      * @author xiaomin.cxm
      * @version $Id: ExecutorSelector.java, v 0.1 April 24, 2017 17:16:13 PM xiaomin.cxm Exp $
      */
+    // TODO: 2018/4/24 by zmyer
     interface ExecutorSelector {
         Executor select(String requestClass, Object requestHeader);
     }

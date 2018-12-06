@@ -16,17 +16,18 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import com.alipay.remoting.AsyncContext;
 import com.alipay.remoting.RemotingContext;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Async biz context of Rpc.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: RpcAsyncContext.java, v 0.1 May 16, 2016 8:23:07 PM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/24 by zmyer
 public class RpcAsyncContext implements AsyncContext {
     /** remoting context */
     private RemotingContext     ctx;
@@ -42,9 +43,8 @@ public class RpcAsyncContext implements AsyncContext {
     /**
      * Default constructor.
      *
-     * @param ctx remoting context
-     * @param cmd rpc request command
-     * @param processor rpc request processor
+     * @param ctx
+     * @param cmd
      */
     public RpcAsyncContext(final RemotingContext ctx, final RpcRequestCommand cmd,
                            final RpcRequestProcessor processor) {

@@ -23,11 +23,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alipay.remoting.Configs;
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
 import com.alipay.remoting.rpc.RpcClient;
@@ -36,6 +36,7 @@ import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
 import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
 import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
 import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
+import com.alipay.remoting.util.GlobalSwitch;
 
 /**
  *
@@ -116,6 +117,7 @@ public class ReconnectManagerTest {
         } else {
             System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
         }
+        GlobalSwitch.reinit();
         server = new BoltServer(port);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);

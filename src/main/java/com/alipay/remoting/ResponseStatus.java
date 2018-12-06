@@ -18,23 +18,35 @@ package com.alipay.remoting;
 
 /**
  * Status of the response.
- * 
+ *
  * @author jiangping
  * @version $Id: ResponseStatus.java, v 0.1 2015-9-28 PM3:08:12 tao Exp $
  */
 public enum ResponseStatus {
-    SUCCESS, // Ok
-    ERROR, // Error caught
-    SERVER_EXCEPTION, // Exception caught
-    UNKNOWN, // Unknown...
-    SERVER_THREADPOOL_BUSY, // Process thread pool busy
-    ERROR_COMM, // Error of communication
-    NO_PROCESSOR, // No processor find
-    TIMEOUT, // Timeout
-    CLIENT_SEND_ERROR, // Send failed
-    CODEC_EXCEPTION, // Exception in encode or decode
-    CONNECTION_CLOSED, // Connection closed.
-    SERVER_SERIAL_EXCEPTION, // server serialize exception
+    SUCCESS,
+    // Ok
+    ERROR,
+    // Error caught
+    SERVER_EXCEPTION,
+    // Exception caught
+    UNKNOWN,
+    // Unknown...
+    SERVER_THREADPOOL_BUSY,
+    // Process thread pool busy
+    ERROR_COMM,
+    // Error of communication
+    NO_PROCESSOR,
+    // No processor find
+    TIMEOUT,
+    // Timeout
+    CLIENT_SEND_ERROR,
+    // Send failed
+    CODEC_EXCEPTION,
+    // Exception in encode or decode
+    CONNECTION_CLOSED,
+    // Connection closed.
+    SERVER_SERIAL_EXCEPTION,
+    // server serialize exception
     SERVER_DESERIAL_EXCEPTION // server deserialize exception
     ;
 
@@ -70,14 +82,15 @@ public enum ResponseStatus {
                 return 0x0011;
             case SERVER_DESERIAL_EXCEPTION:
                 return 0x0012;
-
+            default:
+                break;
         }
         throw new IllegalArgumentException("Unknown status," + this);
     }
 
     /**
      * Convert to ResponseStatus.
-     * 
+     *
      * @param value
      * @return
      */
@@ -109,6 +122,8 @@ public enum ResponseStatus {
                 return SERVER_SERIAL_EXCEPTION;
             case 0x0012:
                 return SERVER_DESERIAL_EXCEPTION;
+            default:
+                break;
         }
         throw new IllegalArgumentException("Unknown status value ," + value);
     }

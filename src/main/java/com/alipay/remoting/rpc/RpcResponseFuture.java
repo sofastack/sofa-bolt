@@ -22,10 +22,11 @@ import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
 
 /**
  * The future for response.
- * 
+ *
  * @author jiangping
  * @version $Id: ResponseFuture.java, v 0.1 2015-10-3 PM5:07:05 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcResponseFuture {
     /** rpc server address */
     private String       addr;
@@ -35,6 +36,9 @@ public class RpcResponseFuture {
 
     /**
      * Constructor
+     *
+     * @param addr
+     * @param future
      */
     public RpcResponseFuture(String addr, InvokeFuture future) {
         this.addr = addr;
@@ -43,6 +47,8 @@ public class RpcResponseFuture {
 
     /**
      * Whether the future is done.
+     *
+     * @return
      */
     public boolean isDone() {
         return this.future.isDone();
@@ -50,25 +56,47 @@ public class RpcResponseFuture {
 
     /**
      * get result with timeout specified
-     * 
+     *
      * if request done, resolve normal responseObject
      * if request not done, throws InvokeTimeoutException
+     *
+     * @param timeoutMillis
+     * @return
+     * @throws InvokeTimeoutException
+     * @throws RemotingException
+     * @throws InterruptedException
      */
+    // TODO: 2018/4/23 by zmyer
     public Object get(int timeoutMillis) throws InvokeTimeoutException, RemotingException,
                                         InterruptedException {
+        //等待应答
         this.future.waitResponse(timeoutMillis);
         if (!isDone()) {
             throw new InvokeTimeoutException("Future get result timeout!");
         }
+        //获取应答结果
         ResponseCommand responseCommand = (ResponseCommand) this.future.waitResponse();
+        //设置调用上下文对象
         responseCommand.setInvokeContext(this.future.getInvokeContext());
-        return RpcResponseResolver.resolveResponseObject(responseCommand, addr);
+        //反序列化对象
+        Object responseObject = RpcResponseResolver.resolveResponseObject(responseCommand, addr);
+        //返回结果
+        return responseObject;
     }
 
+    /**
+     *
+     *
+     * @return
+     * @throws RemotingException
+     * @throws InterruptedException
+     */
+    // TODO: 2018/4/23 by zmyer
     public Object get() throws RemotingException, InterruptedException {
         ResponseCommand responseCommand = (ResponseCommand) this.future.waitResponse();
         responseCommand.setInvokeContext(this.future.getInvokeContext());
-        return RpcResponseResolver.resolveResponseObject(responseCommand, addr);
+        Object responseObject = RpcResponseResolver.resolveResponseObject(responseCommand, addr);
+        return responseObject;
     }
 
 }

@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author tsui
  * @version $Id: RunStateRecordedFutureTask.java, v 0.1 2017-07-31 16:28 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RunStateRecordedFutureTask<V> extends FutureTask<V> {
     private AtomicBoolean hasRun = new AtomicBoolean();
 
@@ -33,22 +34,16 @@ public class RunStateRecordedFutureTask<V> extends FutureTask<V> {
         super(callable);
     }
 
-    @Override
     public void run() {
         this.hasRun.set(true);
         super.run();
     }
 
     public V getAfterRun() throws InterruptedException, ExecutionException,
-                          FutureTaskNotRunYetException, FutureTaskNotCompleted {
+                          FutureTaskNotRunYetException {
         if (!hasRun.get()) {
             throw new FutureTaskNotRunYetException();
         }
-
-        if (!isDone()) {
-            throw new FutureTaskNotCompleted();
-        }
-
         return super.get();
     }
 }

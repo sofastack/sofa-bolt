@@ -16,17 +16,12 @@
  */
 package com.alipay.remoting.rpc;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.slf4j.Logger;
-
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventProcessor;
 import com.alipay.remoting.ConnectionEventType;
+import com.alipay.remoting.ConnectionFactory;
 import com.alipay.remoting.ConnectionMonitorStrategy;
 import com.alipay.remoting.ConnectionPool;
 import com.alipay.remoting.ConnectionSelectStrategy;
@@ -39,74 +34,75 @@ import com.alipay.remoting.ReconnectManager;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.ScheduledDisconnectStrategy;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.config.AbstractConfigurableInstance;
-import com.alipay.remoting.config.configs.ConfigType;
-import com.alipay.remoting.config.switches.GlobalSwitch;
-import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
-import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
+import com.alipay.remoting.util.GlobalSwitch;
+import org.slf4j.Logger;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * Client for Rpc.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcClient.java, v 0.1 2015-9-23 PM4:03:28 tao Exp $
  */
-public class RpcClient extends AbstractConfigurableInstance {
+// TODO: 2018/4/23 by zmyer
+public class RpcClient {
 
     /** logger */
-    private static final Logger                         logger                   = BoltLoggerFactory
-                                                                                     .getLogger("RpcRemoting");
+    private static final Logger       logger                   = BoltLoggerFactory
+                                                                   .getLogger("RpcRemoting");
 
-    private ConcurrentHashMap<String, UserProcessor<?>> userProcessors           = new ConcurrentHashMap<String, UserProcessor<?>>();
+    /** global switch */
+    private GlobalSwitch              globalSwitch             = new GlobalSwitch();
+
     /** connection factory */
-    private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
-                                                                                     userProcessors,
-                                                                                     this);
+    private ConnectionFactory         connctionFactory         = new RpcConnectionFactory();
 
     /** connection event handler */
-    private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler(
-                                                                                     switches());
+    private ConnectionEventHandler    connectionEventHandler   = new RpcConnectionEventHandler(
+                                                                   globalSwitch);
 
     /** reconnect manager */
-    private ReconnectManager                            reconnectManager;
+    private ReconnectManager          reconnectManager;
 
     /** connection event listener */
-    private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();
+    private ConnectionEventListener   connectionEventListener  = new ConnectionEventListener();
 
     /** address parser to get custom args */
-    private RemotingAddressParser                       addressParser;
+    private RemotingAddressParser     addressParser;
 
     /** connection select strategy */
-    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy(
-                                                                                     switches());
+    private ConnectionSelectStrategy  connectionSelectStrategy = new RandomSelectStrategy(
+                                                                   globalSwitch);
 
     /** connection manager */
-    private DefaultConnectionManager                    connectionManager        = new DefaultConnectionManager(
-                                                                                     connectionSelectStrategy,
-                                                                                     connectionFactory,
-                                                                                     connectionEventHandler,
-                                                                                     connectionEventListener,
-                                                                                     switches());
+    private DefaultConnectionManager  connectionManager        = new DefaultConnectionManager(
+                                                                   connectionSelectStrategy,
+                                                                   connctionFactory,
+                                                                   connectionEventHandler,
+                                                                   connectionEventListener,
+                                                                   globalSwitch);
 
     /** rpc remoting */
-    protected RpcRemoting                               rpcRemoting;
+    protected RpcRemoting             rpcRemoting;
 
     /** task scanner */
-    private RpcTaskScanner                              taskScanner              = new RpcTaskScanner();
+    private RpcTaskScanner            taskScanner              = new RpcTaskScanner();
 
     /** connection monitor */
-    private DefaultConnectionMonitor                    connectionMonitor;
+    private DefaultConnectionMonitor  connectionMonitor;
 
     /** connection monitor strategy */
-    private ConnectionMonitorStrategy                   monitorStrategy;
+    private ConnectionMonitorStrategy monitorStrategy;
 
-    public RpcClient() {
-        super(ConfigType.CLIENT_SIDE);
-    }
-
+    /**
+     * Initialization.
+     */
+    // TODO: 2018/6/22 by zmyer
     public void init() {
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
@@ -118,7 +114,7 @@ public class RpcClient extends AbstractConfigurableInstance {
         this.taskScanner.add(this.connectionManager);
         this.taskScanner.start();
 
-        if (switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
+        if (globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
             if (monitorStrategy == null) {
                 ScheduledDisconnectStrategy strategy = new ScheduledDisconnectStrategy();
                 connectionMonitor = new DefaultConnectionMonitor(strategy, this.connectionManager);
@@ -129,7 +125,7 @@ public class RpcClient extends AbstractConfigurableInstance {
             connectionMonitor.start();
             logger.warn("Switch on connection monitor");
         }
-        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
+        if (globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
             reconnectManager = new ReconnectManager(connectionManager);
             connectionEventHandler.setReconnectManager(reconnectManager);
             logger.warn("Switch on reconnect manager");
@@ -170,7 +166,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(String addr)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param addr
      * @param request
      * @throws RemotingException
@@ -210,7 +206,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(Url url)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param url
      * @param request
      * @throws RemotingException
@@ -230,6 +226,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/6/22 by zmyer
     public void oneway(final Url url, final Object request, final InvokeContext invokeContext)
                                                                                               throws RemotingException,
                                                                                               InterruptedException {
@@ -241,7 +238,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * <p>
      * Notice:<br>
      *   <b>DO NOT modify the request object concurrently when this method is called.</b>
-     * 
+     *
      * @param conn
      * @param request
      * @throws RemotingException
@@ -277,7 +274,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(String addr)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param addr
      * @param request
      * @param timeoutMillis
@@ -323,7 +320,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(Url url)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param url
      * @param request
      * @param timeoutMillis
@@ -348,6 +345,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/6/22 by zmyer
     public Object invokeSync(final Url url, final Object request,
                              final InvokeContext invokeContext, final int timeoutMillis)
                                                                                         throws RemotingException,
@@ -360,7 +358,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * <p>
      * Notice:<br>
      *   <b>DO NOT modify the request object concurrently when this method is called.</b>
-     * 
+     *
      * @param conn
      * @param request
      * @param timeoutMillis
@@ -407,7 +405,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(String addr)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param addr
      * @param request
      * @param timeoutMillis
@@ -454,7 +452,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(Url url)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param url
      * @param request
      * @param timeoutMillis
@@ -492,7 +490,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * <p>
      * Notice:<br>
      *   <b>DO NOT modify the request object concurrently when this method is called.</b>
-     * 
+     *
      * @param conn
      * @param request
      * @param timeoutMillis
@@ -535,7 +533,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(String addr)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param addr
      * @param request
      * @param invokeCallback
@@ -585,7 +583,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *      </ul>
      *   <li>You should use {@link #closeConnection(Url url)} to close it if you want.
      *   </ol>
-     * 
+     *
      * @param url
      * @param request
      * @param invokeCallback
@@ -611,6 +609,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * @throws RemotingException
      * @throws InterruptedException
      */
+    // TODO: 2018/6/22 by zmyer
     public void invokeWithCallback(final Url url, final Object request,
                                    final InvokeContext invokeContext,
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
@@ -626,7 +625,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * <p>
      * Notice:<br>
      *   <b>DO NOT modify the request object concurrently when this method is called.</b>
-     * 
+     *
      * @param conn
      * @param request
      * @param invokeCallback
@@ -659,7 +658,7 @@ public class RpcClient extends AbstractConfigurableInstance {
 
     /**
      * Add processor to process connection event.
-     * 
+     *
      * @param type
      * @param processor
      */
@@ -669,14 +668,13 @@ public class RpcClient extends AbstractConfigurableInstance {
     }
 
     /**
-     * Use UserProcessorRegisterHelper{@link UserProcessorRegisterHelper} to help register user processor for client side.
+     * Register user processor for client side.
      *
      * @param processor
-     * @throws RemotingException 
+     * @throws RemotingException
      */
-
     public void registerUserProcessor(UserProcessor<?> processor) {
-        UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
+        this.connectionManager.getConnectionFactory().registerUserProcessor(processor);
     }
 
     /**
@@ -686,7 +684,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *   <li>Each time you call this method, will create a new connection.
      *   <li>Bolt will not control this connection.
      *   <li>You should use {@link #closeStandaloneConnection} to close it.
-     * 
+     *
      * @param ip
      * @param port
      * @param connectTimeout
@@ -707,7 +705,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      *   <li>Bolt will not control this connection.
      *   <li>You should use {@link #closeStandaloneConnection} to close it.
      *   </ol>
-     * 
+     *
      * @param addr
      * @param connectTimeout
      * @return
@@ -720,7 +718,7 @@ public class RpcClient extends AbstractConfigurableInstance {
 
     /**
      * Close a standalone connection
-     * 
+     *
      * @param conn
      */
     public void closeStandaloneConnection(Connection conn) {
@@ -763,12 +761,13 @@ public class RpcClient extends AbstractConfigurableInstance {
      *   <li>Bolt will control this connection in {@link com.alipay.remoting.ConnectionPool}
      *   <li>You should use {@link #closeConnection(Url url)} to close it.
      *   </ol>
-     * 
+     *
      * @param url
      * @param connectTimeout this is prior to url args {@link RpcConfigs#CONNECT_TIMEOUT_KEY}
      * @return
      * @throws RemotingException
      */
+    // TODO: 2018/6/22 by zmyer
     public Connection getConnection(Url url, int connectTimeout) throws RemotingException,
                                                                 InterruptedException {
         url.setConnectTimeout(connectTimeout);
@@ -804,7 +803,7 @@ public class RpcClient extends AbstractConfigurableInstance {
 
     /**
      * Close all connections of a address
-     * 
+     *
      * @param addr
      */
     public void closeConnection(String addr) {
@@ -814,7 +813,7 @@ public class RpcClient extends AbstractConfigurableInstance {
 
     /**
      * Close all connections of a {@link Url}
-     * 
+     *
      * @param url
      */
     public void closeConnection(Url url) {
@@ -826,7 +825,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * If this address not connected, then do nothing.
      * <p>
      * Notice: this method takes no effect on a stand alone connection.
-     * 
+     *
      * @param addr
      */
     public void enableConnHeartbeat(String addr) {
@@ -839,7 +838,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * If this {@link Url} not connected, then do nothing.
      * <p>
      * Notice: this method takes no effect on a stand alone connection.
-     * 
+     *
      * @param url
      */
     public void enableConnHeartbeat(Url url) {
@@ -853,7 +852,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * If this addr not connected, then do nothing.
      * <p>
      * Notice: this method takes no effect on a stand alone connection.
-     * 
+     *
      * @param addr
      */
     public void disableConnHeartbeat(String addr) {
@@ -866,7 +865,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * If this {@link Url} not connected, then do nothing.
      * <p>
      * Notice: this method takes no effect on a stand alone connection.
-     * 
+     *
      * @param url
      */
     public void disableConnHeartbeat(Url url) {
@@ -881,16 +880,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * Notice: This api should be called before {@link RpcClient#init()}
      */
     public void enableReconnectSwitch() {
-        this.switches().turnOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
-    }
-
-    /**
-     * disable connection reconnect switch off
-     * <p>
-     * Notice: This api should be called before {@link RpcClient#init()}
-     */
-    public void disableReconnectSwith() {
-        this.switches().turnOff(GlobalSwitch.CONN_RECONNECT_SWITCH);
+        this.globalSwitch.turnOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
     }
 
     /**
@@ -898,23 +888,14 @@ public class RpcClient extends AbstractConfigurableInstance {
      * @return
      */
     public boolean isReconnectSwitchOn() {
-        return this.switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
+        return this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
     }
 
     /**
      * enable connection monitor switch on
      */
     public void enableConnectionMonitorSwitch() {
-        this.switches().turnOn(GlobalSwitch.CONN_MONITOR_SWITCH);
-    }
-
-    /**
-     * disable connection monitor switch off
-     * <p>
-     * Notice: This api should be called before {@link RpcClient#init()}
-     */
-    public void disableConnectionMonitorSwitch() {
-        this.switches().turnOff(GlobalSwitch.CONN_MONITOR_SWITCH);
+        this.globalSwitch.turnOn(GlobalSwitch.CONN_MONITOR_SWITCH);
     }
 
     /**
@@ -922,7 +903,7 @@ public class RpcClient extends AbstractConfigurableInstance {
      * @return
      */
     public boolean isConnectionMonitorSwitchOn() {
-        return this.switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH);
+        return this.globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH);
     }
 
     // ~~~ getter and setter
@@ -933,7 +914,7 @@ public class RpcClient extends AbstractConfigurableInstance {
 
     /**
      * Getter method for property <tt>addressParser</tt>.
-     * 
+     *
      * @return property value of addressParser
      */
     public RemotingAddressParser getAddressParser() {
@@ -942,7 +923,7 @@ public class RpcClient extends AbstractConfigurableInstance {
 
     /**
      * Setter method for property <tt>addressParser</tt>.
-     * 
+     *
      * @param addressParser value to be assigned to property addressParser
      */
     public void setAddressParser(RemotingAddressParser addressParser) {

@@ -16,118 +16,128 @@
  */
 package com.alipay.remoting;
 
-import java.net.InetSocketAddress;
-
 import io.netty.util.Timeout;
+
+import java.net.InetSocketAddress;
 
 /**
  * The future of an invocation.
- * 
+ *
  * @author jiangping
  * @version $Id: InvokeFuture.java, v 0.1 2015-9-21 PM5:30:35 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public interface InvokeFuture {
     /**
      * Wait response with timeout.
      *
-     * @param timeoutMillis time out in millisecond
-     * @return remoting command
-     * @throws InterruptedException if interrupted
+     * @param timeoutMillis
+     * @return
+     * @throws InterruptedException
      */
-    RemotingCommand waitResponse(final long timeoutMillis) throws InterruptedException;
+    public RemotingCommand waitResponse(final long timeoutMillis) throws InterruptedException;
 
     /**
      * Wait response with unlimit timeout
      *
-     * @return remoting command
-     * @throws InterruptedException if interrupted
+     * @return
+     * @throws InterruptedException
      */
-    RemotingCommand waitResponse() throws InterruptedException;
+    public RemotingCommand waitResponse() throws InterruptedException;
 
     /**
      * Create a remoting command response when connection closed
      *
-     * @param responseHost target host
-     * @return remoting command
+     * @param responseHost
+     * @return
      */
-    RemotingCommand createConnectionClosedResponse(InetSocketAddress responseHost);
+    public RemotingCommand createConnectionClosedResponse(InetSocketAddress responseHost);
 
     /**
      * Put the response to the future.
      *
-     * @param response remoting command
+     * @param response
      */
-    void putResponse(final RemotingCommand response);
+    public void putResponse(final RemotingCommand response);
 
     /**
      * Get the id of the invocation.
-     * @return invoke id
+     *
+     * @return
      */
-    int invokeId();
+    public int invokeId();
 
     /**
      * Execute the callback.
      */
-    void executeInvokeCallback();
+    public void executeInvokeCallback();
 
     /**
      * Asynchronous execute the callback abnormally.
      */
-    void tryAsyncExecuteInvokeCallbackAbnormally();
+    public void tryAsyncExecuteInvokeCallbackAbnormally();
 
     /**
      * Set the cause if exception caught.
+     *
+     * @param cause
      */
-    void setCause(Throwable cause);
+    public void setCause(Throwable cause);
 
     /**
      * Get the cause of exception of the future.
-     * @return the cause
+     *
+     * @return
      */
-    Throwable getCause();
+    public Throwable getCause();
 
     /**
      * Get the application callback of the future.
-     * @return get invoke callback
+     *
+     * @return
      */
-    InvokeCallback getInvokeCallback();
+    public InvokeCallback getInvokeCallback();
 
     /**
      * Add timeout for the future.
+     *
+     * @param timeout
      */
-    void addTimeout(Timeout timeout);
+    public void addTimeout(Timeout timeout);
 
     /**
      * Cancel the timeout.
      */
-    void cancelTimeout();
+    public void cancelTimeout();
 
     /**
      * Whether the future is done.
-     * @return true if the future is done
+     *
+     * @return
      */
-    boolean isDone();
+    public boolean isDone();
 
     /**
-     * Get application classloader.
      * @return application classloader
      */
-    ClassLoader getAppClassLoader();
+    public ClassLoader getAppClassLoader();
 
     /**
      * Get the protocol code of command.
-     * @return protocol code
+     *
+     * @return
      */
-    byte getProtocolCode();
+    public byte getProtocolCode();
 
     /**
      * set invoke context
+     * @param invokeContext
      */
-    void setInvokeContext(InvokeContext invokeContext);
+    public void setInvokeContext(InvokeContext invokeContext);
 
     /**
-     * Get invoke context.
-     * @return the invoke context
+     * get invoke context
+     * @return
      */
-    InvokeContext getInvokeContext();
+    public InvokeContext getInvokeContext();
 }

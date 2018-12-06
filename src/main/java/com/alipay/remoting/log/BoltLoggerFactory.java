@@ -16,12 +16,11 @@
  */
 package com.alipay.remoting.log;
 
-import java.io.File;
-
-import org.slf4j.Logger;
-
 import com.alipay.remoting.util.StringUtils;
 import com.alipay.sofa.common.log.LoggerSpaceManager;
+import org.slf4j.Logger;
+
+import java.io.File;
 
 /**
  * Customized logger factory
@@ -31,6 +30,7 @@ import com.alipay.sofa.common.log.LoggerSpaceManager;
  * @author tsui
  * @version $Id: BoltLoggerFactory.java, v 0.1 2017-09-05 16:06 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class BoltLoggerFactory {
     public static final String  BOLT_LOG_SPACE_PROPERTY   = "bolt.log.space";
 
@@ -42,7 +42,6 @@ public class BoltLoggerFactory {
     private static final String CLIENT_LOG_LEVEL          = "com.alipay.remoting.client.log.level";
     private static final String CLIENT_LOG_LEVEL_DEFAULT  = "INFO";
     private static final String CLIENT_LOG_ENCODE         = "com.alipay.remoting.client.log.encode";
-    private static final String COMMON_ENCODE             = "file.encoding";
     private static final String CLIENT_LOG_ENCODE_DEFAULT = "UTF-8";
 
     static {
@@ -52,23 +51,16 @@ public class BoltLoggerFactory {
         }
 
         String logPath = System.getProperty(LOG_PATH);
+        String logLevel = System.getProperty(CLIENT_LOG_LEVEL);
+        String logEncode = System.getProperty(CLIENT_LOG_ENCODE);
         if (StringUtils.isBlank(logPath)) {
             System.setProperty(LOG_PATH, LOG_PATH_DEFAULT);
         }
-
-        String logLevel = System.getProperty(CLIENT_LOG_LEVEL);
         if (StringUtils.isBlank(logLevel)) {
             System.setProperty(CLIENT_LOG_LEVEL, CLIENT_LOG_LEVEL_DEFAULT);
         }
-
-        String commonEncode = System.getProperty(COMMON_ENCODE);
-        if (StringUtils.isNotBlank(commonEncode)) {
-            System.setProperty(CLIENT_LOG_ENCODE, commonEncode);
-        } else {
-            String logEncode = System.getProperty(CLIENT_LOG_ENCODE);
-            if (StringUtils.isBlank(logEncode)) {
-                System.setProperty(CLIENT_LOG_ENCODE, CLIENT_LOG_ENCODE_DEFAULT);
-            }
+        if (StringUtils.isBlank(logEncode)) {
+            System.setProperty(CLIENT_LOG_ENCODE, CLIENT_LOG_ENCODE_DEFAULT);
         }
     }
 
@@ -83,6 +75,7 @@ public class BoltLoggerFactory {
         if (name == null || name.isEmpty()) {
             return null;
         }
-        return LoggerSpaceManager.getLoggerBySpace(name, BOLT_LOG_SPACE);
+        Logger logger = LoggerSpaceManager.getLoggerBySpace(name, BOLT_LOG_SPACE);
+        return logger;
     }
 }

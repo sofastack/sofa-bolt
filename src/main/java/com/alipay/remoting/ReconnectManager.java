@@ -16,21 +16,21 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.exception.RemotingException;
+import com.alipay.remoting.log.BoltLoggerFactory;
+import org.slf4j.Logger;
+
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.slf4j.Logger;
-
-import com.alipay.remoting.exception.RemotingException;
-import com.alipay.remoting.log.BoltLoggerFactory;
-
 /**
  * Reconnect manager.
- * 
+ *
  * @author yunliang.shi
  * @version $Id: ReconnectManager.java, v 0.1 Mar 11, 2016 5:20:50 PM yunliang.shi Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class ReconnectManager {
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
 
@@ -41,7 +41,7 @@ public class ReconnectManager {
     private final LinkedBlockingQueue<ReconnectTask> tasks                  = new LinkedBlockingQueue<ReconnectTask>();
 
     protected final List<Url/* url */>              canceled               = new CopyOnWriteArrayList<Url>();
-    private volatile boolean                         started;
+    private volatile boolean                         started                = false;
 
     private int                                      healConnectionInterval = 1000;
 
@@ -56,6 +56,7 @@ public class ReconnectManager {
         this.started = true;
     }
 
+    // TODO: 2018/6/22 by zmyer
     private void doReconnectTask(ReconnectTask task) throws InterruptedException, RemotingException {
         connectionManager.createConnectionAndHealIfNeed(task.url);
     }
@@ -74,7 +75,7 @@ public class ReconnectManager {
 
     /**
      * add reconnect task
-     * 
+     *
      * @param url
      */
     public void addReconnectTask(Url url) {
@@ -85,10 +86,11 @@ public class ReconnectManager {
 
     /**
      * Check task whether is valid, if canceled, is not valid
-     * 
+     *
      * @param task
      * @return
      */
+    // TODO: 2018/6/22 by zmyer
     private boolean isValidTask(ReconnectTask task) {
         return !canceled.contains(task.url);
     }
@@ -108,14 +110,14 @@ public class ReconnectManager {
 
     /**
      * heal connection thread
-     * 
+     *
      * @author yunliang.shi
      * @version $Id: ReconnectManager.java, v 0.1 Mar 11, 2016 5:24:08 PM yunliang.shi Exp $
      */
+    // TODO: 2018/6/22 by zmyer
     private final class HealConnectionRunner implements Runnable {
         private long lastConnectTime = -1;
 
-        @Override
         public void run() {
             while (ReconnectManager.this.started) {
                 long start = -1;

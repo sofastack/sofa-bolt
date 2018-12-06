@@ -20,38 +20,39 @@ import java.util.concurrent.ExecutorService;
 
 /**
  * Command handler.
- * 
+ *
  * @author jiangping
  * @version $Id: CommandHandler.java, v 0.1 2015-12-14 PM4:03:55 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public interface CommandHandler {
     /**
      * Handle the command.
-     * 
+     *
      * @param ctx
      * @param msg
      * @throws Exception
      */
-    void handleCommand(RemotingContext ctx, Object msg) throws Exception;
+    public void handleCommand(RemotingContext ctx, Object msg) throws Exception;
 
     /**
      * Register processor for command with specified code.
-     * 
+     *
      * @param cmd
      * @param processor
      */
-    void registerProcessor(CommandCode cmd, RemotingProcessor<?> processor);
+    public void registerProcessor(CommandCode cmd, RemotingProcessor<?> processor);
 
     /**
      * Register default executor for the handler.
-     * 
+     *
      * @param executor
      */
-    void registerDefaultExecutor(ExecutorService executor);
+    public void registerDefaultExecutor(ExecutorService executor);
 
     /**
      * Get default executor for the handler.
      */
-    ExecutorService getDefaultExecutor();
+    public ExecutorService getDefaultExecutor();
 
 }

@@ -16,17 +16,18 @@
  */
 package com.alipay.remoting.rpc;
 
-import java.net.InetSocketAddress;
-
 import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.ResponseStatus;
 
+import java.net.InetSocketAddress;
+
 /**
  * Command of response.
- * 
+ *
  * @author jiangping
  * @version $Id: ResponseCommand.java, v 0.1 2015-9-10 AM10:31:34 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class ResponseCommand extends RpcCommand {
 
     /** For serialization  */
@@ -61,7 +62,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Getter method for property <tt>responseTimeMillis</tt>.
-     * 
+     *
      * @return property value of responseTimeMillis
      */
     public long getResponseTimeMillis() {
@@ -70,7 +71,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Setter method for property <tt>responseTimeMillis</tt>.
-     * 
+     *
      * @param responseTimeMillis value to be assigned to property responseTimeMillis
      */
     public void setResponseTimeMillis(long responseTimeMillis) {
@@ -79,7 +80,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Getter method for property <tt>responseHost</tt>.
-     * 
+     *
      * @return property value of responseHost
      */
     public InetSocketAddress getResponseHost() {
@@ -88,7 +89,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Setter method for property <tt>responseHost</tt>.
-     * 
+     *
      * @param responseHost value to be assigned to property responseHost
      */
     public void setResponseHost(InetSocketAddress responseHost) {
@@ -97,7 +98,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Getter method for property <tt>responseStatus</tt>.
-     * 
+     *
      * @return property value of responseStatus
      */
     public ResponseStatus getResponseStatus() {
@@ -106,7 +107,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Setter method for property <tt>responseStatus</tt>.
-     * 
+     *
      * @param responseStatus value to be assigned to property responseStatus
      */
     public void setResponseStatus(ResponseStatus responseStatus) {
@@ -115,7 +116,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Getter method for property <tt>cause</tt>.
-     * 
+     *
      * @return property value of cause
      */
     public Throwable getCause() {
@@ -124,7 +125,7 @@ public class ResponseCommand extends RpcCommand {
 
     /**
      * Setter method for property <tt>cause</tt>.
-     * 
+     *
      * @param cause value to be assigned to property cause
      */
     public void setCause(Throwable cause) {

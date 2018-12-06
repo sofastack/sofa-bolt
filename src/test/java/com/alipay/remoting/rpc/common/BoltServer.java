@@ -51,8 +51,7 @@ public class BoltServer {
     }
 
     public boolean start() {
-        this.server.start();
-        return true;
+        return this.server.start();
     }
 
     public void stop() {

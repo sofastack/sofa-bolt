@@ -22,6 +22,7 @@ package com.alipay.remoting.rpc.protocol;
  * @author tsui
  * @version $Id: RpcDeserializeLevel.java, v 0.1 2017-04-24 15:12 tsui Exp $
  */
+// TODO: 2018/4/24 by zmyer
 public class RpcDeserializeLevel {
     /** deserialize clazz, header, contents all three parts of rpc command */
     public final static int DESERIALIZE_ALL    = 0x02;
@@ -32,7 +33,11 @@ public class RpcDeserializeLevel {
 
     /**
      * Convert to String.
+     *
+     * @param value
+     * @return
      */
+    // TODO: 2018/4/24 by zmyer
     public static String valueOf(int value) {
         switch (value) {
             case 0x00:
@@ -41,6 +46,8 @@ public class RpcDeserializeLevel {
                 return "DESERIALIZE_HEADER";
             case 0x02:
                 return "DESERIALIZE_ALL";
+            default:
+                break;
         }
         throw new IllegalArgumentException("Unknown deserialize level value ," + value);
     }

@@ -21,7 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.alipay.remoting.config.Configs;
+import com.alipay.remoting.Configs;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.common.BoltServer;
@@ -33,7 +33,7 @@ import com.alipay.remoting.rpc.common.PortScan;
  * @author xiaomin.cxm
  * @version $Id: WaterMarkTest.java, v 0.1 Apr 6, 2016 8:58:36 PM xiaomin.cxm Exp $
  */
-public class WaterMarkInitTest {
+public class WaterMark_init_Test {
     BoltServer server;
     RpcClient  client;
 
@@ -50,15 +50,16 @@ public class WaterMarkInitTest {
     }
 
     @Test
-    public void testLowBiggerThanHigh() {
+    public void testLowBiggerThanHigh() throws InterruptedException {
         System.setProperty(Configs.NETTY_BUFFER_HIGH_WATERMARK, Integer.toString(1));
         System.setProperty(Configs.NETTY_BUFFER_LOW_WATERMARK, Integer.toString(2));
         try {
+
             server = new BoltServer(port, true);
             server.start();
             Assert.fail("should not reach here");
-        } catch (IllegalStateException e) {
-            // expect IllegalStateException
+        } catch (IllegalArgumentException e) {
+            // except IllegalArgumentException
         }
 
         try {
@@ -66,7 +67,7 @@ public class WaterMarkInitTest {
             client.init();
             Assert.fail("should not reach here");
         } catch (IllegalArgumentException e) {
-            // expect IllegalStateException
+            // expect IllegalArgumentException
         }
     }
 

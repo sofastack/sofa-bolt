@@ -22,14 +22,15 @@ import com.alipay.remoting.BizContext;
 /**
  * Extends this to process user defined request in ASYNC way.<br>
  * If you want process reqeuest in SYNC way, please extends {@link SyncUserProcessor}.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: AsyncUserProcessor.java, v 0.1 May 16, 2016 8:18:03 PM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/24 by zmyer
 public abstract class AsyncUserProcessor<T> extends AbstractUserProcessor<T> {
     /**
      * unsupported here!
-     * 
+     *
      * @see com.alipay.remoting.rpc.protocol.UserProcessor#handleRequest(com.alipay.remoting.BizContext, java.lang.Object)
      */
     @Override

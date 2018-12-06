@@ -16,14 +16,6 @@
  */
 package com.alipay.remoting.rpc;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.slf4j.Logger;
-
 import com.alipay.remoting.CommandFactory;
 import com.alipay.remoting.CommandHandler;
 import com.alipay.remoting.InvokeCallback;
@@ -35,53 +27,70 @@ import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.ProtocolManager;
 import com.alipay.remoting.RemotingCommand;
 import com.alipay.remoting.log.BoltLoggerFactory;
-
 import io.netty.util.Timeout;
+import org.slf4j.Logger;
+
+import java.net.InetSocketAddress;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The default implementation of InvokeFuture.
- * 
+ *
  * @author jiangping
  * @version $Id: DefaultInvokeFuture.java, v 0.1 2015-9-27 PM6:30:22 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class DefaultInvokeFuture implements InvokeFuture {
 
     private static final Logger      logger                  = BoltLoggerFactory
                                                                  .getLogger("RpcRemoting");
 
+    //调用id
     private int                      invokeId;
 
+    //回调监听器
     private InvokeCallbackListener   callbackListener;
 
+    //回调对象
     private InvokeCallback           callback;
 
+    //应答指令
     private volatile ResponseCommand responseCommand;
 
     private final CountDownLatch     countDownLatch          = new CountDownLatch(1);
 
     private final AtomicBoolean      executeCallbackOnlyOnce = new AtomicBoolean(false);
 
+    //超时时间
     private Timeout                  timeout;
 
+    //异常信息
     private Throwable                cause;
 
+    //类加载器
     private ClassLoader              classLoader;
 
+    //协议
     private byte                     protocol;
 
+    //调用上下文对象
     private InvokeContext            invokeContext;
 
+    //命令工厂
     private CommandFactory           commandFactory;
 
     /**
      * Constructor.
      *
-     * @param invokeId invoke id
-     * @param callbackListener callback listener
-     * @param callback callback
-     * @param protocol protocol code
-     * @param commandFactory command factory
+     * @param invokeId
+     * @param callbackListener
+     * @param callback
+     * @param protocol
      */
+    // TODO: 2018/4/23 by zmyer
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol, CommandFactory commandFactory) {
         this.invokeId = invokeId;
@@ -93,15 +102,14 @@ public class DefaultInvokeFuture implements InvokeFuture {
     }
 
     /**
-     * Constructor.
      *
-     * @param invokeId invoke id
-     * @param callbackListener callback listener
-     * @param callback callback
-     * @param protocol protocol
-     * @param commandFactory command factory
-     * @param invokeContext invoke context
+     * @param invokeId
+     * @param callbackListener
+     * @param callback
+     * @param protocol
+     * @param invokeContext
      */
+    // TODO: 2018/4/23 by zmyer
     public DefaultInvokeFuture(int invokeId, InvokeCallbackListener callbackListener,
                                InvokeCallback callback, byte protocol,
                                CommandFactory commandFactory, InvokeContext invokeContext) {
@@ -109,26 +117,38 @@ public class DefaultInvokeFuture implements InvokeFuture {
         this.invokeContext = invokeContext;
     }
 
+    /**
+     * @throws InterruptedException
+     * @see com.alipay.remoting.InvokeFuture#waitResponse(long)
+     */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public ResponseCommand waitResponse(long timeoutMillis) throws InterruptedException {
         this.countDownLatch.await(timeoutMillis, TimeUnit.MILLISECONDS);
         return this.responseCommand;
     }
 
+    /**
+     * @throws InterruptedException
+     * @see com.alipay.remoting.InvokeFuture#waitResponse(long)
+     */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public ResponseCommand waitResponse() throws InterruptedException {
         this.countDownLatch.await();
         return this.responseCommand;
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public RemotingCommand createConnectionClosedResponse(InetSocketAddress responseHost) {
         return this.commandFactory.createConnectionClosedResponse(responseHost, null);
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#putResponse(com.alipay.remoting.RemotingCommand)
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void putResponse(RemotingCommand response) {
         this.responseCommand = (ResponseCommand) response;
@@ -136,7 +156,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
     }
 
     /**
-     * 
+     *
      * @see com.alipay.remoting.InvokeFuture#isDone()
      */
     @Override
@@ -149,7 +169,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
         return this.classLoader;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#invokeId()
      */
     @Override
@@ -157,16 +177,18 @@ public class DefaultInvokeFuture implements InvokeFuture {
         return this.invokeId;
     }
 
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void executeInvokeCallback() {
         if (callbackListener != null) {
+            //只能调用一次
             if (this.executeCallbackOnlyOnce.compareAndSet(false, true)) {
                 callbackListener.onResponse(this);
             }
         }
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#getInvokeCallback()
      */
     @Override
@@ -174,7 +196,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
         return this.callback;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#addTimeout(io.netty.util.Timeout)
      */
     @Override
@@ -182,7 +204,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
         this.timeout = timeout;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#cancelTimeout()
      */
     @Override
@@ -192,7 +214,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
         }
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#setCause(java.lang.Throwable)
      */
     @Override
@@ -200,7 +222,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
         this.cause = cause;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#getCause()
      */
     @Override
@@ -208,7 +230,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
         return this.cause;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#getProtocolCode()
      */
     @Override
@@ -232,9 +254,10 @@ public class DefaultInvokeFuture implements InvokeFuture {
         return invokeContext;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeFuture#tryAsyncExecuteInvokeCallbackAbnormally()
      */
+    // TODO: 2018/4/23 by zmyer
     @Override
     public void tryAsyncExecuteInvokeCallbackAbnormally() {
         try {
@@ -255,6 +278,7 @@ public class DefaultInvokeFuture implements InvokeFuture {
                                         Thread.currentThread().setContextClassLoader(
                                             DefaultInvokeFuture.this.getAppClassLoader());
                                     }
+                                    //开始回调
                                     DefaultInvokeFuture.this.executeInvokeCallback();
                                 } finally {
                                     if (null != oldClassLoader) {

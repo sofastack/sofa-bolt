@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author tsui 
  * @version $Id: InvokeContext.java, v 0.1 2016-07-21 15:44 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class InvokeContext {
     // ~~~ invoke context keys of client side
     public final static String                CLIENT_LOCAL_IP        = "bolt.client.local.ip";
@@ -85,20 +86,18 @@ public class InvokeContext {
      * @param key
      * @return
      */
-    @SuppressWarnings("unchecked")
     public <T> T get(String key) {
         return (T) this.context.get(key);
     }
 
     /**
      * get and use default if not found
-     * 
+     *
      * @param key
      * @param defaultIfNotFound
      * @param <T>
      * @return
      */
-    @SuppressWarnings("unchecked")
     public <T> T get(String key, T defaultIfNotFound) {
         return this.context.get(key) != null ? (T) this.context.get(key) : defaultIfNotFound;
     }

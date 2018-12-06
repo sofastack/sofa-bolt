@@ -19,14 +19,15 @@ package com.alipay.remoting.rpc.protocol;
 import com.alipay.remoting.ProtocolManager;
 
 /**
- * Protocol manager.
  *
  * @author tsui
  * @version $Id: RpcProtocols.java, v 0.1 2018-03-27 19:42 tsui Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcProtocolManager {
     public static final int DEFAULT_PROTOCOL_CODE_LENGTH = 1;
 
+    // TODO: 2018/4/23 by zmyer
     public static void initProtocols() {
         ProtocolManager.registerProtocol(new RpcProtocol(), RpcProtocol.PROTOCOL_CODE);
         ProtocolManager.registerProtocol(new RpcProtocolV2(), RpcProtocolV2.PROTOCOL_CODE);

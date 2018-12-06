@@ -18,7 +18,7 @@ package com.alipay.remoting;
 
 /**
  * The common command code, especially for heart beat command.
- * 
+ *
  * @author jiangping
  * @version $Id: CommonCommandCode.java, v 0.1 2015-9-21 PM5:05:59 tao Exp $
  */
@@ -28,11 +28,10 @@ public enum CommonCommandCode implements CommandCode {
 
     private short value;
 
-    CommonCommandCode(short value) {
+    private CommonCommandCode(short value) {
         this.value = value;
     }
 
-    @Override
     public short value() {
         return this.value;
     }

@@ -36,7 +36,7 @@ import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
  */
 public class RpcClientDemoByMain {
     static Logger             logger                    = LoggerFactory
-                                                            .getLogger(RpcClientDemoByMain.class);
+                                                            .getLogger(BasicUsageDemoByJunit.class);
 
     static RpcClient          client;
 
@@ -67,7 +67,7 @@ public class RpcClientDemoByMain {
             logger.error(errMsg, e);
             Assert.fail(errMsg);
         } catch (InterruptedException e) {
-            logger.error("interrupted!");
+            e.printStackTrace();
         }
         client.shutdown();
     }

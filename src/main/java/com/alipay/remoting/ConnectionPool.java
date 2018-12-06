@@ -16,20 +16,20 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.log.BoltLoggerFactory;
+import org.slf4j.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.slf4j.Logger;
-
-import com.alipay.remoting.log.BoltLoggerFactory;
-
 /**
  * Connection pool
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: ConnectionPool.java, v 0.1 Mar 8, 2016 11:04:54 AM xiaomin.cxm Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class ConnectionPool implements Scannable {
     // ~~~ constants
     /** logger */
@@ -50,7 +50,7 @@ public class ConnectionPool implements Scannable {
 
     /**
      * Constructor
-     * 
+     *
      * @param strategy
      */
     public ConnectionPool(ConnectionSelectStrategy strategy) {
@@ -61,7 +61,7 @@ public class ConnectionPool implements Scannable {
 
     /**
      * add a connection
-     * 
+     *
      * @param connection
      */
     public void add(Connection connection) {
@@ -77,7 +77,7 @@ public class ConnectionPool implements Scannable {
 
     /**
      * check weather a connection already added
-     * 
+     *
      * @param connection
      * @return
      */
@@ -87,7 +87,7 @@ public class ConnectionPool implements Scannable {
 
     /**
      * removeAndTryClose a connection
-     * 
+     *
      * @param connection
      */
     public void removeAndTryClose(Connection connection) {
@@ -115,14 +115,16 @@ public class ConnectionPool implements Scannable {
 
     /**
      * get a connection
-     * 
+     *
      * @return
      */
+    // TODO: 2018/4/23 by zmyer
     public Connection get() {
         markAccess();
         if (null != this.conns) {
             List<Connection> snapshot = new ArrayList<Connection>(this.conns);
             if (snapshot.size() > 0) {
+                //按照选择策略，选出一个合适的连接对象
                 return this.strategy.select(snapshot);
             } else {
                 return null;
@@ -134,9 +136,10 @@ public class ConnectionPool implements Scannable {
 
     /**
      * get all connections
-     * 
+     *
      * @return
      */
+    // TODO: 2018/4/23 by zmyer
     public List<Connection> getAll() {
         markAccess();
         return new ArrayList<Connection>(this.conns);
@@ -172,6 +175,7 @@ public class ConnectionPool implements Scannable {
     /**
      * do mark the time stamp when access this pool
      */
+    // TODO: 2018/4/23 by zmyer
     private void markAccess() {
         this.lastAccessTimestamp = System.currentTimeMillis();
     }
@@ -194,6 +198,7 @@ public class ConnectionPool implements Scannable {
     /**
      * do mark async create connection start
      */
+    // TODO: 2018/4/23 by zmyer
     public void markAsyncCreationStart() {
         this.asyncCreationDone = false;
     }
@@ -201,6 +206,7 @@ public class ConnectionPool implements Scannable {
     /**
      * @see com.alipay.remoting.Scannable#scan()
      */
+    // TODO: 2018/6/22 by zmyer
     @Override
     public void scan() {
         if (null != this.conns && !this.conns.isEmpty()) {

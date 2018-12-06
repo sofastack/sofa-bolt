@@ -16,11 +16,6 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-
-import org.slf4j.Logger;
-
 import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.CommandDecoder;
 import com.alipay.remoting.ResponseStatus;
@@ -30,16 +25,20 @@ import com.alipay.remoting.rpc.HeartbeatCommand;
 import com.alipay.remoting.rpc.RequestCommand;
 import com.alipay.remoting.rpc.ResponseCommand;
 import com.alipay.remoting.rpc.RpcCommandType;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.slf4j.Logger;
+
+import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * Command decoder for Rpc.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcCommandDecoder.java, v 0.1 2015-10-14 PM5:15:26 tao Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public class RpcCommandDecoder implements CommandDecoder {
 
     private static final Logger logger = BoltLoggerFactory.getLogger("RpcRemoting");
@@ -131,6 +130,7 @@ public class RpcCommandDecoder implements CommandDecoder {
 
                         } else {
                             in.resetReaderIndex();
+                            return;
                         }
                     } else if (type == RpcCommandType.RESPONSE) {
                         //decode response
@@ -184,6 +184,7 @@ public class RpcCommandDecoder implements CommandDecoder {
                             out.add(command);
                         } else {
                             in.resetReaderIndex();
+                            return;
                         }
                     } else {
                         String emsg = "Unknown command type: " + type;

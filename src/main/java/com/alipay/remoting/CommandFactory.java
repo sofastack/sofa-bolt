@@ -20,10 +20,11 @@ import java.net.InetSocketAddress;
 
 /**
  * Command factory
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: CommandFactory.java, v 0.1 Mar 10, 2016 11:24:24 AM yunliang.shi Exp $
  */
+// TODO: 2018/4/23 by zmyer
 public interface CommandFactory {
     // ~~~ create request command
 
@@ -53,9 +54,6 @@ public interface CommandFactory {
     <T extends RemotingCommand> T createExceptionResponse(int id, final Throwable t, String errMsg);
 
     <T extends RemotingCommand> T createExceptionResponse(int id, ResponseStatus status);
-
-    <T extends RemotingCommand> T createExceptionResponse(int id, ResponseStatus status,
-                                                          final Throwable t);
 
     <T extends RemotingCommand> T createTimeoutResponse(final InetSocketAddress address);
 

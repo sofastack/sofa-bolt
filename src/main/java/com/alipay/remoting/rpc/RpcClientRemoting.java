@@ -29,12 +29,17 @@ import com.alipay.remoting.util.RemotingUtil;
 
 /**
  * Rpc client remoting
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: RpcClientRemoting.java, v 0.1 Apr 14, 2016 11:58:56 AM xiaomin.cxm Exp $
  */
+// TODO: 2018/6/22 by zmyer
 public class RpcClientRemoting extends RpcRemoting {
-
+    /**
+     * @param addressParser
+     * @param connectionManager
+     */
+    // TODO: 2018/6/22 by zmyer
     public RpcClientRemoting(CommandFactory commandFactory, RemotingAddressParser addressParser,
                              DefaultConnectionManager connectionManager) {
         super(commandFactory, addressParser, connectionManager);
@@ -43,6 +48,7 @@ public class RpcClientRemoting extends RpcRemoting {
     /**
      * @see com.alipay.remoting.rpc.RpcRemoting#oneway(com.alipay.remoting.Url, java.lang.Object, InvokeContext)
      */
+    // TODO: 2018/6/22 by zmyer
     @Override
     public void oneway(Url url, Object request, InvokeContext invokeContext)
                                                                             throws RemotingException,
@@ -55,6 +61,7 @@ public class RpcClientRemoting extends RpcRemoting {
     /**
      * @see com.alipay.remoting.rpc.RpcRemoting#invokeSync(com.alipay.remoting.Url, java.lang.Object, InvokeContext, int)
      */
+    // TODO: 2018/6/22 by zmyer
     @Override
     public Object invokeSync(Url url, Object request, InvokeContext invokeContext, int timeoutMillis)
                                                                                                      throws RemotingException,
@@ -79,6 +86,7 @@ public class RpcClientRemoting extends RpcRemoting {
     /**
      * @see com.alipay.remoting.rpc.RpcRemoting#invokeWithCallback(com.alipay.remoting.Url, java.lang.Object, InvokeContext, com.alipay.remoting.InvokeCallback, int)
      */
+    // TODO: 2018/6/22 by zmyer
     @Override
     public void invokeWithCallback(Url url, Object request, InvokeContext invokeContext,
                                    InvokeCallback invokeCallback, int timeoutMillis)
@@ -92,6 +100,7 @@ public class RpcClientRemoting extends RpcRemoting {
     /**
      * @see RpcRemoting#preProcessInvokeContext(InvokeContext, RemotingCommand, Connection)
      */
+    // TODO: 2018/6/22 by zmyer
     @Override
     protected void preProcessInvokeContext(InvokeContext invokeContext, RemotingCommand cmd,
                                            Connection connection) {
@@ -111,15 +120,17 @@ public class RpcClientRemoting extends RpcRemoting {
     /**
      * Get connection and set init invokeContext if invokeContext not {@code null}
      *
-     * @param url target url
-     * @param invokeContext invoke context to set
-     * @return connection
+     * @param url
+     * @param invokeContext
+     * @return
+     * @throws RemotingException
      */
+    // TODO: 2018/6/22 by zmyer
     protected Connection getConnectionAndInitInvokeContext(Url url, InvokeContext invokeContext)
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
         long start = System.currentTimeMillis();
-        Connection conn;
+        Connection conn = null;
         try {
             conn = this.connectionManager.getAndCreateIfAbsent(url);
         } finally {

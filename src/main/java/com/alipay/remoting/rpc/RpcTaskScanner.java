@@ -16,42 +16,47 @@
  */
 package com.alipay.remoting.rpc;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-
-import com.alipay.remoting.NamedThreadFactory;
 import com.alipay.remoting.Scannable;
 import com.alipay.remoting.log.BoltLoggerFactory;
+import org.slf4j.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Scanner is used to do scan task.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcTaskScanner.java, v 0.1 Mar 4, 2016 3:30:52 PM tao Exp $
  */
+// TODO: 2018/6/22 by zmyer
 public class RpcTaskScanner {
     private static final Logger      logger           = BoltLoggerFactory.getLogger("RpcRemoting");
+    private ScheduledExecutorService scheduledService = Executors
+                                                          .newSingleThreadScheduledExecutor(new ThreadFactory() {
+                                                              @Override
+                                                              public Thread newThread(Runnable r) {
+                                                                  return new Thread(r,
+                                                                      "RpcTaskScannerThread");
+                                                              }
+                                                          });
 
-    private ScheduledExecutorService scheduledService = new ScheduledThreadPoolExecutor(1,
-                                                          new NamedThreadFactory(
-                                                              "RpcTaskScannerThread", true));
-
-    private List<Scannable>          scanList         = new LinkedList<Scannable>();
+    private List<Scannable>          scanlist         = new LinkedList<Scannable>();
 
     /**
      * Start!
      */
+    // TODO: 2018/6/22 by zmyer
     public void start() {
         scheduledService.scheduleWithFixedDelay(new Runnable() {
 
             @Override
             public void run() {
-                for (Scannable scanned : scanList) {
+                for (Scannable scanned : scanlist) {
                     try {
                         scanned.scan();
                     } catch (Throwable t) {
@@ -65,14 +70,14 @@ public class RpcTaskScanner {
 
     /**
      * Add scan target.
-     * 
+     *
      * @param target
      */
     public void add(Scannable target) {
-        scanList.add(target);
+        scanlist.add(target);
     }
 
-    /** 
+    /**
      * Shutdown the scheduled service.
      */
     public void shutdown() {

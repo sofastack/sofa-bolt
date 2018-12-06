@@ -54,16 +54,16 @@ import io.netty.channel.Channel;
  */
 public class RemotingUtilTest {
 
-    Logger                      logger      = LoggerFactory.getLogger(RemotingUtilTest.class);
+    Logger                      logger   = LoggerFactory.getLogger(RemotingUtilTest.class);
 
     Server                      server;
     RpcClient                   client;
 
-    private static final int    port        = 1111;
-    private static final String localIP     = "127.0.0.1";
+    private static final int    port     = 1111;
+    private static final String localip  = "127.0.0.1";
 
-    private static final Url    connAddress = new Url(localIP, port);
-    RpcAddressParser            parser      = new RpcAddressParser();
+    private static final Url    connAddr = new Url(localip, port);
+    RpcAddressParser            parser   = new RpcAddressParser();
 
     @Before
     public void init() {
@@ -81,7 +81,7 @@ public class RemotingUtilTest {
     @After
     public void stop() {
         server.stopServer();
-        client.closeConnection(connAddress);
+        client.closeConnection(connAddr);
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
@@ -96,11 +96,11 @@ public class RemotingUtilTest {
     public void testParseRemoteAddress() {
         Connection conn;
         try {
-            parser.initUrlArgs(connAddress);
-            conn = client.getConnection(connAddress, 1000);
+            parser.initUrlArgs(connAddr);
+            conn = client.getConnection(connAddr, 1000);
             Channel channel = conn.getChannel();
             String res = RemotingUtil.parseRemoteAddress(channel);
-            Assert.assertEquals(connAddress.getUniqueKey(), res);
+            Assert.assertEquals(connAddr.getUniqueKey(), res);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.assertFalse(true);
@@ -115,8 +115,8 @@ public class RemotingUtilTest {
     public void testParseLocalAddress() {
         Connection conn;
         try {
-            parser.initUrlArgs(connAddress);
-            conn = client.getConnection(connAddress, 1000);
+            parser.initUrlArgs(connAddr);
+            conn = client.getConnection(connAddr, 1000);
             Channel channel = conn.getChannel();
             String res = RemotingUtil.parseLocalAddress(channel);
             Assert.assertNotNull(res);
@@ -134,37 +134,37 @@ public class RemotingUtilTest {
     public void testParseRemoteHostIp() {
         Connection conn;
         try {
-            parser.initUrlArgs(connAddress);
-            conn = client.getConnection(connAddress, 1000);
+            parser.initUrlArgs(connAddr);
+            conn = client.getConnection(connAddr, 1000);
             Channel channel = conn.getChannel();
             String res = RemotingUtil.parseRemoteIP(channel);
-            Assert.assertEquals(localIP, res);
+            Assert.assertEquals(localip, res);
         } catch (Exception e) {
             Assert.assertFalse(true);
         }
     }
 
     /**
-     * parse {@link InetSocketAddress} to get address (format [ip:port])
+     * parse InetSocketAddress to get address (format [ip:port])
      */
     @Test
     public void testParseSocketAddressToString() {
-        String localhostName;
-        String localIP;
+        String localhostName = null;
+        String localip = null;
         try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            localhostName = inetAddress.getHostName();
-            localIP = inetAddress.getHostAddress();
-            if (null == localIP || StringUtils.isBlank(localIP)) {
+            InetAddress inetAddr = InetAddress.getLocalHost();
+            localhostName = inetAddr.getHostName();
+            localip = inetAddr.getHostAddress();
+            if (null == localip || StringUtils.isBlank(localip)) {
                 return;
             }
         } catch (UnknownHostException e) {
             localhostName = "localhost";
-            localIP = "127.0.0.1";
+            localip = "127.0.0.1";
         }
         SocketAddress socketAddress = new InetSocketAddress(localhostName, port);
         String res = RemotingUtil.parseSocketAddressToString(socketAddress);
-        Assert.assertEquals(localIP + ":" + port, res);
+        Assert.assertEquals(localip + ":" + port, res);
     }
 
     /**
@@ -189,30 +189,29 @@ public class RemotingUtilTest {
      */
     @Test
     public void testParseSocketAddressToHostIp() {
-        String localhostName;
-        String localIP;
+        String localhostName = null;
+        String localip = null;
         try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            localhostName = inetAddress.getHostName();
-            localIP = inetAddress.getHostAddress();
-            if (null == localIP || StringUtils.isBlank(localIP)) {
+            InetAddress inetAddr = InetAddress.getLocalHost();
+            localhostName = inetAddr.getHostName();
+            localip = inetAddr.getHostAddress();
+            if (null == localip || StringUtils.isBlank(localip)) {
                 return;
             }
         } catch (UnknownHostException e) {
             localhostName = "localhost";
-            localIP = "127.0.0.1";
+            localip = "127.0.0.1";
         }
-
         SocketAddress socketAddress = new InetSocketAddress(localhostName, port);
         String res = RemotingUtil.parseSocketAddressToHostIp(socketAddress);
-        Assert.assertEquals(localIP, res);
+        Assert.assertEquals(localip, res);
     }
 
     class Server {
         Logger    logger = LoggerFactory.getLogger(Server.class);
         RpcServer server;
 
-        public void startServer() {
+        public void startServer() throws InterruptedException {
             server = new RpcServer(port);
             server.registerUserProcessor(new SyncUserProcessor<RequestBody>() {
                 ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
@@ -220,7 +219,8 @@ public class RemotingUtilTest {
                                                 new NamedThreadFactory("Request-process-pool"));
 
                 @Override
-                public Object handleRequest(BizContext bizCtx, RequestBody request) {
+                public Object handleRequest(BizContext bizCtx, RequestBody request)
+                                                                                   throws Exception {
                     logger.warn("Request received:" + request);
                     return "Hello world!";
                 }
@@ -236,6 +236,7 @@ public class RemotingUtilTest {
                 }
 
             });
+            server.init();
             server.start();
         }
 
