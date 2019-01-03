@@ -66,7 +66,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
                 return null;
             }
 
-            Connection result = null;
+            Connection result;
             if (null != this.globalSwitch
                 && this.globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
                 List<Connection> serviceStatusOnConns = new ArrayList<Connection>();
@@ -94,8 +94,8 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
     /**
      * get one connection randomly
      * 
-     * @param conns
-     * @return
+     * @param conns source connections
+     * @return result connection
      */
     private Connection randomGet(List<Connection> conns) {
         if (null == conns || conns.isEmpty()) {
