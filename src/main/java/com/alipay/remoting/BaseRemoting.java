@@ -77,8 +77,7 @@ public abstract class BaseRemoting {
             });
         } catch (Exception e) {
             conn.removeInvokeFuture(requestId);
-            future.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(),
-                    e));
+            future.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
             logger.error("Exception caught when sending invocation, id={}", requestId, e);
         }
         RemotingCommand response = future.waitResponse(timeoutMillis);
