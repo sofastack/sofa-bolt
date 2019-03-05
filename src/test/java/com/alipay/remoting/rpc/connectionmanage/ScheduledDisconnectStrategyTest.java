@@ -115,7 +115,7 @@ public class ScheduledDisconnectStrategyTest {
             client.getConnection(url, 1000);
         }
 
-        Thread.sleep(2200);
+        Thread.sleep(2150);
         Assert.assertTrue(1 <= clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(9, clientConnectProcessor.getConnectTimes());
         Thread.sleep(200);

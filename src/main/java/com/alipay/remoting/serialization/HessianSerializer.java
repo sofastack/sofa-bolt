@@ -20,8 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import com.alipay.hessian.ClassNameResolver;
-import com.alipay.hessian.internal.InternalNameBlackListFilter;
 import com.alipay.remoting.exception.CodecException;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
@@ -36,13 +34,6 @@ import com.caucho.hessian.io.SerializerFactory;
 public class HessianSerializer implements Serializer {
 
     private SerializerFactory serializerFactory = new SerializerFactory();
-
-    public HessianSerializer() {
-        //initialize with default black list in hessian
-        ClassNameResolver resolver = new ClassNameResolver();
-        resolver.addFilter(new InternalNameBlackListFilter(8192));
-        serializerFactory.setClassNameResolver(resolver);
-    }
 
     /** 
      * @see com.alipay.remoting.serialization.Serializer#serialize(java.lang.Object)
@@ -59,8 +50,7 @@ public class HessianSerializer implements Serializer {
             throw new CodecException("IOException occurred when Hessian serializer encode!", e);
         }
 
-        byte[] bytes = byteArray.toByteArray();
-        return bytes;
+        return byteArray.toByteArray();
     }
 
     /**
