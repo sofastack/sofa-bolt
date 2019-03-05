@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/alipay/sofa-bolt.svg?branch=master)](https://travis-ci.org/alipay/sofa-bolt)
 [![Coverage Status](https://codecov.io/gh/alipay/sofa-bolt/branch/master/graph/badge.svg)](https://codecov.io/gh/alipay/sofa-bolt)
 ![license](https://img.shields.io/badge/license-Apache--2.0-green.svg)
-![version](https://img.shields.io/badge/bolt-1.5.2-blue.svg)
+![version](https://img.shields.io/badge/bolt-1.5.3-blue.svg)
 
 # 1. 介绍
 SOFABolt 是蚂蚁金融服务集团开发的一套基于 Netty 实现的网络通信框架。
@@ -56,7 +56,13 @@ Bolt 名字取自迪士尼动画-闪电狗，是一个基于 Netty 最佳实践�
 # 5. 版权协议
 对 SOFABolt 代码的修改和变更，需要遵守[版权协议](./LICENSE)
 
-# 6. 有用的链接
+# 6. 多语言
+
+* [node](https://github.com/alipay/sofa-bolt-node)
+* [python](https://github.com/alipay/sofa-bolt-python)
+* [cpp](https://github.com/alipay/sofa-bolt-cpp)
+
+# 7. 有用的链接
 * [ISSUES](https://github.com/alipay/sofa-bolt/issues)
 * [用户手册](https://github.com/alipay/sofa-bolt/wiki/SOFA-Bolt-Handbook)
 * [中文介绍文章: 蚂蚁通信框架实践](http://mp.weixin.qq.com/s/JRsbK1Un2av9GKmJ8DK7IQ)
