@@ -58,7 +58,6 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
 
     /**
      * executor to create connections in async way
-     * note: this is lazy initialized
      */
     private Executor                                                                asyncCreateConnectionExecutor;
 
