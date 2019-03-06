@@ -32,6 +32,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.constant.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,57 +53,11 @@ import com.alipay.remoting.util.StringUtils;
 public class DefaultConnectionManager implements ConnectionManager, ConnectionHeartbeatManager,
                                      Scannable {
 
-    // ~~~ constants
-    /**
-     * logger
-     */
-    private static final Logger                                                     logger              = LoggerFactory
-                                                                                                            .getLogger("CommonDefault");
-
-    /**
-     * default expire time to remove connection pool, time unit: milliseconds
-     */
-    private static final int                                                        DEFAULT_EXPIRE_TIME = 10 * 60 * 1000;
-
-    /**
-     * default retry times when falied to get result of FutureTask
-     */
-    private static final int                                                        DEFAULT_RETRY_TIMES = 2;
-
-    // ~~~ members
-
-    /**
-     * min pool size for asyncCreateConnectionExecutor
-     */
-    private int                                                                     minPoolSize         = ConfigManager
-                                                                                                            .conn_create_tp_min_size();
-
-    /**
-     * max pool size for asyncCreateConnectionExecutor
-     */
-    private int                                                                     maxPoolSize         = ConfigManager
-                                                                                                            .conn_create_tp_max_size();
-
-    /**
-     * queue size for asyncCreateConnectionExecutor
-     */
-    private int                                                                     queueSize           = ConfigManager
-                                                                                                            .conn_create_tp_queue_size();
-
-    /**
-     * keep alive time for asyncCreateConnectionExecutor
-     */
-    private long                                                                    keepAliveTime       = ConfigManager
-                                                                                                            .conn_create_tp_keepalive();
-
-    /**
-     * executor initialie status
-     */
-    private volatile boolean                                                        executorInitialized;
+    private static final Logger                                                     logger = LoggerFactory
+                                                                                               .getLogger("CommonDefault");
 
     /**
      * executor to create connections in async way
-     * note: this is lazy initialized
      */
     private Executor                                                                asyncCreateConnectionExecutor;
 
@@ -146,19 +101,27 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
      */
     protected ConnectionEventListener                                               connectionEventListener;
 
-    // ~~~ constructors
-
     /**
-     * Default constructor
+     * Default constructor.
      */
     public DefaultConnectionManager() {
         this.connTasks = new ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>>();
         this.healTasks = new ConcurrentHashMap<String, FutureTask<Integer>>();
         this.connectionSelectStrategy = new RandomSelectStrategy(globalSwitch);
+
+        long keepAliveTime = ConfigManager.conn_create_tp_keepalive();
+        int queueSize = ConfigManager.conn_create_tp_queue_size();
+        int minPoolSize = ConfigManager.conn_create_tp_min_size();
+        int maxPoolSize = ConfigManager.conn_create_tp_max_size();
+        this.asyncCreateConnectionExecutor = new ThreadPoolExecutor(minPoolSize, maxPoolSize,
+            keepAliveTime, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize),
+            new NamedThreadFactory("Bolt-conn-warmup-executor", true));
     }
 
     /**
-     * @param connectionSelectStrategy
+     * Construct with parameters.
+     *
+     * @param connectionSelectStrategy connection selection strategy
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy) {
         this();
@@ -166,8 +129,10 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     }
 
     /**
-     * @param connectionSelectStrategy
-     * @param connectionFactory
+     * Construct with parameters.
+     *
+     * @param connectionSelectStrategy connection selection strategy
+     * @param connectionFactory connection factory
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
                                     ConnectionFactory connectionFactory) {
@@ -176,9 +141,10 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     }
 
     /**
-     * @param connectionFactory
-     * @param addressParser
-     * @param connectionEventHandler
+     * Construct with parameters.
+     * @param connectionFactory connection selection strategy
+     * @param addressParser address parser
+     * @param connectionEventHandler connection event handler
      */
     public DefaultConnectionManager(ConnectionFactory connectionFactory,
                                     RemotingAddressParser addressParser,
@@ -189,10 +155,12 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     }
 
     /**
-     * @param connectionSelectStrategy
-     * @param connectionFactory
-     * @param connectionEventHandler
-     * @param connectionEventListener
+     * Construct with parameters.
+     *
+     * @param connectionSelectStrategy connection selection strategy
+     * @param connectionFactory connection factory
+     * @param connectionEventHandler connection event handler
+     * @param connectionEventListener connection event listener
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
                                     ConnectionFactory connectionFactory,
@@ -204,23 +172,23 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     }
 
     /**
-     * @param connectionSelectStrategy
-     * @param connctionFactory
-     * @param connectionEventHandler
-     * @param connectionEventListener
-     * @param globalSwitch
+     * Construct with parameters.
+     *
+     * @param connectionSelectStrategy connection selection strategy.
+     * @param connectionFactory connection factory
+     * @param connectionEventHandler connection event handler
+     * @param connectionEventListener connection event listener
+     * @param globalSwitch global switch
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
-                                    ConnectionFactory connctionFactory,
+                                    ConnectionFactory connectionFactory,
                                     ConnectionEventHandler connectionEventHandler,
                                     ConnectionEventListener connectionEventListener,
                                     GlobalSwitch globalSwitch) {
-        this(connectionSelectStrategy, connctionFactory, connectionEventHandler,
+        this(connectionSelectStrategy, connectionFactory, connectionEventHandler,
             connectionEventListener);
         this.globalSwitch = globalSwitch;
     }
-
-    // ~~~ interface methods
 
     /**
      * @see com.alipay.remoting.ConnectionManager#init()
@@ -381,15 +349,13 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         if (null == this.connTasks || this.connTasks.isEmpty()) {
             return;
         }
-        if (null != this.connTasks && !this.connTasks.isEmpty()) {
-            Iterator<String> iter = this.connTasks.keySet().iterator();
-            while (iter.hasNext()) {
-                String poolKey = iter.next();
-                this.removeTask(poolKey);
-                iter.remove();
-            }
-            logger.warn("All connection pool and connections have been removed!");
+        Iterator<String> iter = this.connTasks.keySet().iterator();
+        while (iter.hasNext()) {
+            String poolKey = iter.next();
+            this.removeTask(poolKey);
+            iter.remove();
         }
+        logger.warn("All connection pool and connections have been removed!");
     }
 
     /**
@@ -443,7 +409,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
                 if (null != pool) {
                     pool.scan();
                     if (pool.isEmpty()) {
-                        if ((System.currentTimeMillis() - pool.getLastAccessTimestamp()) > DEFAULT_EXPIRE_TIME) {
+                        if ((System.currentTimeMillis() - pool.getLastAccessTimestamp()) > Constants.DEFAULT_EXPIRE_TIME) {
                             iter.remove();
                             logger.warn("Remove expired pool task of poolKey {} which is empty.",
                                 poolKey);
@@ -476,8 +442,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
      * If no task cached, create one and initialize the connections.
      * If task cached, check whether the number of connections adequate, if not then heal it.
      *
-     * @param url
-     * @return
+     * @param url target url
      * @throws InterruptedException
      * @throws RemotingException
      */
@@ -499,7 +464,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
      */
     @Override
     public Connection create(Url url) throws RemotingException {
-        Connection conn = null;
+        Connection conn;
         try {
             conn = this.connectionFactory.createConnection(url);
         } catch (Exception e) {
@@ -514,14 +479,12 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
      */
     @Override
     public Connection create(String ip, int port, int connectTimeout) throws RemotingException {
-        Connection conn = null;
         try {
-            conn = this.connectionFactory.createConnection(ip, port, connectTimeout);
+            return this.connectionFactory.createConnection(ip, port, connectTimeout);
         } catch (Exception e) {
             throw new RemotingException("Create connection failed. The address is " + ip + ":"
                                         + port, e);
         }
-        return conn;
     }
 
     /**
@@ -554,13 +517,11 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         }
     }
 
-    // ~~~ private methods
-
     /**
      * get connection pool from future task
      *
-     * @param task
-     * @return
+     * @param task future task
+     * @return connection pool
      */
     private ConnectionPool getConnectionPool(RunStateRecordedFutureTask<ConnectionPool> task) {
         return FutureTaskUtil.getFutureTaskResult(task, logger);
@@ -581,10 +542,10 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
                                                               Callable<ConnectionPool> callable)
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
-        RunStateRecordedFutureTask<ConnectionPool> initialTask = null;
+        RunStateRecordedFutureTask<ConnectionPool> initialTask;
         ConnectionPool pool = null;
 
-        int retry = DEFAULT_RETRY_TIMES;
+        int retry = Constants.DEFAULT_RETRY_TIMES;
 
         int timesOfResultNull = 0;
         int timesOfInterrupt = 0;
@@ -592,10 +553,11 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         for (int i = 0; (i < retry) && (pool == null); ++i) {
             initialTask = this.connTasks.get(poolKey);
             if (null == initialTask) {
-                initialTask = new RunStateRecordedFutureTask<ConnectionPool>(callable);
-                initialTask = this.connTasks.putIfAbsent(poolKey, initialTask);
+                RunStateRecordedFutureTask<ConnectionPool> newTask = new RunStateRecordedFutureTask<ConnectionPool>(
+                    callable);
+                initialTask = this.connTasks.putIfAbsent(poolKey, newTask);
                 if (null == initialTask) {
-                    initialTask = this.connTasks.get(poolKey);
+                    initialTask = newTask;
                     initialTask.run();
                 }
             }
@@ -641,7 +603,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     /**
      * remove task and remove all connections
      *
-     * @param poolKey
+     * @param poolKey target pool key
      */
     private void removeTask(String poolKey) {
         RunStateRecordedFutureTask<ConnectionPool> task = this.connTasks.remove(poolKey);
@@ -656,8 +618,8 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     /**
      * execute heal connection tasks if the actual number of connections in pool is less than expected
      *
-     * @param pool
-     * @param url
+     * @param pool connection pool
+     * @param url target url
      */
     private void healIfNeed(ConnectionPool pool, Url url) throws RemotingException,
                                                          InterruptedException {
@@ -667,10 +629,11 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         if (pool.isAsyncCreationDone() && pool.size() < url.getConnNum()) {
             FutureTask<Integer> task = this.healTasks.get(poolKey);
             if (null == task) {
-                task = new FutureTask<Integer>(new HealConnectionCall(url, pool));
-                task = this.healTasks.putIfAbsent(poolKey, task);
+                FutureTask<Integer> newTask = new FutureTask<Integer>(new HealConnectionCall(url,
+                    pool));
+                task = this.healTasks.putIfAbsent(poolKey, newTask);
                 if (null == task) {
-                    task = this.healTasks.get(poolKey);
+                    task = newTask;
                     task.run();
                 }
             }
@@ -717,7 +680,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         /**
          * create a {@link ConnectionPool} and init connections with the specified {@link Url}
          *
-         * @param url
+         * @param url target url
          */
         public ConnectionPoolCall(Url url) {
             this.whetherInitConnection = true;
@@ -753,7 +716,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         /**
          * create a {@link ConnectionPool} and init connections with the specified {@link Url}
          *
-         * @param url
+         * @param url target url
          */
         public HealConnectionCall(Url url, ConnectionPool pool) {
             this.url = url;
@@ -770,9 +733,9 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     /**
      * do create connections
      *
-     * @param url
-     * @param pool
-     * @param taskName
+     * @param url target url
+     * @param pool connection pool
+     * @param taskName task name
      * @param syncCreateNumWhenNotWarmup you can specify this param to ensure at least desired number of connections available in sync way
      * @throws RemotingException
      */
@@ -780,77 +743,63 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
                           final int syncCreateNumWhenNotWarmup) throws RemotingException {
         final int actualNum = pool.size();
         final int expectNum = url.getConnNum();
-        if (actualNum < expectNum) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("actual num {}, expect num {}, task name {}", actualNum, expectNum,
-                    taskName);
+        if (actualNum >= expectNum) {
+            return;
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("actual num {}, expect num {}, task name {}", actualNum, expectNum,
+                taskName);
+        }
+        if (url.isConnWarmup()) {
+            for (int i = actualNum; i < expectNum; ++i) {
+                Connection connection = create(url);
+                pool.add(connection);
             }
-            if (url.isConnWarmup()) {
-                for (int i = actualNum; i < expectNum; ++i) {
+        } else {
+            if (syncCreateNumWhenNotWarmup < 0 || syncCreateNumWhenNotWarmup > url.getConnNum()) {
+                throw new IllegalArgumentException(
+                    "sync create number when not warmup should be [0," + url.getConnNum() + "]");
+            }
+            // create connection in sync way
+            if (syncCreateNumWhenNotWarmup > 0) {
+                for (int i = 0; i < syncCreateNumWhenNotWarmup; ++i) {
                     Connection connection = create(url);
                     pool.add(connection);
                 }
-            } else {
-                if (syncCreateNumWhenNotWarmup < 0 || syncCreateNumWhenNotWarmup > url.getConnNum()) {
-                    throw new IllegalArgumentException(
-                        "sync create number when not warmup should be [0," + url.getConnNum() + "]");
+                if (syncCreateNumWhenNotWarmup >= url.getConnNum()) {
+                    return;
                 }
-                // create connection in sync way
-                if (syncCreateNumWhenNotWarmup > 0) {
-                    for (int i = 0; i < syncCreateNumWhenNotWarmup; ++i) {
-                        Connection connection = create(url);
-                        pool.add(connection);
-                    }
-                    if (syncCreateNumWhenNotWarmup == url.getConnNum()) {
-                        return;
-                    }
-                }
-                // initialize executor in lazy way
-                initializeExecutor();
-                pool.markAsyncCreationStart();// mark the start of async
-                try {
-                    this.asyncCreateConnectionExecutor.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                for (int i = pool.size(); i < url.getConnNum(); ++i) {
-                                    Connection conn = null;
-                                    try {
-                                        conn = create(url);
-                                    } catch (RemotingException e) {
-                                        logger
-                                            .error(
-                                                "Exception occurred in async create connection thread for {}, taskName {}",
-                                                url.getUniqueKey(), taskName, e);
-                                    }
-                                    pool.add(conn);
+            }
+
+            pool.markAsyncCreationStart();// mark the start of async
+            try {
+                this.asyncCreateConnectionExecutor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            for (int i = pool.size(); i < url.getConnNum(); ++i) {
+                                Connection conn = null;
+                                try {
+                                    conn = create(url);
+                                } catch (RemotingException e) {
+                                    logger
+                                        .error(
+                                            "Exception occurred in async create connection thread for {}, taskName {}",
+                                            url.getUniqueKey(), taskName, e);
                                 }
-                            } finally {
-                                pool.markAsyncCreationDone();// mark the end of async
+                                pool.add(conn);
                             }
+                        } finally {
+                            pool.markAsyncCreationDone();// mark the end of async
                         }
-                    });
-                } catch (RejectedExecutionException e) {
-                    pool.markAsyncCreationDone();// mark the end of async when reject
-                    throw e;
-                }
-            } // end of NOT warm up
-        } // end of if
+                    }
+                });
+            } catch (RejectedExecutionException e) {
+                pool.markAsyncCreationDone();// mark the end of async when reject
+                throw e;
+            }
+        } // end of NOT warm up
     }
-
-    /**
-     * initialize executor
-     */
-    private void initializeExecutor() {
-        if (!this.executorInitialized) {
-            this.executorInitialized = true;
-            this.asyncCreateConnectionExecutor = new ThreadPoolExecutor(minPoolSize, maxPoolSize,
-                keepAliveTime, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize),
-                new NamedThreadFactory("Bolt-conn-warmup-executor", true));
-        }
-    }
-
-    // ~~~ getters and setters
 
     /**
      * Getter method for property <tt>connectionSelectStrategy</tt>.

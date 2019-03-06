@@ -30,7 +30,7 @@ public interface ConfigContainer {
      * check whether a config item of a certain config type exist.
      * @param configType config types in the config container, different config type can hold the same config item key
      * @param configItem config items in the config container
-     * @return exist then return true, not exist return alse
+     * @return exist then return true, not exist return false
      */
     boolean contains(ConfigType configType, ConfigItem configItem);
 

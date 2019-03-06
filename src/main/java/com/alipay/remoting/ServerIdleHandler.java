@@ -40,7 +40,6 @@ public class ServerIdleHandler extends ChannelDuplexHandler {
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
 
     /**
-     * 
      * @see io.netty.channel.ChannelInboundHandlerAdapter#userEventTriggered(io.netty.channel.ChannelHandlerContext, java.lang.Object)
      */
     @Override
