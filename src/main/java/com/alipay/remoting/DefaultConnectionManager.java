@@ -480,14 +480,12 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
      */
     @Override
     public Connection create(String ip, int port, int connectTimeout) throws RemotingException {
-        Connection conn;
         try {
-            conn = this.connectionFactory.createConnection(ip, port, connectTimeout);
+            return this.connectionFactory.createConnection(ip, port, connectTimeout);
         } catch (Exception e) {
             throw new RemotingException("Create connection failed. The address is " + ip + ":"
                                         + port, e);
         }
-        return conn;
     }
 
     /**
