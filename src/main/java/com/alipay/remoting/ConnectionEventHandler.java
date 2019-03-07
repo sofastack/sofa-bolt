@@ -52,7 +52,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     private ConnectionEventExecutor eventExecutor;
 
-    private ReconnectManager        reconnectManager;
+    private Reconnector        reconnectManager;
 
     private GlobalSwitch            globalSwitch;
 
@@ -144,7 +144,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                 && this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
                 Connection conn = (Connection) attr.get();
                 if (reconnectManager != null) {
-                    reconnectManager.addReconnectTask(conn.getUrl());
+                    reconnectManager.reconnect(conn.getUrl());
                 }
             }
             // trigger close connection event
@@ -246,12 +246,16 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     }
 
     /**
-     * Setter method for property <tt>reconnectManager<tt>.
-     *
+     * please use {@link ConnectionEventHandler#setReconnector(Reconnector)} instead
      * @param reconnectManager value to be assigned to property reconnectManager
      */
+    @Deprecated
     public void setReconnectManager(ReconnectManager reconnectManager) {
         this.reconnectManager = reconnectManager;
+    }
+
+    public void setReconnector(Reconnector reconnector) {
+        this.reconnectManager = reconnector;
     }
 
     /**
