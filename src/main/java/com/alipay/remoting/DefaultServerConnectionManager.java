@@ -17,16 +17,15 @@
 package com.alipay.remoting;
 
 /**
- * Async context for biz.
- * 
- * @author xiaomin.cxm
- * @version $Id: AsyncContext.java, v 0.1 May 19, 2016 2:19:05 PM xiaomin.cxm Exp $
+ * Do some preparatory work in order to refactor the ConnectionManager in the next version.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2019-03-07 14:40
  */
-public interface AsyncContext {
-    /**
-     * send response back
-     * 
-     * @param responseObject response object
-     */
-    void sendResponse(Object responseObject);
+public class DefaultServerConnectionManager extends DefaultConnectionManager implements
+                                                                            ServerConnectionManager {
+
+    public DefaultServerConnectionManager(ConnectionSelectStrategy connectionSelectStrategy) {
+        super(connectionSelectStrategy);
+    }
+
 }

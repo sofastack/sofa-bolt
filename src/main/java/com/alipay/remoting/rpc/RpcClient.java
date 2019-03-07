@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.AbstractBoltClient;
+import com.alipay.remoting.DefaultClientConnectionManager;
 import com.alipay.remoting.LifeCycleException;
 import org.slf4j.Logger;
 
@@ -60,7 +61,7 @@ public class RpcClient extends AbstractBoltClient {
     private final ConcurrentHashMap<String, UserProcessor<?>> userProcessors;
     private final ConnectionEventHandler                      connectionEventHandler;
     private final ConnectionEventListener                     connectionEventListener;
-    private final DefaultConnectionManager                    connectionManager;
+    private final DefaultClientConnectionManager              connectionManager;
 
     private ReconnectManager                                  reconnectManager;
     private RemotingAddressParser                             addressParser;
@@ -75,8 +76,8 @@ public class RpcClient extends AbstractBoltClient {
         this.userProcessors = new ConcurrentHashMap<String, UserProcessor<?>>();
         this.connectionEventHandler = new RpcConnectionEventHandler(switches());
         this.connectionEventListener = new ConnectionEventListener();
-        this.connectionManager = new DefaultConnectionManager(new RandomSelectStrategy(switches()),
-            new RpcConnectionFactory(userProcessors, this), connectionEventHandler,
+        this.connectionManager = new DefaultClientConnectionManager(new RandomSelectStrategy(
+            switches()), new RpcConnectionFactory(userProcessors, this), connectionEventHandler,
             connectionEventListener, switches());
     }
 
@@ -99,7 +100,7 @@ public class RpcClient extends AbstractBoltClient {
     public void shutdown() {
         super.shutdown();
 
-        this.connectionManager.removeAll();
+        this.connectionManager.shutdown();
         logger.warn("Close all connections from client side!");
         this.taskScanner.shutdown();
         logger.warn("Rpc client shutdown!");
@@ -119,7 +120,7 @@ public class RpcClient extends AbstractBoltClient {
             this.addressParser = new RpcAddressParser();
         }
         this.connectionManager.setAddressParser(this.addressParser);
-        this.connectionManager.init();
+        this.connectionManager.startup();
         this.rpcRemoting = new RpcClientRemoting(new RpcCommandFactory(), this.addressParser,
             this.connectionManager);
         this.taskScanner.add(this.connectionManager);

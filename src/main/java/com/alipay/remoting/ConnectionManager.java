@@ -27,10 +27,12 @@ import com.alipay.remoting.exception.RemotingException;
  * @author xiaomin.cxm
  * @version $Id: ConnectionManager.java, v 0.1 Mar 7, 2016 2:42:46 PM xiaomin.cxm Exp $
  */
-public interface ConnectionManager extends Scannable {
+public interface ConnectionManager extends Scannable, LifeCycle {
+
     /**
-     * init
+     * Deprecated, use startup instead.
      */
+    @Deprecated
     void init();
 
     /**
@@ -97,7 +99,9 @@ public interface ConnectionManager extends Scannable {
 
     /**
      * Remove and close all connections from all {@link ConnectionPool}.
+     * Deprecated, use shutdown instead.
      */
+    @Deprecated
     void removeAll();
 
     /**
