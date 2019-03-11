@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.DefaultServerConnectionManager;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.AbstractRemotingServer;
@@ -123,7 +124,7 @@ public class RpcServer extends AbstractRemotingServer {
     private RemotingAddressParser                       addressParser;
 
     /** connection manager */
-    private DefaultConnectionManager                    connectionManager;
+    private DefaultServerConnectionManager              connectionManager;
 
     /** rpc remoting */
     protected RpcRemoting                               rpcRemoting;
@@ -227,8 +228,10 @@ public class RpcServer extends AbstractRemotingServer {
             this.addressParser = new RpcAddressParser();
         }
         if (this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+            this.connectionManager = new DefaultServerConnectionManager(new RandomSelectStrategy());
+            this.connectionManager.startup();
+
             this.connectionEventHandler = new RpcConnectionEventHandler(switches());
-            this.connectionManager = new DefaultConnectionManager(new RandomSelectStrategy());
             this.connectionEventHandler.setConnectionManager(this.connectionManager);
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         } else {
@@ -322,7 +325,7 @@ public class RpcServer extends AbstractRemotingServer {
         }
         if (this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)
             && null != this.connectionManager) {
-            this.connectionManager.removeAll();
+            this.connectionManager.shutdown();
             logger.warn("Close all connections from server side!");
         }
         logger.warn("Rpc Server stopped!");

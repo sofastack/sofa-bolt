@@ -26,7 +26,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -50,8 +49,9 @@ import com.alipay.remoting.util.StringUtils;
  * @author xiaomin.cxm
  * @version $Id: DefaultConnectionManager.java, v 0.1 Mar 8, 2016 10:43:51 AM xiaomin.cxm Exp $
  */
-public class DefaultConnectionManager implements ConnectionManager, ConnectionHeartbeatManager,
-                                     Scannable {
+public class DefaultConnectionManager extends AbstractLifeCycle implements ConnectionManager,
+                                                               ConnectionHeartbeatManager,
+                                                               Scannable, LifeCycle {
 
     private static final Logger                                                     logger = LoggerFactory
                                                                                                .getLogger("CommonDefault");
@@ -59,7 +59,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
     /**
      * executor to create connections in async way
      */
-    private Executor                                                                asyncCreateConnectionExecutor;
+    private ThreadPoolExecutor                                                      asyncCreateConnectionExecutor;
 
     /**
      * switch status
@@ -108,14 +108,6 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         this.connTasks = new ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>>();
         this.healTasks = new ConcurrentHashMap<String, FutureTask<Integer>>();
         this.connectionSelectStrategy = new RandomSelectStrategy(globalSwitch);
-
-        long keepAliveTime = ConfigManager.conn_create_tp_keepalive();
-        int queueSize = ConfigManager.conn_create_tp_queue_size();
-        int minPoolSize = ConfigManager.conn_create_tp_min_size();
-        int maxPoolSize = ConfigManager.conn_create_tp_max_size();
-        this.asyncCreateConnectionExecutor = new ThreadPoolExecutor(minPoolSize, maxPoolSize,
-            keepAliveTime, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize),
-            new NamedThreadFactory("Bolt-conn-warmup-executor", true));
     }
 
     /**
@@ -190,9 +182,40 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
         this.globalSwitch = globalSwitch;
     }
 
-    /**
-     * @see com.alipay.remoting.ConnectionManager#init()
-     */
+    @Override
+    public void startup() throws LifeCycleException {
+        super.startup();
+
+        long keepAliveTime = ConfigManager.conn_create_tp_keepalive();
+        int queueSize = ConfigManager.conn_create_tp_queue_size();
+        int minPoolSize = ConfigManager.conn_create_tp_min_size();
+        int maxPoolSize = ConfigManager.conn_create_tp_max_size();
+        this.asyncCreateConnectionExecutor = new ThreadPoolExecutor(minPoolSize, maxPoolSize,
+            keepAliveTime, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(queueSize),
+            new NamedThreadFactory("Bolt-conn-warmup-executor", true));
+    }
+
+    @Override
+    public void shutdown() throws LifeCycleException {
+        super.shutdown();
+
+        if (asyncCreateConnectionExecutor != null) {
+            asyncCreateConnectionExecutor.shutdown();
+        }
+
+        if (null == this.connTasks || this.connTasks.isEmpty()) {
+            return;
+        }
+        Iterator<String> iter = this.connTasks.keySet().iterator();
+        while (iter.hasNext()) {
+            String poolKey = iter.next();
+            this.removeTask(poolKey);
+            iter.remove();
+        }
+        logger.warn("All connection pool and connections have been removed!");
+    }
+
+    @Deprecated
     @Override
     public void init() {
         this.connectionEventHandler.setConnectionManager(this);
@@ -341,9 +364,8 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
 
     /**
      * Warning! This is weakly consistent implementation, to prevent lock the whole {@link ConcurrentHashMap}.
-     *
-     * @see ConnectionManager#removeAll()
      */
+    @Deprecated
     @Override
     public void removeAll() {
         if (null == this.connTasks || this.connTasks.isEmpty()) {
@@ -605,7 +627,7 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
      *
      * @param poolKey target pool key
      */
-    private void removeTask(String poolKey) {
+    protected void removeTask(String poolKey) {
         RunStateRecordedFutureTask<ConnectionPool> task = this.connTasks.remove(poolKey);
         if (null != task) {
             ConnectionPool pool = FutureTaskUtil.getFutureTaskResult(task, logger);
