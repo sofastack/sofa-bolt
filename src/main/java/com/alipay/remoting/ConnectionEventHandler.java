@@ -52,7 +52,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     private ConnectionEventExecutor eventExecutor;
 
-    private Reconnector        reconnectManager;
+    private Reconnector             reconnectManager;
 
     private GlobalSwitch            globalSwitch;
 

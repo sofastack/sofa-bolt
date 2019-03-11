@@ -64,7 +64,7 @@ public class RpcClient extends AbstractBoltClient {
     private final ConnectionEventListener                     connectionEventListener;
     private final DefaultClientConnectionManager              connectionManager;
 
-    private Reconnector reconnectManager;
+    private Reconnector                                       reconnectManager;
     private RemotingAddressParser                             addressParser;
     private DefaultConnectionMonitor                          connectionMonitor;
     private ConnectionMonitorStrategy                         monitorStrategy;
@@ -129,8 +129,8 @@ public class RpcClient extends AbstractBoltClient {
 
         if (switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
             if (monitorStrategy == null) {
-                ScheduledDisconnectStrategy strategy = new ScheduledDisconnectStrategy();
-                connectionMonitor = new DefaultConnectionMonitor(strategy, this.connectionManager);
+                connectionMonitor = new DefaultConnectionMonitor(new ScheduledDisconnectStrategy(),
+                    this.connectionManager);
             } else {
                 connectionMonitor = new DefaultConnectionMonitor(monitorStrategy,
                     this.connectionManager);

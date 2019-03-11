@@ -418,8 +418,6 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
 
     /**
      * in case of cache pollution and connection leak, to do schedule scan
-     *
-     * @see com.alipay.remoting.Scannable#scan()
      */
     @Override
     public void scan() {

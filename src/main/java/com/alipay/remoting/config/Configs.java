@@ -170,6 +170,7 @@ public class Configs {
     public static final String CONN_THRESHOLD_DEFAULT                = "3";
 
     /** Retry detect period for ScheduledDisconnectStrategy */
+    @Deprecated
     public static final String RETRY_DETECT_PERIOD                   = "bolt.retry.delete.period";
     public static final String RETRY_DETECT_PERIOD_DEFAULT           = "5000";
 
