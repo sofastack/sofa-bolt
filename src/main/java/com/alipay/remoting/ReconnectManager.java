@@ -82,7 +82,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
     }
 
     /**
-     * please use {@link ReconnectManager#disableReconnect(Url)} instead
+     * please use {@link Reconnector#disableReconnect(Url)} instead
      */
     @Deprecated
     public void addCancelUrl(Url url) {
@@ -90,7 +90,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
     }
 
     /**
-     * please use {@link ReconnectManager#enableReconnect(Url)} instead
+     * please use {@link Reconnector#enableReconnect(Url)} instead
      */
     @Deprecated
     public void removeCancelUrl(Url url) {
@@ -98,7 +98,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
     }
 
     /**
-     * please use {@link ReconnectManager#reconnect(Url)} instead
+     * please use {@link Reconnector#reconnect(Url)} instead
      */
     @Deprecated
     public void addReconnectTask(Url url) {
@@ -106,7 +106,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
     }
 
     /**
-     * please use {@link ReconnectManager#shutdown()} instead
+     * please use {@link Reconnector#shutdown()} instead
      */
     @Deprecated
     public void stop() {

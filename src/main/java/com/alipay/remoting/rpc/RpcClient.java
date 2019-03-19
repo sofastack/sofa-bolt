@@ -23,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.alipay.remoting.AbstractBoltClient;
 import com.alipay.remoting.DefaultClientConnectionManager;
 import com.alipay.remoting.LifeCycleException;
+import com.alipay.remoting.Reconnector;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -63,7 +64,7 @@ public class RpcClient extends AbstractBoltClient {
     private final ConnectionEventListener                     connectionEventListener;
     private final DefaultClientConnectionManager              connectionManager;
 
-    private ReconnectManager                                  reconnectManager;
+    private Reconnector                                       reconnectManager;
     private RemotingAddressParser                             addressParser;
     private DefaultConnectionMonitor                          connectionMonitor;
     private ConnectionMonitorStrategy                         monitorStrategy;
@@ -128,8 +129,8 @@ public class RpcClient extends AbstractBoltClient {
 
         if (switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
             if (monitorStrategy == null) {
-                ScheduledDisconnectStrategy strategy = new ScheduledDisconnectStrategy();
-                connectionMonitor = new DefaultConnectionMonitor(strategy, this.connectionManager);
+                connectionMonitor = new DefaultConnectionMonitor(new ScheduledDisconnectStrategy(),
+                    this.connectionManager);
             } else {
                 connectionMonitor = new DefaultConnectionMonitor(monitorStrategy,
                     this.connectionManager);
@@ -141,7 +142,7 @@ public class RpcClient extends AbstractBoltClient {
             reconnectManager = new ReconnectManager(connectionManager);
             reconnectManager.startup();
 
-            connectionEventHandler.setReconnectManager(reconnectManager);
+            connectionEventHandler.setReconnector(reconnectManager);
             logger.warn("Switch on reconnect manager");
         }
     }

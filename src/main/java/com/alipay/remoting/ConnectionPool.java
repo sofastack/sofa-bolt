@@ -31,45 +31,36 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @version $Id: ConnectionPool.java, v 0.1 Mar 8, 2016 11:04:54 AM xiaomin.cxm Exp $
  */
 public class ConnectionPool implements Scannable {
-    // ~~~ constants
-    /** logger */
-    private static final Logger              logger            = BoltLoggerFactory
-                                                                   .getLogger("CommonDefault");
 
-    /** connections */
-    private CopyOnWriteArrayList<Connection> conns             = new CopyOnWriteArrayList<Connection>();
+    private static final Logger              logger = BoltLoggerFactory.getLogger("CommonDefault");
 
-    /** strategy */
+    private CopyOnWriteArrayList<Connection> connections;
     private ConnectionSelectStrategy         strategy;
-
-    /** timestamp to record the last time this pool be accessed */
     private volatile long                    lastAccessTimestamp;
-
-    /** whether async create connection done */
-    private volatile boolean                 asyncCreationDone = true;
+    private volatile boolean                 asyncCreationDone;
 
     /**
      * Constructor
      * 
-     * @param strategy
+     * @param strategy ConnectionSelectStrategy
      */
     public ConnectionPool(ConnectionSelectStrategy strategy) {
         this.strategy = strategy;
+        this.connections = new CopyOnWriteArrayList<Connection>();
+        this.asyncCreationDone = true;
     }
-
-    // ~~~ members
 
     /**
      * add a connection
      * 
-     * @param connection
+     * @param connection Connection
      */
     public void add(Connection connection) {
         markAccess();
         if (null == connection) {
             return;
         }
-        boolean res = this.conns.addIfAbsent(connection);
+        boolean res = connections.addIfAbsent(connection);
         if (res) {
             connection.increaseRef();
         }
@@ -78,23 +69,23 @@ public class ConnectionPool implements Scannable {
     /**
      * check weather a connection already added
      * 
-     * @param connection
-     * @return
+     * @param connection Connection
+     * @return whether this pool contains the target connection
      */
     public boolean contains(Connection connection) {
-        return this.conns.contains(connection);
+        return connections.contains(connection);
     }
 
     /**
      * removeAndTryClose a connection
      * 
-     * @param connection
+     * @param connection Connection
      */
     public void removeAndTryClose(Connection connection) {
         if (null == connection) {
             return;
         }
-        boolean res = this.conns.remove(connection);
+        boolean res = connections.remove(connection);
         if (res) {
             connection.decreaseRef();
         }
@@ -107,23 +98,23 @@ public class ConnectionPool implements Scannable {
      * remove all connections
      */
     public void removeAllAndTryClose() {
-        for (Connection conn : this.conns) {
+        for (Connection conn : connections) {
             removeAndTryClose(conn);
         }
-        this.conns.clear();
+        connections.clear();
     }
 
     /**
      * get a connection
      * 
-     * @return
+     * @return Connection
      */
     public Connection get() {
         markAccess();
-        if (null != this.conns) {
-            List<Connection> snapshot = new ArrayList<Connection>(this.conns);
+        if (null != connections) {
+            List<Connection> snapshot = new ArrayList<Connection>(connections);
             if (snapshot.size() > 0) {
-                return this.strategy.select(snapshot);
+                return strategy.select(snapshot);
             } else {
                 return null;
             }
@@ -135,29 +126,29 @@ public class ConnectionPool implements Scannable {
     /**
      * get all connections
      * 
-     * @return
+     * @return Connection List
      */
     public List<Connection> getAll() {
         markAccess();
-        return new ArrayList<Connection>(this.conns);
+        return new ArrayList<Connection>(connections);
     }
 
     /**
      * connection pool size
      *
-     * @return
+     * @return pool size
      */
     public int size() {
-        return this.conns.size();
+        return connections.size();
     }
 
     /**
      * is connection pool empty
      *
-     * @return
+     * @return true if this connection pool has no connection
      */
     public boolean isEmpty() {
-        return this.conns.isEmpty();
+        return connections.isEmpty();
     }
 
     /**
@@ -166,51 +157,48 @@ public class ConnectionPool implements Scannable {
      * @return property value of lastAccessTimestamp
      */
     public long getLastAccessTimestamp() {
-        return this.lastAccessTimestamp;
+        return lastAccessTimestamp;
     }
 
     /**
      * do mark the time stamp when access this pool
      */
     private void markAccess() {
-        this.lastAccessTimestamp = System.currentTimeMillis();
+        lastAccessTimestamp = System.currentTimeMillis();
     }
 
     /**
      * is async create connection done
-     * @return
+     * @return true if async create connection done
      */
     public boolean isAsyncCreationDone() {
-        return this.asyncCreationDone;
+        return asyncCreationDone;
     }
 
     /**
      * do mark async create connection done
      */
     public void markAsyncCreationDone() {
-        this.asyncCreationDone = true;
+        asyncCreationDone = true;
     }
 
     /**
      * do mark async create connection start
      */
     public void markAsyncCreationStart() {
-        this.asyncCreationDone = false;
+        asyncCreationDone = false;
     }
 
-    /**
-     * @see com.alipay.remoting.Scannable#scan()
-     */
     @Override
     public void scan() {
-        if (null != this.conns && !this.conns.isEmpty()) {
-            for (Connection conn : conns) {
+        if (null != connections && !connections.isEmpty()) {
+            for (Connection conn : connections) {
                 if (!conn.isFine()) {
                     logger.warn(
                         "Remove bad connection when scanning conns of ConnectionPool - {}:{}",
                         conn.getRemoteIP(), conn.getRemotePort());
                     conn.close();
-                    this.removeAndTryClose(conn);
+                    removeAndTryClose(conn);
                 }
             }
         }
