@@ -19,9 +19,17 @@ package com.alipay.remoting;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.alipay.remoting.config.BoltOption;
+import com.alipay.remoting.config.BoltOptions;
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.ConfigurableInstance;
+import com.alipay.remoting.config.configs.ConfigContainer;
+import com.alipay.remoting.config.configs.ConfigItem;
+import com.alipay.remoting.config.configs.DefaultConfigContainer;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.config.AbstractConfigurableInstance;
 import com.alipay.remoting.config.configs.ConfigType;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
@@ -31,23 +39,32 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @author jiangping
  * @version $Id: AbstractRemotingServer.java, v 0.1 2015-9-5 PM7:37:48 tao Exp $
  */
-public abstract class AbstractRemotingServer extends AbstractConfigurableInstance implements
-                                                                                 RemotingServer {
+public abstract class AbstractRemotingServer extends AbstractLifeCycle implements RemotingServer,
+                                                                      ConfigurableInstance {
 
-    private static final Logger logger  = BoltLoggerFactory.getLogger("CommonDefault");
+    private static final Logger   logger  = BoltLoggerFactory.getLogger("CommonDefault");
 
-    private AtomicBoolean       started = new AtomicBoolean(false);
-    private String              ip;
-    private int                 port;
+    private AtomicBoolean         started = new AtomicBoolean(false);
+    private String                ip;
+    private int                   port;
+
+    private final BoltOptions     options;
+    private final ConfigType      configType;
+    private final GlobalSwitch    globalSwitch;
+    private final ConfigContainer configContainer;
 
     public AbstractRemotingServer(int port) {
         this(new InetSocketAddress(port).getAddress().getHostAddress(), port);
     }
 
     public AbstractRemotingServer(String ip, int port) {
-        super(ConfigType.SERVER_SIDE);
         this.ip = ip;
         this.port = port;
+
+        this.options = new BoltOptions();
+        this.configType = ConfigType.SERVER_SIDE;
+        this.globalSwitch = new GlobalSwitch();
+        this.configContainer = new DefaultConfigContainer();
     }
 
     @Override
@@ -105,4 +122,50 @@ public abstract class AbstractRemotingServer extends AbstractConfigurableInstanc
 
     protected abstract boolean doStop();
 
+    @Override
+    public <T> T option(BoltOption<T> option) {
+        return options.option(option);
+    }
+
+    @Override
+    public <T> Configurable option(BoltOption<T> option, T value) {
+        options.option(option, value);
+        return this;
+    }
+
+    @Override
+    public ConfigContainer conf() {
+        return this.configContainer;
+    }
+
+    @Override
+    public GlobalSwitch switches() {
+        return this.globalSwitch;
+    }
+
+    @Override
+    public void initWriteBufferWaterMark(int low, int high) {
+        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK, low);
+        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK, high);
+    }
+
+    @Override
+    public int netty_buffer_low_watermark() {
+        if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK)) {
+            return (Integer) configContainer
+                .get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
+        } else {
+            return ConfigManager.netty_buffer_low_watermark();
+        }
+    }
+
+    @Override
+    public int netty_buffer_high_watermark() {
+        if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK)) {
+            return (Integer) configContainer.get(configType,
+                ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
+        } else {
+            return ConfigManager.netty_buffer_high_watermark();
+        }
+    }
 }

@@ -21,9 +21,11 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.AbstractBoltClient;
+import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultClientConnectionManager;
 import com.alipay.remoting.LifeCycleException;
 import com.alipay.remoting.Reconnector;
+import com.alipay.remoting.config.BoltGenericOption;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -62,8 +64,8 @@ public class RpcClient extends AbstractBoltClient {
     private final ConcurrentHashMap<String, UserProcessor<?>> userProcessors;
     private final ConnectionEventHandler                      connectionEventHandler;
     private final ConnectionEventListener                     connectionEventListener;
-    private final DefaultClientConnectionManager              connectionManager;
 
+    private DefaultClientConnectionManager                    connectionManager;
     private Reconnector                                       reconnectManager;
     private RemotingAddressParser                             addressParser;
     private DefaultConnectionMonitor                          connectionMonitor;
@@ -77,9 +79,6 @@ public class RpcClient extends AbstractBoltClient {
         this.userProcessors = new ConcurrentHashMap<String, UserProcessor<?>>();
         this.connectionEventHandler = new RpcConnectionEventHandler(switches());
         this.connectionEventListener = new ConnectionEventListener();
-        this.connectionManager = new DefaultClientConnectionManager(new RandomSelectStrategy(
-            switches()), new RpcConnectionFactory(userProcessors, this), connectionEventHandler,
-            connectionEventListener, switches());
     }
 
     /**
@@ -120,6 +119,14 @@ public class RpcClient extends AbstractBoltClient {
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
         }
+
+        ConnectionSelectStrategy connectionSelectStrategy = option(BoltGenericOption.CONNECTION_SELECT_STRATEGY);
+        if (connectionSelectStrategy == null) {
+            connectionSelectStrategy = new RandomSelectStrategy(switches());
+        }
+        this.connectionManager = new DefaultClientConnectionManager(connectionSelectStrategy,
+            new RpcConnectionFactory(userProcessors, this), connectionEventHandler,
+            connectionEventListener, switches());
         this.connectionManager.setAddressParser(this.addressParser);
         this.connectionManager.startup();
         this.rpcRemoting = new RpcClientRemoting(new RpcCommandFactory(), this.addressParser,

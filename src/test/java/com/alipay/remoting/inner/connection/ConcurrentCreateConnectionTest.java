@@ -57,7 +57,8 @@ public class ConcurrentCreateConnectionTest {
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors           = new ConcurrentHashMap<String, UserProcessor<?>>();
 
     private DefaultClientConnectionManager              cm;
-    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy();
+    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy(
+                                                                                     null);
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
                                                                                      userProcessors,
