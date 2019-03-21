@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultServerConnectionManager;
 import org.slf4j.Logger;
 
@@ -228,7 +229,9 @@ public class RpcServer extends AbstractRemotingServer {
             this.addressParser = new RpcAddressParser();
         }
         if (this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
-            this.connectionManager = new DefaultServerConnectionManager(new RandomSelectStrategy());
+            // in server side, do not care the connection service state, so use null instead of global switch
+            ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy(null);
+            this.connectionManager = new DefaultServerConnectionManager(connectionSelectStrategy);
             this.connectionManager.startup();
 
             this.connectionEventHandler = new RpcConnectionEventHandler(switches());

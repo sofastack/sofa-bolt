@@ -28,8 +28,8 @@ public interface ConnectionSelectStrategy {
     /**
      * select strategy
      * 
-     * @param conns
-     * @return
+     * @param connections source connections
+     * @return selected connection
      */
-    Connection select(List<Connection> conns);
+    Connection select(List<Connection> connections);
 }

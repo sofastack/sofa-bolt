@@ -17,11 +17,18 @@
 package com.alipay.remoting;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.alipay.remoting.config.BoltOption;
+import com.alipay.remoting.config.BoltOptions;
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.ConfigurableInstance;
+import com.alipay.remoting.config.configs.ConfigContainer;
+import com.alipay.remoting.config.configs.ConfigItem;
+import com.alipay.remoting.config.configs.DefaultConfigContainer;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.config.AbstractConfigurableInstance;
 import com.alipay.remoting.config.configs.ConfigType;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
@@ -31,61 +38,78 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @author jiangping
  * @version $Id: AbstractRemotingServer.java, v 0.1 2015-9-5 PM7:37:48 tao Exp $
  */
-public abstract class AbstractRemotingServer extends AbstractConfigurableInstance implements
-                                                                                 RemotingServer {
+public abstract class AbstractRemotingServer extends AbstractLifeCycle implements RemotingServer,
+                                                                      ConfigurableInstance {
 
-    private static final Logger logger  = BoltLoggerFactory.getLogger("CommonDefault");
+    private static final Logger   logger = BoltLoggerFactory.getLogger("CommonDefault");
 
-    private AtomicBoolean       started = new AtomicBoolean(false);
-    private String              ip;
-    private int                 port;
+    private String                ip;
+    private int                   port;
+
+    private final BoltOptions     options;
+    private final ConfigType      configType;
+    private final GlobalSwitch    globalSwitch;
+    private final ConfigContainer configContainer;
 
     public AbstractRemotingServer(int port) {
         this(new InetSocketAddress(port).getAddress().getHostAddress(), port);
     }
 
     public AbstractRemotingServer(String ip, int port) {
-        super(ConfigType.SERVER_SIDE);
         this.ip = ip;
         this.port = port;
+
+        this.options = new BoltOptions();
+        this.configType = ConfigType.SERVER_SIDE;
+        this.globalSwitch = new GlobalSwitch();
+        this.configContainer = new DefaultConfigContainer();
     }
 
     @Override
+    @Deprecated
     public void init() {
         // Do not call this method, it will be removed in the next version
     }
 
     @Override
+    @Deprecated
     public boolean start() {
-        if (started.compareAndSet(false, true)) {
-            try {
-                doInit();
+        startup();
+        return true;
+    }
 
-                logger.warn("Prepare to start server on port {} ", port);
-                if (doStart()) {
-                    logger.warn("Server started on port {}", port);
-                    return true;
-                } else {
-                    logger.warn("Failed starting server on port {}", port);
-                    return false;
-                }
-            } catch (Throwable t) {
-                this.stop();// do stop to ensure close resources created during doInit()
-                throw new IllegalStateException("ERROR: Failed to start the Server!", t);
+    @Override
+    @Deprecated
+    public boolean stop() {
+        shutdown();
+        return true;
+    }
+
+    @Override
+    public void startup() throws LifeCycleException {
+        super.startup();
+
+        try {
+            doInit();
+
+            logger.warn("Prepare to start server on port {} ", port);
+            if (doStart()) {
+                logger.warn("Server started on port {}", port);
+            } else {
+                logger.warn("Failed starting server on port {}", port);
+                throw new LifeCycleException("Failed starting server on port: " + port);
             }
-        } else {
-            String errMsg = "ERROR: The server has already started!";
-            logger.error(errMsg);
-            throw new IllegalStateException(errMsg);
+        } catch (Throwable t) {
+            this.shutdown();// do stop to ensure close resources created during doInit()
+            throw new IllegalStateException("ERROR: Failed to start the Server!", t);
         }
     }
 
     @Override
-    public boolean stop() {
-        if (started.compareAndSet(true, false)) {
-            return this.doStop();
-        } else {
-            throw new IllegalStateException("ERROR: The server has already stopped!");
+    public void shutdown() throws LifeCycleException {
+        super.shutdown();
+        if (!doStop()) {
+            throw new LifeCycleException("doStop fail");
         }
     }
 
@@ -105,4 +129,50 @@ public abstract class AbstractRemotingServer extends AbstractConfigurableInstanc
 
     protected abstract boolean doStop();
 
+    @Override
+    public <T> T option(BoltOption<T> option) {
+        return options.option(option);
+    }
+
+    @Override
+    public <T> Configurable option(BoltOption<T> option, T value) {
+        options.option(option, value);
+        return this;
+    }
+
+    @Override
+    public ConfigContainer conf() {
+        return this.configContainer;
+    }
+
+    @Override
+    public GlobalSwitch switches() {
+        return this.globalSwitch;
+    }
+
+    @Override
+    public void initWriteBufferWaterMark(int low, int high) {
+        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK, low);
+        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK, high);
+    }
+
+    @Override
+    public int netty_buffer_low_watermark() {
+        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
+        if (config != null) {
+            return (Integer) config;
+        } else {
+            return ConfigManager.netty_buffer_low_watermark();
+        }
+    }
+
+    @Override
+    public int netty_buffer_high_watermark() {
+        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
+        if (config != null) {
+            return (Integer) config;
+        } else {
+            return ConfigManager.netty_buffer_high_watermark();
+        }
+    }
 }

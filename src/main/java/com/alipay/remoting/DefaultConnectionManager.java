@@ -141,7 +141,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
     public DefaultConnectionManager(ConnectionFactory connectionFactory,
                                     RemotingAddressParser addressParser,
                                     ConnectionEventHandler connectionEventHandler) {
-        this(new RandomSelectStrategy(), connectionFactory);
+        this(new RandomSelectStrategy(null), connectionFactory);
         this.addressParser = addressParser;
         this.connectionEventHandler = connectionEventHandler;
     }
