@@ -291,8 +291,6 @@ public class RpcServer extends AbstractRemotingServer {
                 Url url = addressParser.parse(RemotingUtil.parseRemoteAddress(channel));
                 if (switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
                     connectionManager.add(new Connection(channel, url), url.getUniqueKey());
-                } else {
-                    new Connection(channel, url);
                 }
                 channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
             }
