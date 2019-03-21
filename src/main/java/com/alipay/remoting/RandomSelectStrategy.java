@@ -39,7 +39,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
 
     private static final int    MAX_TIMES = 5;
     private final Random        random    = new Random();
-    private GlobalSwitch        globalSwitch;
+    private final GlobalSwitch  globalSwitch;
 
     public RandomSelectStrategy(GlobalSwitch globalSwitch) {
         this.globalSwitch = globalSwitch;

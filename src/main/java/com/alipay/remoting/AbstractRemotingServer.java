@@ -158,9 +158,9 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
 
     @Override
     public int netty_buffer_low_watermark() {
-        if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK)) {
-            return (Integer) configContainer
-                .get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
+        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
+        if (config != null) {
+            return (Integer) config;
         } else {
             return ConfigManager.netty_buffer_low_watermark();
         }
@@ -168,9 +168,9 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
 
     @Override
     public int netty_buffer_high_watermark() {
-        if (configContainer.contains(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK)) {
-            return (Integer) configContainer.get(configType,
-                ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
+        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
+        if (config != null) {
+            return (Integer) config;
         } else {
             return ConfigManager.netty_buffer_high_watermark();
         }
