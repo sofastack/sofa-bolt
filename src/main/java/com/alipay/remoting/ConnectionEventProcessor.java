@@ -25,8 +25,8 @@ public interface ConnectionEventProcessor {
     /**
      * Process event.<br>
      * 
-     * @param remoteAddr
-     * @param conn
+     * @param remoteAddress remoting connection
+     * @param connection Connection
      */
-    void onEvent(String remoteAddr, Connection conn);
+    void onEvent(String remoteAddress, Connection connection);
 }
