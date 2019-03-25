@@ -168,7 +168,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                     }
                     break;
                 default:
-                    return;
+                    break;
             }
         } else {
             super.userEventTriggered(ctx, event);
@@ -186,12 +186,6 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         ctx.channel().close();
     }
 
-    /**
-     *
-     * @param conn
-     * @param remoteAddress
-     * @param type
-     */
     private void onEvent(final Connection conn, final String remoteAddress,
                          final ConnectionEventType type) {
         if (this.eventListener != null) {
@@ -273,22 +267,17 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         /**
          * Process event.
          * 
-         * @param event
+         * @param runnable Runnable
          */
-        public void onEvent(Runnable event) {
+        public void onEvent(Runnable runnable) {
             try {
-                executor.execute(event);
+                executor.execute(runnable);
             } catch (Throwable t) {
                 logger.error("Exception caught when execute connection event!", t);
             }
         }
     }
 
-    /**
-     * print info log
-     * @param format
-     * @param addr
-     */
     private void infoLog(String format, String addr) {
         if (logger.isInfoEnabled()) {
             if (StringUtils.isNotEmpty(addr)) {

@@ -29,7 +29,7 @@ public class Constants {
     public static final int DEFAULT_EXPIRE_TIME = 10 * 60 * 1000;
 
     /**
-     * default retry times when falied to get result of FutureTask
+     * default retry times when failed to get result of FutureTask
      */
     public static final int DEFAULT_RETRY_TIMES = 2;
 
