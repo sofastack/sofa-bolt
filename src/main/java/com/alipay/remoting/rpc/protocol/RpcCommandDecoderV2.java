@@ -19,8 +19,8 @@ package com.alipay.remoting.rpc.protocol;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+import com.alipay.remoting.log.BoltLoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.CommandDecoder;
@@ -44,7 +44,7 @@ import io.netty.channel.ChannelHandlerContext;
  */
 public class RpcCommandDecoderV2 implements CommandDecoder {
 
-    private static final Logger logger = LoggerFactory.getLogger("RpcRemoting");
+    private static final Logger logger = BoltLoggerFactory.getLogger("RpcRemoting");
 
     private int                 lessLen;
 
