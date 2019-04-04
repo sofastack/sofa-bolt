@@ -36,7 +36,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Command decoder for Rpc.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcCommandDecoder.java, v 0.1 2015-10-14 PM5:15:26 tao Exp $
  */
@@ -44,12 +44,7 @@ public class RpcCommandDecoder implements CommandDecoder {
 
     private static final Logger logger = BoltLoggerFactory.getLogger("RpcRemoting");
 
-    private int                 lessLen;
-
-    {
-        lessLen = RpcProtocol.getResponseHeaderLength() < RpcProtocol.getRequestHeaderLength() ? RpcProtocol
-            .getResponseHeaderLength() : RpcProtocol.getRequestHeaderLength();
-    }
+    private int                 lessLen = Math.min(RpcProtocol.getResponseHeaderLength(), RpcProtocol.getRequestHeaderLength());
 
     /**
      * @see com.alipay.remoting.CommandDecoder#decode(io.netty.channel.ChannelHandlerContext, io.netty.buffer.ByteBuf, java.util.List)
@@ -80,7 +75,7 @@ public class RpcCommandDecoder implements CommandDecoder {
                  */
                 if (in.readableBytes() > 2) {
                     in.markReaderIndex();
-                    in.readByte(); //version
+                    in.skipBytes(1); // skip the magic number
                     byte type = in.readByte(); //type
                     if (type == RpcCommandType.REQUEST || type == RpcCommandType.REQUEST_ONEWAY) {
                         //decode request
