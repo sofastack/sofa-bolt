@@ -803,6 +803,9 @@ public class RpcClient {
      */
     public void closeConnection(String addr) {
         Url url = this.addressParser.parse(addr);
+        if (globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+            reconnectManager.addCancelUrl(url);
+        }
         this.connectionManager.remove(url.getUniqueKey());
     }
 
@@ -812,6 +815,9 @@ public class RpcClient {
      * @param url
      */
     public void closeConnection(Url url) {
+        if (globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+            reconnectManager.addCancelUrl(url);
+        }
         this.connectionManager.remove(url.getUniqueKey());
     }
 

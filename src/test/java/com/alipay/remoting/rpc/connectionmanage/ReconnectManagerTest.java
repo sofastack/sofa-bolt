@@ -106,9 +106,28 @@ public class ReconnectManagerTest {
         Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
         connection.close();
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         Assert.assertEquals(1, clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(2, clientConnectProcessor.getConnectTimes());
+    }
+
+    @Test
+    public void testCancelReconnection() throws RemotingException, InterruptedException {
+        doInit(false, true);
+        client.enableReconnectSwitch();
+
+        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=1";
+        Url url = addressParser.parse(addr);
+
+        client.getConnection(url, 1000);
+        Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
+        Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
+
+        client.closeConnection(url);
+
+        Thread.sleep(1000);
+        Assert.assertEquals(1, clientDisConnectProcessor.getDisConnectTimes());
+        Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
     }
 
     private void doInit(boolean enableSystem, boolean enableUser) {
