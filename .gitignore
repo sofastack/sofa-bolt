@@ -20,3 +20,4 @@ velocity.log
 coverage-report
 test-output
 *.txt
+.DS_Store
