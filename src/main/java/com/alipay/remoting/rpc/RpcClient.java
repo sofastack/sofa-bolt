@@ -809,6 +809,9 @@ public class RpcClient extends AbstractConfigurableInstance {
      */
     public void closeConnection(String addr) {
         Url url = this.addressParser.parse(addr);
+        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+            reconnectManager.addCancelUrl(url);
+        }
         this.connectionManager.remove(url.getUniqueKey());
     }
 
@@ -818,6 +821,9 @@ public class RpcClient extends AbstractConfigurableInstance {
      * @param url
      */
     public void closeConnection(Url url) {
+        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+            reconnectManager.addCancelUrl(url);
+        }
         this.connectionManager.remove(url.getUniqueKey());
     }
 
