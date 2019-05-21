@@ -32,8 +32,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.alipay.remoting.constant.Constants;
+import com.alipay.remoting.log.BoltLoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.config.switches.GlobalSwitch;
@@ -53,7 +53,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                                                                ConnectionHeartbeatManager,
                                                                Scannable, LifeCycle {
 
-    private static final Logger                                                     logger = LoggerFactory
+    private static final Logger                                                     logger = BoltLoggerFactory
                                                                                                .getLogger("CommonDefault");
 
     /**

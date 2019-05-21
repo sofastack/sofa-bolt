@@ -393,14 +393,24 @@ public class RpcClient extends AbstractBoltClient {
         return true;
     }
 
-    @Override
-    public void closeConnection(String address) {
-        Url url = this.addressParser.parse(address);
+    /**
+     * Close all connections of a address
+     * 
+     * @param addr
+     */
+    public void closeConnection(String addr) {
+        Url url = this.addressParser.parse(addr);
+        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+            reconnectManager.disableReconnect(url);
+        }
         this.connectionManager.remove(url.getUniqueKey());
     }
 
     @Override
     public void closeConnection(Url url) {
+        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+            reconnectManager.disableReconnect(url);
+        }
         this.connectionManager.remove(url.getUniqueKey());
     }
 
