@@ -151,7 +151,7 @@ public class Url {
     /**
      * Get property value according to property key
      * 
-     * @param key
+     * @param key property key
      * @return property value
      */
     public String getProperty(String key) {
@@ -254,7 +254,8 @@ public class Url {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Origin url [" + this.originUrl + "], Unique key [" + this.uniqueKey + "].");
+        sb.append("Origin url [").append(this.originUrl).append("], Unique key [")
+            .append(this.uniqueKey).append("].");
         return sb.toString();
     }
 
@@ -268,11 +269,8 @@ public class Url {
     private static final Logger                                 logger      = BoltLoggerFactory
                                                                                 .getLogger("RpcRemoting");
 
-    /**
-     * @throws Throwable
-     */
     @Override
-    protected void finalize() throws Throwable {
+    protected void finalize() {
         try {
             isCollected = true;
             parsedUrls.remove(this.getOriginUrl());

@@ -17,7 +17,6 @@
 package com.alipay.remoting;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -43,26 +42,25 @@ import com.alipay.remoting.util.RunStateRecordedFutureTask;
  * @version $Id: ScheduledDisconnectStrategy.java, v 0.1 2017-02-21 14:14 tsui Exp $
  */
 public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
-    private static final Logger     logger                 = BoltLoggerFactory
-                                                               .getLogger("CommonDefault");
+    private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
 
-    /** the connections threshold of each {@link Url#uniqueKey} */
-    private static final int        CONNECTION_THRESHOLD   = ConfigManager.conn_threshold();
+    private final int           connectionThreshold;
+    private final Random        random;
 
-    /** fresh select connections to be closed */
-    private Map<String, Connection> freshSelectConnections = new ConcurrentHashMap<String, Connection>();
-
-    /** Retry detect period for ScheduledDisconnectStrategy*/
-    private static int              RETRY_DETECT_PERIOD    = ConfigManager.retry_detect_period();
-
-    /** random */
-    private Random                  random                 = new Random();
+    public ScheduledDisconnectStrategy() {
+        this.connectionThreshold = ConfigManager.conn_threshold();
+        this.random = new Random();
+    }
 
     /**
-     * Filter connections to monitor
+     * This method only invoked in ScheduledDisconnectStrategy, so no need to be exposed.
+     * This method will be remove in next version, do not use this method.
      *
-     * @param connections
+     * The user cannot call ScheduledDisconnectStrategy#filter, so modifying the implementation of this method is safe.
+     *
+     * @param connections connections from a connection pool
      */
+    @Deprecated
     @Override
     public Map<String, List<Connection>> filter(List<Connection> connections) {
         List<Connection> serviceOnConnections = new ArrayList<Connection>();
@@ -70,14 +68,10 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
         Map<String, List<Connection>> filteredConnections = new ConcurrentHashMap<String, List<Connection>>();
 
         for (Connection connection : connections) {
-            String serviceStatus = (String) connection.getAttribute(Configs.CONN_SERVICE_STATUS);
-            if (serviceStatus != null) {
-                if (connection.isInvokeFutureMapFinish()
-                    && !freshSelectConnections.containsValue(connection)) {
-                    serviceOffConnections.add(connection);
-                }
-            } else {
+            if (isConnectionOn(connection)) {
                 serviceOnConnections.add(connection);
+            } else {
+                serviceOffConnections.add(connection);
             }
         }
 
@@ -86,58 +80,50 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
         return filteredConnections;
     }
 
-    /**
-     * Monitor connections and close connections with status is off
-     *
-     * @param connPools
-     */
     @Override
     public void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools) {
         try {
-            if (null != connPools && !connPools.isEmpty()) {
-                Iterator<Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>>> iter = connPools
-                    .entrySet().iterator();
+            if (connPools == null || connPools.size() == 0) {
+                return;
+            }
 
-                while (iter.hasNext()) {
-                    Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>> entry = iter
-                        .next();
-                    String poolKey = entry.getKey();
-                    ConnectionPool pool = FutureTaskUtil.getFutureTaskResult(entry.getValue(),
-                        logger);
+            for (Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>> entry : connPools
+                .entrySet()) {
+                String poolKey = entry.getKey();
+                ConnectionPool pool = FutureTaskUtil.getFutureTaskResult(entry.getValue(), logger);
 
-                    List<Connection> connections = pool.getAll();
-                    Map<String, List<Connection>> filteredConnectons = this.filter(connections);
-                    List<Connection> serviceOnConnections = filteredConnectons
-                        .get(Configs.CONN_SERVICE_STATUS_ON);
-                    List<Connection> serviceOffConnections = filteredConnectons
-                        .get(Configs.CONN_SERVICE_STATUS_OFF);
-                    if (serviceOnConnections.size() > CONNECTION_THRESHOLD) {
-                        Connection freshSelectConnect = serviceOnConnections.get(random
-                            .nextInt(serviceOnConnections.size()));
-                        freshSelectConnect.setAttribute(Configs.CONN_SERVICE_STATUS,
-                            Configs.CONN_SERVICE_STATUS_OFF);
-
-                        Connection lastSelectConnect = freshSelectConnections.remove(poolKey);
-                        freshSelectConnections.put(poolKey, freshSelectConnect);
-
-                        closeFreshSelectConnections(lastSelectConnect, serviceOffConnections);
-
+                List<Connection> serviceOnConnections = new ArrayList<Connection>();
+                List<Connection> serviceOffConnections = new ArrayList<Connection>();
+                for (Connection connection : pool.getAll()) {
+                    if (isConnectionOn(connection)) {
+                        serviceOnConnections.add(connection);
                     } else {
-                        if (freshSelectConnections.containsKey(poolKey)) {
-                            Connection lastSelectConnect = freshSelectConnections.remove(poolKey);
-                            closeFreshSelectConnections(lastSelectConnect, serviceOffConnections);
-                        }
-                        if (logger.isInfoEnabled()) {
-                            logger
-                                .info(
-                                    "the size of serviceOnConnections [{}] reached CONNECTION_THRESHOLD [{}].",
-                                    serviceOnConnections.size(), CONNECTION_THRESHOLD);
-                        }
+                        serviceOffConnections.add(connection);
                     }
+                }
 
-                    for (Connection offConn : serviceOffConnections) {
+                if (serviceOnConnections.size() > connectionThreshold) {
+                    Connection freshSelectConnect = serviceOnConnections.get(random
+                        .nextInt(serviceOnConnections.size()));
+                    freshSelectConnect.setAttribute(Configs.CONN_SERVICE_STATUS,
+                        Configs.CONN_SERVICE_STATUS_OFF);
+                    serviceOffConnections.add(freshSelectConnect);
+                } else {
+                    if (logger.isInfoEnabled()) {
+                        logger.info("serviceOnConnections({}) size[{}], CONNECTION_THRESHOLD[{}].",
+                            poolKey, serviceOnConnections.size(), connectionThreshold);
+                    }
+                }
+
+                for (Connection offConn : serviceOffConnections) {
+                    if (offConn.isInvokeFutureMapFinish()) {
                         if (offConn.isFine()) {
                             offConn.close();
+                        }
+                    } else {
+                        if (logger.isInfoEnabled()) {
+                            logger.info("Address={} won't close at this schedule turn",
+                                RemotingUtil.parseRemoteAddress(offConn.getChannel()));
                         }
                     }
                 }
@@ -147,30 +133,8 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
         }
     }
 
-    /**
-     * close the connection of the fresh select connections
-     *
-     * @param lastSelectConnect
-     * @param serviceOffConnections
-     * @throws InterruptedException
-     */
-    private void closeFreshSelectConnections(Connection lastSelectConnect,
-                                             List<Connection> serviceOffConnections)
-                                                                                    throws InterruptedException {
-        if (null != lastSelectConnect) {
-            if (lastSelectConnect.isInvokeFutureMapFinish()) {
-                serviceOffConnections.add(lastSelectConnect);
-            } else {
-                Thread.sleep(RETRY_DETECT_PERIOD);
-                if (lastSelectConnect.isInvokeFutureMapFinish()) {
-                    serviceOffConnections.add(lastSelectConnect);
-                } else {
-                    if (logger.isInfoEnabled()) {
-                        logger.info("Address={} won't close at this schedule turn",
-                            RemotingUtil.parseRemoteAddress(lastSelectConnect.getChannel()));
-                    }
-                }
-            }
-        }
+    private boolean isConnectionOn(Connection connection) {
+        String serviceStatus = (String) connection.getAttribute(Configs.CONN_SERVICE_STATUS);
+        return serviceStatus == null || Boolean.parseBoolean(serviceStatus);
     }
 }

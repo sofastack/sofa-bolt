@@ -105,13 +105,14 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                             }
                             ctx.channel().attr(Connection.HEARTBEAT_COUNT).set(0);
                         } else {
-                            if (response == null) {
+                            if (response != null
+                                && response.getResponseStatus() == ResponseStatus.TIMEOUT) {
                                 logger.error("Heartbeat timeout! The address is {}",
                                     RemotingUtil.parseRemoteAddress(ctx.channel()));
                             } else {
                                 logger.error(
                                     "Heartbeat exception caught! Error code={}, The address is {}",
-                                    response.getResponseStatus(),
+                                    response == null ? null : response.getResponseStatus(),
                                     RemotingUtil.parseRemoteAddress(ctx.channel()));
                             }
                             Integer times = ctx.channel().attr(Connection.HEARTBEAT_COUNT).get();

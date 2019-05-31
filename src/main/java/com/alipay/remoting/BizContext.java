@@ -26,28 +26,28 @@ public interface BizContext {
     /**
      * get remote address
      * 
-     * @return
+     * @return remote address
      */
     String getRemoteAddress();
 
     /**
      * get remote host ip
      * 
-     * @return
+     * @return remote host
      */
     String getRemoteHost();
 
     /**
      * get remote port
      * 
-     * @return
+     * @return remote port
      */
     int getRemotePort();
 
     /**
      * get the connection of this request
      *
-     * @return
+     * @return connection
      */
     Connection getConnection();
 
@@ -61,36 +61,34 @@ public interface BizContext {
     /**
      * get the timeout value from rpc client.
      *
-     * @return
+     * @return client timeout
      */
     int getClientTimeout();
 
     /**
      * get the arrive time stamp
      *
-     * @return
+     * @return the arrive time stamp
      */
     long getArriveTimestamp();
 
     /**
      * put a key and value
-     * 
-     * @return
      */
     void put(String key, String value);
 
     /**
      * get value
      * 
-     * @param key
-     * @return
+     * @param key target key
+     * @return value
      */
     String get(String key);
 
     /**
      * get invoke context.
      *
-     * @return
+     * @return InvokeContext
      */
     InvokeContext getInvokeContext();
 }

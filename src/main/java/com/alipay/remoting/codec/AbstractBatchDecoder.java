@@ -36,7 +36,6 @@ import io.netty.util.internal.StringUtil;
  * <pre>
  *   if (msg instanceof List) {
  *       processorManager.getDefaultExecutor().execute(new Runnable() {
- *           @Override
  *           public void run() {
  *               // batch submit to an executor
  *               for (Object m : (List<?>) msg) {

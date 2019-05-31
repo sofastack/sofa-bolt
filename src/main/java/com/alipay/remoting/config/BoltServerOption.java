@@ -14,27 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.config;
 
 /**
- * Connection heart beat manager, operate heart beat whether enabled for a certain connection at runtime
- * 
- * @author xiaomin.cxm
- * @version $Id: ConnectionHeartbeatManager.java, v 0.1 Apr 12, 2016 6:55:56 PM xiaomin.cxm Exp $
+ * Supported options in server side.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2018-11-06 18:00
  */
-public interface ConnectionHeartbeatManager {
+public class BoltServerOption<T> extends BoltGenericOption<T> {
 
-    /**
-     * disable heart beat for a certain connection
-     * 
-     * @param connection Connection
-     */
-    void disableHeartbeat(Connection connection);
+    public static final BoltOption<Integer> TCP_SO_BACKLOG  = valueOf("bolt.tcp.so.backlog", 1024);
 
-    /**
-     * enable heart beat for a certain connection
-     * 
-     * @param connection Connection
-     */
-    void enableHeartbeat(Connection connection);
+    public static final BoltOption<Boolean> NETTY_EPOLL_LT  = valueOf("bolt.netty.epoll.lt", true);
+
+    public static final BoltOption<Integer> TCP_SERVER_IDLE = valueOf(
+                                                                "bolt.tcp.server.idle.interval",
+                                                                90 * 1000);
+
+    private BoltServerOption(String name, T defaultValue) {
+        super(name, defaultValue);
+    }
 }

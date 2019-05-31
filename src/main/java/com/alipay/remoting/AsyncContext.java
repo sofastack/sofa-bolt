@@ -26,7 +26,7 @@ public interface AsyncContext {
     /**
      * send response back
      * 
-     * @param responseObject
+     * @param responseObject response object
      */
     void sendResponse(Object responseObject);
 }

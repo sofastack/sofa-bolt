@@ -17,24 +17,15 @@
 package com.alipay.remoting;
 
 /**
- * Connection heart beat manager, operate heart beat whether enabled for a certain connection at runtime
- * 
- * @author xiaomin.cxm
- * @version $Id: ConnectionHeartbeatManager.java, v 0.1 Apr 12, 2016 6:55:56 PM xiaomin.cxm Exp $
+ * Do some preparatory work in order to refactor the ConnectionManager in the next version.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2019-03-07 14:40
  */
-public interface ConnectionHeartbeatManager {
+public class DefaultServerConnectionManager extends DefaultConnectionManager implements
+                                                                            ServerConnectionManager {
 
-    /**
-     * disable heart beat for a certain connection
-     * 
-     * @param connection Connection
-     */
-    void disableHeartbeat(Connection connection);
+    public DefaultServerConnectionManager(ConnectionSelectStrategy connectionSelectStrategy) {
+        super(connectionSelectStrategy);
+    }
 
-    /**
-     * enable heart beat for a certain connection
-     * 
-     * @param connection Connection
-     */
-    void enableHeartbeat(Connection connection);
 }

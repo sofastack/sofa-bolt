@@ -17,24 +17,30 @@
 package com.alipay.remoting;
 
 /**
- * Connection heart beat manager, operate heart beat whether enabled for a certain connection at runtime
- * 
- * @author xiaomin.cxm
- * @version $Id: ConnectionHeartbeatManager.java, v 0.1 Apr 12, 2016 6:55:56 PM xiaomin.cxm Exp $
+ * Reconnect manager interface.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2018-11-05 17:43
  */
-public interface ConnectionHeartbeatManager {
+public interface Reconnector extends LifeCycle {
 
     /**
-     * disable heart beat for a certain connection
-     * 
-     * @param connection Connection
+     * Do reconnecting in async mode.
+     *
+     * @param url target url
      */
-    void disableHeartbeat(Connection connection);
+    void reconnect(Url url);
 
     /**
-     * enable heart beat for a certain connection
-     * 
-     * @param connection Connection
+     * Disable reconnect to the target url.
+     *
+     * @param url target url
      */
-    void enableHeartbeat(Connection connection);
+    void disableReconnect(Url url);
+
+    /**
+     * Enable reconnect to the target url.
+     *
+     * @param url target url
+     */
+    void enableReconnect(Url url);
 }

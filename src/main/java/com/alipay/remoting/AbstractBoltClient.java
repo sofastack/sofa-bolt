@@ -14,8 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.config;
+package com.alipay.remoting;
 
+import com.alipay.remoting.config.BoltOption;
+import com.alipay.remoting.config.BoltOptions;
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.config.configs.ConfigContainer;
 import com.alipay.remoting.config.configs.ConfigItem;
 import com.alipay.remoting.config.configs.ConfigType;
@@ -23,18 +28,32 @@ import com.alipay.remoting.config.configs.DefaultConfigContainer;
 import com.alipay.remoting.config.switches.GlobalSwitch;
 
 /**
- * common implementation for a configurable instance
- *
- * @author tsui
- * @version $Id: AbstractConfigurableInstance.java, v 0.1 2018-07-30 21:11 tsui Exp $$
+ * @author chengyi (mark.lx@antfin.com) 2018-11-07 15:22
  */
-public class AbstractConfigurableInstance implements ConfigurableInstance {
-    private ConfigContainer configContainer = new DefaultConfigContainer();
-    private GlobalSwitch    globalSwitch    = new GlobalSwitch();
-    private ConfigType      configType;
+public abstract class AbstractBoltClient extends AbstractLifeCycle implements BoltClient,
+                                                                  ConfigurableInstance {
 
-    protected AbstractConfigurableInstance(ConfigType configType) {
-        this.configType = configType;
+    private final BoltOptions     options;
+    private final ConfigType      configType;
+    private final GlobalSwitch    globalSwitch;
+    private final ConfigContainer configContainer;
+
+    public AbstractBoltClient() {
+        this.options = new BoltOptions();
+        this.configType = ConfigType.CLIENT_SIDE;
+        this.globalSwitch = new GlobalSwitch();
+        this.configContainer = new DefaultConfigContainer();
+    }
+
+    @Override
+    public <T> T option(BoltOption<T> option) {
+        return options.option(option);
+    }
+
+    @Override
+    public <T> Configurable option(BoltOption<T> option, T value) {
+        options.option(option, value);
+        return this;
     }
 
     @Override
@@ -55,10 +74,9 @@ public class AbstractConfigurableInstance implements ConfigurableInstance {
 
     @Override
     public int netty_buffer_low_watermark() {
-        if (null != configContainer
-            && configContainer.contains(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK)) {
-            return (Integer) configContainer
-                .get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
+        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
+        if (config != null) {
+            return (Integer) config;
         } else {
             return ConfigManager.netty_buffer_low_watermark();
         }
@@ -66,10 +84,9 @@ public class AbstractConfigurableInstance implements ConfigurableInstance {
 
     @Override
     public int netty_buffer_high_watermark() {
-        if (null != configContainer
-            && configContainer.contains(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK)) {
-            return (Integer) configContainer.get(configType,
-                ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
+        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
+        if (config != null) {
+            return (Integer) config;
         } else {
             return ConfigManager.netty_buffer_high_watermark();
         }

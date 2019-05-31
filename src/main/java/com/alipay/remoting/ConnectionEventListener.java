@@ -33,15 +33,15 @@ public class ConnectionEventListener {
     /**
      * Dispatch events.
      * 
-     * @param type
-     * @param remoteAddr
-     * @param conn
+     * @param type ConnectionEventType
+     * @param remoteAddress remoting address
+     * @param connection Connection
      */
-    public void onEvent(ConnectionEventType type, String remoteAddr, Connection conn) {
+    public void onEvent(ConnectionEventType type, String remoteAddress, Connection connection) {
         List<ConnectionEventProcessor> processorList = this.processors.get(type);
         if (processorList != null) {
             for (ConnectionEventProcessor processor : processorList) {
-                processor.onEvent(remoteAddr, conn);
+                processor.onEvent(remoteAddress, connection);
             }
         }
     }
@@ -49,8 +49,8 @@ public class ConnectionEventListener {
     /**
      * Add event processor.
      * 
-     * @param type
-     * @param processor
+     * @param type ConnectionEventType
+     * @param processor ConnectionEventProcessor
      */
     public void addConnectionEventProcessor(ConnectionEventType type,
                                             ConnectionEventProcessor processor) {

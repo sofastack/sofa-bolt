@@ -14,27 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.constant;
 
 /**
- * Connection heart beat manager, operate heart beat whether enabled for a certain connection at runtime
- * 
- * @author xiaomin.cxm
- * @version $Id: ConnectionHeartbeatManager.java, v 0.1 Apr 12, 2016 6:55:56 PM xiaomin.cxm Exp $
+ * Bolt Constants.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2019-03-06 15:19
  */
-public interface ConnectionHeartbeatManager {
+public class Constants {
 
     /**
-     * disable heart beat for a certain connection
-     * 
-     * @param connection Connection
+     * default expire time to remove connection pool, time unit: milliseconds
      */
-    void disableHeartbeat(Connection connection);
+    public static final int DEFAULT_EXPIRE_TIME = 10 * 60 * 1000;
 
     /**
-     * enable heart beat for a certain connection
-     * 
-     * @param connection Connection
+     * default retry times when failed to get result of FutureTask
      */
-    void enableHeartbeat(Connection connection);
+    public static final int DEFAULT_RETRY_TIMES = 2;
+
 }

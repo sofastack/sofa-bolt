@@ -14,27 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.config;
 
 /**
- * Connection heart beat manager, operate heart beat whether enabled for a certain connection at runtime
- * 
- * @author xiaomin.cxm
- * @version $Id: ConnectionHeartbeatManager.java, v 0.1 Apr 12, 2016 6:55:56 PM xiaomin.cxm Exp $
+ * Config interface.
+ *
+ * @author chengyi (mark.lx@antfin.com) 2018-11-06 14:46
  */
-public interface ConnectionHeartbeatManager {
+public interface Configurable {
 
     /**
-     * disable heart beat for a certain connection
-     * 
-     * @param connection Connection
+     * Get the option value.
+     *
+     * @param option target option
+     * @return BoltOption
      */
-    void disableHeartbeat(Connection connection);
+    <T> T option(BoltOption<T> option);
 
     /**
-     * enable heart beat for a certain connection
-     * 
-     * @param connection Connection
+     * Allow to specify a {@link BoltOption} which is used for the {@link Configurable} instances once they got
+     * created. Use a value of {@code null} to remove a previous set {@link BoltOption}.
+     *
+     * @param option target option
+     * @param value option value, null to remove the previous option
+     * @return Configurable instance
      */
-    void enableHeartbeat(Connection connection);
+    <T> Configurable option(BoltOption<T> option, T value);
+
 }
