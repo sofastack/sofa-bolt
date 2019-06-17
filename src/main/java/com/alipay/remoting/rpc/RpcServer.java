@@ -67,6 +67,7 @@ import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -266,6 +267,8 @@ public class RpcServer extends AbstractRemotingServer {
         NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
         final boolean idleSwitch = ConfigManager.tcp_idle_switch();
+        final boolean flushConsolidationSwitch = switches().isOn(
+            GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
         final int idleTime = ConfigManager.tcp_server_idle();
         final ChannelHandler serverIdleHandler = new ServerIdleHandler();
         final RpcHandler rpcHandler = new RpcHandler(true, this.userProcessors);
@@ -274,6 +277,10 @@ public class RpcServer extends AbstractRemotingServer {
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                if (flushConsolidationSwitch) {
+                    pipeline.addLast("flushConsolidationHandler", new FlushConsolidationHandler(
+                        1024, true));
+                }
                 pipeline.addLast("decoder", codec.newDecoder());
                 pipeline.addLast("encoder", codec.newEncoder());
                 if (idleSwitch) {

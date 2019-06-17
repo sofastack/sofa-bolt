@@ -30,6 +30,7 @@ import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.config.ConfigurableInstance;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
@@ -47,6 +48,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -104,11 +106,17 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
+        final boolean flushConsolidationSwitch = this.confInstance.switches().isOn(
+            GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                if (flushConsolidationSwitch) {
+                    pipeline.addLast("flushConsolidationHandler", new FlushConsolidationHandler(
+                        1024, true));
+                }
                 pipeline.addLast("decoder", codec.newDecoder());
                 pipeline.addLast("encoder", codec.newEncoder());
 
