@@ -139,7 +139,7 @@ public class RpcConnectionFactory implements ConnectionFactory {
         if (channel.isActive()) {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
-            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CLOSE);
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
         }
         return conn;
     }
@@ -158,7 +158,7 @@ public class RpcConnectionFactory implements ConnectionFactory {
         if (channel.isActive()) {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
-            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CLOSE);
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
         }
         return conn;
     }
@@ -177,7 +177,7 @@ public class RpcConnectionFactory implements ConnectionFactory {
         if (channel.isActive()) {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
-            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CLOSE);
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
         }
         return conn;
     }

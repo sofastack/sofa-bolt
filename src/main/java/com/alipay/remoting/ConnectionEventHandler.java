@@ -143,7 +143,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
             // if conn is null, means that channel has been inactive before binding with connection
             // this situation will fire a CLOSE event in ConnectionFactory
             if (conn != null) {
-                ctx.channel().pipeline().fireUserEventTriggered(ConnectionEventType.CLOSE);
+                userEventTriggered(ctx, ConnectionEventType.CLOSE);
             }
         }
     }
@@ -169,20 +169,21 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                 return;
             }
 
+            final String remoteAddress = RemotingUtil.parseRemoteAddress(ctx.channel());
+            final String localAddress = RemotingUtil.parseLocalAddress(ctx.channel());
+            logger.info("trigger user event, local[{}], remote[{}], event: {}", localAddress,
+                remoteAddress, eventType.name());
+
             switch (eventType) {
                 case CONNECT:
                     onEvent(connection, connection.getUrl().getOriginUrl(),
                         ConnectionEventType.CONNECT);
                     break;
+                case CONNECT_FAILED:
                 case CLOSE:
-                    submitReconnectTaskIfNecessary(connection.getUrl());
-                    onEvent(connection, connection.getUrl().getOriginUrl(),
-                        ConnectionEventType.CLOSE);
-                    break;
                 case EXCEPTION:
                     submitReconnectTaskIfNecessary(connection.getUrl());
-                    onEvent(connection, connection.getUrl().getOriginUrl(),
-                        ConnectionEventType.EXCEPTION);
+                    onEvent(connection, connection.getUrl().getOriginUrl(), eventType);
                     break;
                 default:
                     logger.error("[BUG]unknown event: {}", eventType.name());
