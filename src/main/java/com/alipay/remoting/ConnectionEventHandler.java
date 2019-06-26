@@ -139,35 +139,55 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         super.channelInactive(ctx);
         Attribute attr = ctx.channel().attr(Connection.CONNECTION);
         if (null != attr) {
-            // add reconnect task
-            if (this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
-                Connection conn = (Connection) attr.get();
-                if (reconnectManager != null) {
-                    reconnectManager.addReconnectTask(conn.getUrl());
-                }
+            Connection conn = (Connection) attr.get();
+            // if conn is null, means that channel has been inactive before binding with connection
+            // this situation will fire a CLOSE event in ConnectionFactory
+            if (conn != null) {
+                userEventTriggered(ctx, ConnectionEventType.CLOSE);
             }
-            // trigger close connection event
-            onEvent((Connection) attr.get(), remoteAddress, ConnectionEventType.CLOSE);
         }
     }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object event) throws Exception {
         if (event instanceof ConnectionEventType) {
-            switch ((ConnectionEventType) event) {
+            ConnectionEventType eventType = (ConnectionEventType) event;
+            Channel channel = ctx.channel();
+            if (channel == null) {
+                logger
+                    .warn(
+                        "channel null when handle user triggered event in ConnectionEventHandler! eventType: {}",
+                        eventType.name());
+                return;
+            }
+            Connection connection = channel.attr(Connection.CONNECTION).get();
+            if (connection == null) {
+                logger
+                    .error(
+                        "[BUG]connection is null when handle user triggered event in ConnectionEventHandler! eventType: {}",
+                        eventType.name());
+                return;
+            }
+
+            final String remoteAddress = RemotingUtil.parseRemoteAddress(ctx.channel());
+            final String localAddress = RemotingUtil.parseLocalAddress(ctx.channel());
+            logger.info("trigger user event, local[{}], remote[{}], event: {}", localAddress,
+                remoteAddress, eventType.name());
+
+            switch (eventType) {
                 case CONNECT:
-                    Channel channel = ctx.channel();
-                    if (null != channel) {
-                        Connection connection = channel.attr(Connection.CONNECTION).get();
-                        this.onEvent(connection, connection.getUrl().getOriginUrl(),
-                            ConnectionEventType.CONNECT);
-                    } else {
-                        logger
-                            .warn("channel null when handle user triggered event in ConnectionEventHandler!");
-                    }
+                    onEvent(connection, connection.getUrl().getOriginUrl(),
+                        ConnectionEventType.CONNECT);
+                    break;
+                case CONNECT_FAILED:
+                case CLOSE:
+                case EXCEPTION:
+                    submitReconnectTaskIfNecessary(connection.getUrl());
+                    onEvent(connection, connection.getUrl().getOriginUrl(), eventType);
                     break;
                 default:
-                    return;
+                    logger.error("[BUG]unknown event: {}", eventType.name());
+                    break;
             }
         } else {
             super.userEventTriggered(ctx, event);
@@ -185,12 +205,12 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         ctx.channel().close();
     }
 
-    /**
-     *
-     * @param conn
-     * @param remoteAddress
-     * @param type
-     */
+    private void submitReconnectTaskIfNecessary(Url url) {
+        if (globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+            reconnectManager.addReconnectTask(url);
+        }
+    }
+
     private void onEvent(final Connection conn, final String remoteAddress,
                          final ConnectionEventType type) {
         if (this.eventListener != null) {
@@ -255,7 +275,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     /**
      * Dispatch connection event.
-     * 
+     *
      * @author jiangping
      * @version $Id: ConnectionEventExecutor.java, v 0.1 Mar 4, 2016 9:20:15 PM tao Exp $
      */
@@ -265,11 +285,6 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                                      new LinkedBlockingQueue<Runnable>(10000),
                                      new NamedThreadFactory("Bolt-conn-event-executor", true));
 
-        /**
-         * Process event.
-         * 
-         * @param event
-         */
         public void onEvent(Runnable event) {
             try {
                 executor.execute(event);
@@ -279,11 +294,6 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         }
     }
 
-    /**
-     * print info log
-     * @param format
-     * @param addr
-     */
     private void infoLog(String format, String addr) {
         if (logger.isInfoEnabled()) {
             if (StringUtils.isNotEmpty(addr)) {

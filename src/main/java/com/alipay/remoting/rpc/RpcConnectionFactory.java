@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import io.netty.buffer.UnpooledByteBufAllocator;
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -132,9 +133,14 @@ public class RpcConnectionFactory implements ConnectionFactory {
     public Connection createConnection(Url url) throws Exception {
         ChannelFuture future = doCreateConnection(url.getIp(), url.getPort(),
             url.getConnectTimeout());
-        Connection conn = new Connection(future.channel(),
-            ProtocolCode.fromBytes(url.getProtocol()), url.getVersion(), url);
-        future.channel().pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        Channel channel = future.channel();
+        Connection conn = new Connection(channel, ProtocolCode.fromBytes(url.getProtocol()),
+            url.getVersion(), url);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -145,10 +151,15 @@ public class RpcConnectionFactory implements ConnectionFactory {
     public Connection createConnection(String targetIP, int targetPort, int connectTimeout)
                                                                                            throws Exception {
         ChannelFuture future = doCreateConnection(targetIP, targetPort, connectTimeout);
-        Connection conn = new Connection(future.channel(),
+        Channel channel = future.channel();
+        Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
             new Url(targetIP, targetPort));
-        future.channel().pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -159,10 +170,15 @@ public class RpcConnectionFactory implements ConnectionFactory {
     public Connection createConnection(String targetIP, int targetPort, byte version,
                                        int connectTimeout) throws Exception {
         ChannelFuture future = doCreateConnection(targetIP, targetPort, connectTimeout);
-        Connection conn = new Connection(future.channel(),
+        Channel channel = future.channel();
+        Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
                 targetPort));
-        future.channel().pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 

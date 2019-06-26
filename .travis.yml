@@ -5,6 +5,8 @@ jdk:
   - oraclejdk8
   - openjdk7
 
+dist: trusty
+
 before_install:
   - echo "Downloading Maven 3.2.5"
    && wget https://archive.apache.org/dist/maven/maven-3/3.2.5/binaries/apache-maven-3.2.5-bin.zip
