@@ -131,7 +131,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Channel channel = doCreateConnection(url.getIp(), url.getPort(), url.getConnectTimeout());
         Connection conn = new Connection(channel, ProtocolCode.fromBytes(url.getProtocol()),
             url.getVersion(), url);
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -142,7 +146,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
             new Url(targetIP, targetPort));
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -153,7 +161,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
                 targetPort));
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
