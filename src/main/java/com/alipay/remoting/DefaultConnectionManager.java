@@ -439,7 +439,14 @@ public class DefaultConnectionManager implements ConnectionManager, ConnectionHe
             Iterator<String> iter = this.connTasks.keySet().iterator();
             while (iter.hasNext()) {
                 String poolKey = iter.next();
-                ConnectionPool pool = this.getConnectionPool(this.connTasks.get(poolKey));
+                RunStateRecordedFutureTask<ConnectionPool> task = this.connTasks.get(poolKey);
+                if (!task.isDone()) {
+                    logger.info("task(poolKey={}) is not done, do not scan the connection pool",
+                        poolKey);
+                    continue;
+                }
+
+                ConnectionPool pool = this.getConnectionPool(task);
                 if (null != pool) {
                     pool.scan();
                     if (pool.isEmpty()) {
