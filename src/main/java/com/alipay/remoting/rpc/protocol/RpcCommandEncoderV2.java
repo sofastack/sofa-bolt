@@ -79,7 +79,7 @@ public class RpcCommandEncoderV2 implements CommandEncoder {
                 }
                 out.writeByte(ver);
                 out.writeByte(cmd.getType());
-                out.writeShort(((RpcCommand) msg).getCmdCode().value());
+                out.writeShort(cmd.getCmdCode().value());
                 out.writeByte(cmd.getVersion());
                 out.writeInt(cmd.getId());
                 out.writeByte(cmd.getSerializer());
