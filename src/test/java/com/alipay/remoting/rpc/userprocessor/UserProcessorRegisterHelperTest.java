@@ -27,7 +27,7 @@ import org.junit.Test;
 import com.alipay.remoting.BizContext;
 import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
 import com.alipay.remoting.rpc.protocol.MultiInterestUserProcessor;
-import com.alipay.remoting.rpc.protocol.SyncMutiInterestUserProcessor;
+import com.alipay.remoting.rpc.protocol.SyncMultiInterestUserProcessor;
 import com.alipay.remoting.rpc.protocol.SyncUserProcessor;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
@@ -85,7 +85,7 @@ public class UserProcessorRegisterHelperTest {
 
     @Test
     public void testInterestEmptyException() {
-        MultiInterestUserProcessor userProcessor = new SyncMutiInterestUserProcessor() {
+        MultiInterestUserProcessor userProcessor = new SyncMultiInterestUserProcessor() {
             @Override
             public Object handleRequest(BizContext bizCtx, Object request) throws Exception {
                 return request;
