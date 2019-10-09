@@ -16,35 +16,34 @@
  */
 package com.alipay.remoting;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author chengyi (mark.lx@antfin.com) 2018-11-05 14:43
  */
 public abstract class AbstractLifeCycle implements LifeCycle {
 
-    private volatile boolean isStarted = false;
+    private volatile AtomicBoolean isStarted = new AtomicBoolean(false);
 
     @Override
     public void startup() throws LifeCycleException {
-        if (!isStarted) {
-            isStarted = true;
+        if (isStarted.compareAndSet(false, true)) {
             return;
         }
-
         throw new LifeCycleException("this component has started");
     }
 
     @Override
     public void shutdown() throws LifeCycleException {
-        if (isStarted) {
-            isStarted = false;
+        if (isStarted.compareAndSet(true, false)) {
             return;
         }
-
         throw new LifeCycleException("this component has closed");
     }
 
     @Override
     public boolean isStarted() {
-        return isStarted;
+        return isStarted.get();
     }
+    
 }
