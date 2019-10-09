@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public abstract class AbstractLifeCycle implements LifeCycle {
 
-    private volatile AtomicBoolean isStarted = new AtomicBoolean(false);
+    private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
     @Override
     public void startup() throws LifeCycleException {
@@ -45,5 +45,5 @@ public abstract class AbstractLifeCycle implements LifeCycle {
     public boolean isStarted() {
         return isStarted.get();
     }
-    
+
 }
