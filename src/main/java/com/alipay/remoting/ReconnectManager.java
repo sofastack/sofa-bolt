@@ -47,6 +47,8 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
         this.connectionManager = connectionManager;
         this.tasks = new LinkedBlockingQueue<ReconnectTask>();
         this.canceled = new CopyOnWriteArrayList<Url>();
+        // call startup in the constructor to be compatible with version 1.5.x
+        startup();
     }
 
     @Override
@@ -66,10 +68,15 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
 
     @Override
     public void startup() throws LifeCycleException {
-        super.startup();
+        // make the startup method idempotent to be compatible with version 1.5.x
+        synchronized (this) {
+            if (!isStarted()) {
+                super.startup();
 
-        this.healConnectionThreads = new Thread(new HealConnectionRunner());
-        this.healConnectionThreads.start();
+                this.healConnectionThreads = new Thread(new HealConnectionRunner());
+                this.healConnectionThreads.start();
+            }
+        }
     }
 
     @Override
