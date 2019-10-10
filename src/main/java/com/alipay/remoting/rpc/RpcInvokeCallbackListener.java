@@ -58,6 +58,10 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
      */
     @Override
     public void onResponse(InvokeFuture future) {
+        // todo review这块实现
+        // 执行到这里future已经从Connection中移除了，这里如果出现异常那么响应就丢掉了。
+        // 用户不会收到失败，也不会收到成功，也没有Timeout和Exception
+        // 这块应该支持用户做配置，选择：RejectException、CallerRun或者丢弃等等
         InvokeCallback callback = future.getInvokeCallback();
         if (callback != null) {
             CallbackTask task = new CallbackTask(this.getRemoteAddress(), future);
