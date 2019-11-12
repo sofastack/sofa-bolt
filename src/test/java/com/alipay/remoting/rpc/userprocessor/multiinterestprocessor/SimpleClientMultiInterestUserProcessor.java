@@ -32,14 +32,14 @@ import com.alipay.remoting.BizContext;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.NamedThreadFactory;
 import com.alipay.remoting.rpc.common.RequestBody;
-import com.alipay.remoting.rpc.protocol.SyncMutiInterestUserProcessor;
+import com.alipay.remoting.rpc.protocol.SyncMultiInterestUserProcessor;
 
 /**
  * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM
  */
 public class SimpleClientMultiInterestUserProcessor
                                                    extends
-                                                   SyncMutiInterestUserProcessor<MultiInterestBaseRequestBody> {
+                                                   SyncMultiInterestUserProcessor<MultiInterestBaseRequestBody> {
     /** logger */
     private static final Logger logger          = LoggerFactory
                                                     .getLogger(SimpleClientMultiInterestUserProcessor.class);
