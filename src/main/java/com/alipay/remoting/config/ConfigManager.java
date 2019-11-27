@@ -153,19 +153,23 @@ public class ConfigManager {
     }
 
     // ~~~ public helper methods to retrieve system property
-    public static boolean getBool(String key, String defaultValue) {
+    public static boolean getBool(final String key, final String defaultValue) {
         return Boolean.parseBoolean(System.getProperty(key, defaultValue));
     }
 
-    public static int getInt(String key, String defaultValue) {
+    public static int getInt(final String key, final String defaultValue) {
         return Integer.parseInt(System.getProperty(key, defaultValue));
     }
 
-    public static byte getByte(String key, String defaultValue) {
+    public static byte getByte(final String key, final String defaultValue) {
         return Byte.parseByte(System.getProperty(key, defaultValue));
     }
 
-    public static long getLong(String key, String defaultValue) {
+    public static long getLong(final String key, final String defaultValue) {
         return Long.parseLong(System.getProperty(key, defaultValue));
+    }
+
+    public static String getString(final String key, final String defaultValue) {
+        return System.getProperty(key, defaultValue);
     }
 }

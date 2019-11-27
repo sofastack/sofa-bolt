@@ -14,25 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.constant;
+package com.alipay.remoting.util;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 /**
- * Bolt Constants.
+ * IO Utilities
+ * 
+ * @author boyan(boyan@antfin.com)
  *
- * @author chengyi (mark.lx@antfin.com) 2019-03-06 15:19
  */
-public class Constants {
-
-    /**
-     * default expire time to remove connection pool, time unit: milliseconds
-     */
-    public static final int    DEFAULT_EXPIRE_TIME = 10 * 60 * 1000;
-
-    /**
-     * default retry times when failed to get result of FutureTask
-     */
-    public static final int    DEFAULT_RETRY_TIMES = 2;
-
-    public static final String SSL_HANDLER         = "sslHandler";
-
+public class IoUtils {
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException e) { // NOPMD
+            // ignore
+        }
+    }
 }
