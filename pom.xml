@@ -78,7 +78,7 @@
         <maven.source.plugin>3.0.0</maven.source.plugin>
         <maven.staging.plugin>1.6.7</maven.staging.plugin>
         <maven.surefire.plugin>2.18.1</maven.surefire.plugin>
-        <netty.version>4.1.25.Final</netty.version>
+        <netty.version>4.1.42.Final</netty.version>
 
         <project.encoding>UTF-8</project.encoding>
         <slf4j.version>1.7.21</slf4j.version>

@@ -95,7 +95,7 @@ public class NormalStringCustomSerializer extends DefaultCustomSerializer {
 
     public void reset() {
         this.contentDeserialier = -1;
-        this.contentDeserialier = -1;
+        this.contentSerializer = -1;
         this.deserialFlag.set(false);
         this.serialFlag.set(false);
     }
