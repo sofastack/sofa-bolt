@@ -35,6 +35,7 @@ import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.constant.Constants;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.RpcConfigManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
@@ -57,6 +58,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -114,6 +116,8 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
+        final boolean flushConsolidationSwitch = this.confInstance.switches().isOn(
+            GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
             @Override
@@ -123,6 +127,10 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(true);
                     pipeline.addLast(Constants.SSL_HANDLER, new SslHandler(engine));
+                }
+                if (flushConsolidationSwitch) {
+                    pipeline.addLast("flushConsolidationHandler", new FlushConsolidationHandler(
+                        1024, true));
                 }
                 pipeline.addLast("decoder", codec.newDecoder());
                 pipeline.addLast("encoder", codec.newEncoder());
@@ -146,7 +154,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Channel channel = doCreateConnection(url.getIp(), url.getPort(), url.getConnectTimeout());
         Connection conn = new Connection(channel, ProtocolCode.fromBytes(url.getProtocol()),
             url.getVersion(), url);
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -157,7 +169,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
             new Url(targetIP, targetPort));
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -168,7 +184,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
                 targetPort));
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
