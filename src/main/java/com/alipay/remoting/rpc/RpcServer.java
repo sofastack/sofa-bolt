@@ -16,11 +16,15 @@
  */
 package com.alipay.remoting.rpc;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.security.KeyStore;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
-
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLEngine;
 import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultServerConnectionManager;
 import org.slf4j.Logger;
@@ -47,10 +51,12 @@ import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.config.switches.GlobalSwitch;
+import com.alipay.remoting.constant.Constants;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
+import com.alipay.remoting.util.IoUtils;
 import com.alipay.remoting.util.NettyEventLoopUtil;
 import com.alipay.remoting.util.RemotingUtil;
 
@@ -67,6 +73,9 @@ import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
@@ -277,6 +286,13 @@ public class RpcServer extends AbstractRemotingServer {
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                if (RpcConfigManager.server_ssl_enable()) {
+                    SSLEngine engine = initSSLContext().newEngine(channel.alloc());
+                    engine.setUseClientMode(false);
+                    engine.setNeedClientAuth(RpcConfigManager.server_ssl_need_client_auth());
+                    pipeline.addLast(Constants.SSL_HANDLER, new SslHandler(engine));
+                }
+
                 if (flushConsolidationSwitch) {
                     pipeline.addLast("flushConsolidationHandler", new FlushConsolidationHandler(
                         1024, true));
@@ -310,6 +326,26 @@ public class RpcServer extends AbstractRemotingServer {
                 channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
             }
         });
+    }
+
+    private SslContext initSSLContext() {
+        InputStream in = null;
+        try {
+            KeyStore ks = KeyStore.getInstance(RpcConfigManager.server_ssl_keystore_type());
+            in = new FileInputStream(RpcConfigManager.server_ssl_keystore());
+            char[] passChs = RpcConfigManager.server_ssl_keystore_pass().toCharArray();
+            ks.load(in, passChs);
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(RpcConfigManager
+                .server_ssl_kmf_algorithm());
+            kmf.init(ks, passChs);
+            return SslContextBuilder.forServer(kmf).build();
+        } catch (Exception e) {
+            logger.error("Fail to init SSL context for server.", e);
+            throw new IllegalStateException("Fail to init SSL context", e);
+        } finally {
+            IoUtils.closeQuietly(in);
+        }
+
     }
 
     @Override
