@@ -34,7 +34,7 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**
  * Server template for remoting.
- * 
+ *
  * @author jiangping
  * @version $Id: AbstractRemotingServer.java, v 0.1 2015-9-5 PM7:37:48 tao Exp $
  */
@@ -56,6 +56,10 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
     }
 
     public AbstractRemotingServer(String ip, int port) {
+        if (port < 0 || port > 65535) {
+            throw new IllegalArgumentException(String.format(
+                "Illegal port value: %d, which should between 0 and 65535.", port));
+        }
         this.ip = ip;
         this.port = port;
 
@@ -121,6 +125,16 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
     @Override
     public int port() {
         return port;
+    }
+
+    /**
+     * override the random port zero with the actual binding port value.
+     * @param port local binding port
+     */
+    protected void setLocalBindingPort(int port) {
+        if (port() == 0) {
+            this.port = port;
+        }
     }
 
     protected abstract void doInit();
