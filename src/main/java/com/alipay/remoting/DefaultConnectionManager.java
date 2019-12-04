@@ -116,7 +116,8 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
      * @param connectionSelectStrategy connection selection strategy
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy) {
-        this();
+        this.connTasks = new ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>>();
+        this.healTasks = new ConcurrentHashMap<String, FutureTask<Integer>>();
         this.connectionSelectStrategy = connectionSelectStrategy;
     }
 
@@ -283,10 +284,8 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
     @Override
     public Map<String, List<Connection>> getAll() {
         Map<String, List<Connection>> allConnections = new HashMap<String, List<Connection>>();
-        Iterator<Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>>> iterator = this
-            .getConnPools().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>> entry = iterator.next();
+        for (Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>> entry : this
+            .getConnPools().entrySet()) {
             ConnectionPool pool = FutureTaskUtil.getFutureTaskResult(entry.getValue(), logger);
             if (null != pool) {
                 allConnections.put(entry.getKey(), pool.getAll());
