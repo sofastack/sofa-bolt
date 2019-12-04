@@ -51,7 +51,7 @@ import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
 
 /**
  * Client for Rpc.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcClient.java, v 0.1 2015-9-23 PM4:03:28 tao Exp $
  */
@@ -110,11 +110,18 @@ public class RpcClient extends AbstractBoltClient {
         if (connectionMonitor != null) {
             connectionMonitor.shutdown();
         }
+        for (UserProcessor<?> userProcessor : userProcessors.values()) {
+            userProcessor.shutdown();
+        }
     }
 
     @Override
     public void startup() throws LifeCycleException {
         super.startup();
+
+        for (UserProcessor<?> userProcessor : userProcessors.values()) {
+            userProcessor.startup();
+        }
 
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
@@ -395,7 +402,7 @@ public class RpcClient extends AbstractBoltClient {
 
     /**
      * Close all connections of a address
-     * 
+     *
      * @param addr
      */
     public void closeConnection(String addr) {
