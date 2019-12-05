@@ -27,6 +27,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLEngine;
 import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultServerConnectionManager;
+import com.alipay.remoting.config.BoltGenericOption;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.AbstractRemotingServer;
@@ -252,13 +253,22 @@ public class RpcServer extends AbstractRemotingServer {
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         }
         initRpcRemoting();
+
+        Integer tcpSoSndBuf = option(BoltGenericOption.TCP_SO_SNDBUF);
+        Integer tcpSoRcvBuf = option(BoltGenericOption.TCP_SO_RCVBUF);
+
         this.bootstrap = new ServerBootstrap();
-        this.bootstrap.group(bossGroup, workerGroup)
+        this.bootstrap
+            .group(bossGroup, workerGroup)
             .channel(NettyEventLoopUtil.getServerSocketChannelClass())
             .option(ChannelOption.SO_BACKLOG, ConfigManager.tcp_so_backlog())
             .option(ChannelOption.SO_REUSEADDR, ConfigManager.tcp_so_reuseaddr())
             .childOption(ChannelOption.TCP_NODELAY, ConfigManager.tcp_nodelay())
-            .childOption(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive());
+            .childOption(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive())
+            .childOption(ChannelOption.SO_SNDBUF,
+                tcpSoSndBuf != null ? tcpSoSndBuf : ConfigManager.tcp_so_sndbuf())
+            .childOption(ChannelOption.SO_RCVBUF,
+                tcpSoRcvBuf != null ? tcpSoRcvBuf : ConfigManager.tcp_so_rcvbuf());
 
         // set write buffer water mark
         initWriteBufferWaterMark();
