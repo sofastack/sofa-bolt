@@ -26,7 +26,7 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**
  * Reconnect manager.
- * 
+ *
  * @author yunliang.shi
  * @version $Id: ReconnectManager.java, v 0.1 Mar 11, 2016 5:20:50 PM yunliang.shi Exp $
  */
@@ -53,16 +53,19 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
 
     @Override
     public void reconnect(Url url) {
+        ensureStarted();
         tasks.add(new ReconnectTask(url));
     }
 
     @Override
     public void disableReconnect(Url url) {
+        ensureStarted();
         canceled.add(url);
     }
 
     @Override
     public void enableReconnect(Url url) {
+        ensureStarted();
         canceled.remove(url);
     }
 
@@ -93,6 +96,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
      */
     @Deprecated
     public void addCancelUrl(Url url) {
+        ensureStarted();
         disableReconnect(url);
     }
 
@@ -101,6 +105,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
      */
     @Deprecated
     public void removeCancelUrl(Url url) {
+        ensureStarted();
         enableReconnect(url);
     }
 
@@ -109,6 +114,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
      */
     @Deprecated
     public void addReconnectTask(Url url) {
+        ensureStarted();
         reconnect(url);
     }
 
