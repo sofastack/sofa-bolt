@@ -47,4 +47,15 @@ public abstract class AbstractLifeCycle implements LifeCycle {
     public boolean isStarted() {
         return isStarted;
     }
+
+    /**
+     * ensure the component has been startup before providing service.
+     */
+    protected void ensureStarted() {
+        if (!isStarted()) {
+            throw new LifeCycleException(String.format(
+                "Component(%s) has not been started yet, please startup first!", getClass()
+                    .getSimpleName()));
+        }
+    }
 }
