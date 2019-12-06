@@ -470,6 +470,10 @@ public class RpcServer extends AbstractRemotingServer {
     @Override
     public void registerUserProcessor(UserProcessor<?> processor) {
         UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
+        // startup the processor if it registered after component startup
+        if (isStarted()) {
+            processor.startup();
+        }
     }
 
     /**
