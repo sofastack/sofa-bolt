@@ -152,6 +152,30 @@ public class RpcServer extends AbstractRemotingServer {
     }
 
     /**
+     * Construct a rpc server with random port <br>
+     * the random port will determined after server startup
+     * Note:<br>
+     * You can only use invoke methods with params {@link Connection}, for example {@link #invokeSync(Connection, Object, int)} <br>
+     * Otherwise {@link UnsupportedOperationException} will be thrown.
+     */
+    public RpcServer() {
+        this(false);
+    }
+
+    /**
+     * Construct a rpc server with random port <br>
+     * the random port will determined after server startup
+     * Note:<br>
+     * You can only use invoke methods with params {@link Connection}, for example {@link #invokeSync(Connection, Object, int)} <br>
+     * Otherwise {@link UnsupportedOperationException} will be thrown.
+     *
+     * @param manageConnection true to enable connection management feature
+     */
+    public RpcServer(boolean manageConnection) {
+        this(0, manageConnection);
+    }
+
+    /**
      * Construct a rpc server. <br>
      *
      * Note:<br>
@@ -351,6 +375,12 @@ public class RpcServer extends AbstractRemotingServer {
     @Override
     protected boolean doStart() throws InterruptedException {
         this.channelFuture = this.bootstrap.bind(new InetSocketAddress(ip(), port())).sync();
+        if (port() == 0 && channelFuture.isSuccess()) {
+            InetSocketAddress localAddress = (InetSocketAddress) channelFuture.channel()
+                .localAddress();
+            setLocalBindingPort(localAddress.getPort());
+            logger.info("rpc server start with random port: {}!", port());
+        }
         return this.channelFuture.isSuccess();
     }
 
