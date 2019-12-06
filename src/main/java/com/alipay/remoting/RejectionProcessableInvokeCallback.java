@@ -16,35 +16,19 @@
  */
 package com.alipay.remoting;
 
-import java.util.concurrent.Executor;
-
 /**
- * Invoke callback.
+ * InvokeCallback which support {@link RejectedExecutionPolicy} is able to process the task-rejected situation.
  *
- * @author jiangping
- * @version $Id: InvokeCallback.java, v 0.1 2015-9-30 AM10:24:26 tao Exp $
+ * @author muyun
+ * @version $Id: RejectionProcessableInvokeCallback.java, v 0.1 2019年12月05日 9:16 PM muyun Exp $
  */
-public interface InvokeCallback {
+public interface RejectionProcessableInvokeCallback extends InvokeCallback {
 
     /**
-     * Response received.
-     *
-     * @param result
+     * when user executor rejected the {@link com.alipay.remoting.rpc.RpcInvokeCallbackListener.CallbackTask},
+     * bolt will handle the rejected task according to this {@link RejectedExecutionPolicy}
+     * @return rejectedExecution Policy
+     * @see com.alipay.remoting.rpc.RpcInvokeCallbackListener#onResponse(InvokeFuture)
      */
-    void onResponse(final Object result);
-
-    /**
-     * Exception caught.
-     *
-     * @param e
-     */
-    void onException(final Throwable e);
-
-    /**
-     * User defined executor.
-     *
-     * @return
-     */
-    Executor getExecutor();
-
+    RejectedExecutionPolicy rejectedExecutionPolicy();
 }
