@@ -35,7 +35,7 @@ import com.alipay.remoting.util.StringUtils;
 
 /**
  * Resolve response object from response command.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcResponseResolver.java, v 0.1 2015-10-8 PM2:47:29 tao Exp $
  */
@@ -151,7 +151,7 @@ public class RpcResponseResolver {
         RpcResponseCommand resp = (RpcResponseCommand) responseCommand;
         resp.deserialize();
         Object ex = resp.getResponseObject();
-        if (ex != null && ex instanceof Throwable) {
+        if (ex instanceof Throwable) {
             return (Throwable) ex;
         }
         return null;
