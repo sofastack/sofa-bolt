@@ -27,26 +27,47 @@ import org.junit.Test;
  */
 public class LifeCycleTest {
 
+    private RpcServer server = new RpcServer(9999, true);
+    private RpcClient client = new RpcClient();
+
     @Test
     public void testAvailabilityCheck() {
-        RpcServer server = new RpcServer(9999);
-        RpcClient client = new RpcClient();
+        Assert.assertTrue(testFunctionAvailable(false));
+        server.startup();
+        client.startup();
+        Assert.assertTrue(testFunctionAvailable(true));
+        server.shutdown();
+        client.shutdown();
+        Assert.assertTrue(testFunctionAvailable(false));
+    }
+
+    private boolean testFunctionAvailable(boolean expectedResult) {
         try {
-            server.invokeSync("127.0.0.1:9999", null, 3000);
-            Assert.fail();
+            server.isConnected("127.0.0.1:9999");
+            if (!expectedResult) {
+                return false;
+            }
         } catch (LifeCycleException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            Assert.fail();
+            if (expectedResult) {
+                return false;
+            }
         }
 
         try {
-            client.invokeSync("127.0.0.1:9999", null, 3000);
-            Assert.fail();
+            client.getConnection("127.0.0.1:9999", 1000);
+            if (!expectedResult) {
+                return false;
+            }
         } catch (LifeCycleException e) {
-            e.printStackTrace();
+            if (expectedResult) {
+                return false;
+            }
         } catch (Exception e) {
-            Assert.fail();
+            if (expectedResult) {
+                return false;
+            }
         }
+
+        return true;
     }
 }
