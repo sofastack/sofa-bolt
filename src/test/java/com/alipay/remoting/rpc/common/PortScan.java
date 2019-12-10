@@ -38,10 +38,8 @@ public class PortScan {
             ioe.printStackTrace();
         } finally {
             try {
-                if (ss != null) {
-                    ss.close();
-                    logger.warn("Server socket close status: {}", ss.isClosed());
-                }
+                ss.close();
+                logger.warn("Server socket close status: {}", ss.isClosed());
             } catch (IOException e) {
             }
         }

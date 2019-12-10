@@ -35,7 +35,7 @@ import com.alipay.remoting.rpc.protocol.RpcResponseCommand;
 
 /**
  * Listener which listens the Rpc invoke result, and then invokes the call back.
- *
+ * 
  * @author jiangping
  * @version $Id: RpcInvokeCallbackListener.java, v 0.1 2015-9-30 AM10:36:34 tao Exp $
  */
@@ -53,7 +53,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
         this.address = address;
     }
 
-    /**
+    /** 
      * @see com.alipay.remoting.InvokeCallbackListener#onResponse(com.alipay.remoting.InvokeFuture)
      */
     @Override
@@ -80,14 +80,14 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
         String       remoteAddress;
 
         /**
-         *
+         * 
          */
         public CallbackTask(String remoteAddress, InvokeFuture future) {
             this.remoteAddress = remoteAddress;
             this.future = future;
         }
 
-        /**
+        /** 
          * @see java.lang.Runnable#run()
          */
         @Override
@@ -134,7 +134,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                                 RpcResponseCommand resp = (RpcResponseCommand) response;
                                 resp.deserialize();
                                 Object ex = resp.getResponseObject();
-                                if (ex instanceof Throwable) {
+                                if (ex != null && ex instanceof Throwable) {
                                     e = new InvokeServerException(msg, (Throwable) ex);
                                 } else {
                                     e = new InvokeServerException(msg);
@@ -191,7 +191,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
         } // end of run
     }
 
-    /**
+    /** 
      * @see com.alipay.remoting.InvokeCallbackListener#getRemoteAddress()
      */
     @Override
