@@ -168,6 +168,7 @@ public class RpcClient extends AbstractBoltClient {
     @Override
     public void oneway(final String address, final Object request) throws RemotingException,
                                                                   InterruptedException {
+        ensureStarted();
         this.rpcRemoting.oneway(address, request, null);
     }
 
@@ -175,12 +176,14 @@ public class RpcClient extends AbstractBoltClient {
     public void oneway(final String address, final Object request, final InvokeContext invokeContext)
                                                                                                      throws RemotingException,
                                                                                                      InterruptedException {
+        ensureStarted();
         this.rpcRemoting.oneway(address, request, invokeContext);
     }
 
     @Override
     public void oneway(final Url url, final Object request) throws RemotingException,
                                                            InterruptedException {
+        ensureStarted();
         this.rpcRemoting.oneway(url, request, null);
     }
 
@@ -188,17 +191,20 @@ public class RpcClient extends AbstractBoltClient {
     public void oneway(final Url url, final Object request, final InvokeContext invokeContext)
                                                                                               throws RemotingException,
                                                                                               InterruptedException {
+        ensureStarted();
         this.rpcRemoting.oneway(url, request, invokeContext);
     }
 
     @Override
     public void oneway(final Connection conn, final Object request) throws RemotingException {
+        ensureStarted();
         this.rpcRemoting.oneway(conn, request, null);
     }
 
     @Override
     public void oneway(final Connection conn, final Object request,
                        final InvokeContext invokeContext) throws RemotingException {
+        ensureStarted();
         this.rpcRemoting.oneway(conn, request, invokeContext);
     }
 
@@ -206,6 +212,7 @@ public class RpcClient extends AbstractBoltClient {
     public Object invokeSync(final String address, final Object request, final int timeoutMillis)
                                                                                                  throws RemotingException,
                                                                                                  InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeSync(address, request, null, timeoutMillis);
     }
 
@@ -214,6 +221,7 @@ public class RpcClient extends AbstractBoltClient {
                              final InvokeContext invokeContext, final int timeoutMillis)
                                                                                         throws RemotingException,
                                                                                         InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeSync(address, request, invokeContext, timeoutMillis);
     }
 
@@ -221,6 +229,7 @@ public class RpcClient extends AbstractBoltClient {
     public Object invokeSync(final Url url, final Object request, final int timeoutMillis)
                                                                                           throws RemotingException,
                                                                                           InterruptedException {
+        ensureStarted();
         return this.invokeSync(url, request, null, timeoutMillis);
     }
 
@@ -229,6 +238,7 @@ public class RpcClient extends AbstractBoltClient {
                              final InvokeContext invokeContext, final int timeoutMillis)
                                                                                         throws RemotingException,
                                                                                         InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeSync(url, request, invokeContext, timeoutMillis);
     }
 
@@ -236,6 +246,7 @@ public class RpcClient extends AbstractBoltClient {
     public Object invokeSync(final Connection conn, final Object request, final int timeoutMillis)
                                                                                                   throws RemotingException,
                                                                                                   InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeSync(conn, request, null, timeoutMillis);
     }
 
@@ -244,6 +255,7 @@ public class RpcClient extends AbstractBoltClient {
                              final InvokeContext invokeContext, final int timeoutMillis)
                                                                                         throws RemotingException,
                                                                                         InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeSync(conn, request, invokeContext, timeoutMillis);
     }
 
@@ -251,6 +263,7 @@ public class RpcClient extends AbstractBoltClient {
     public RpcResponseFuture invokeWithFuture(final String address, final Object request,
                                               final int timeoutMillis) throws RemotingException,
                                                                       InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeWithFuture(address, request, null, timeoutMillis);
     }
 
@@ -259,6 +272,7 @@ public class RpcClient extends AbstractBoltClient {
                                               final InvokeContext invokeContext,
                                               final int timeoutMillis) throws RemotingException,
                                                                       InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeWithFuture(address, request, invokeContext, timeoutMillis);
     }
 
@@ -266,6 +280,7 @@ public class RpcClient extends AbstractBoltClient {
     public RpcResponseFuture invokeWithFuture(final Url url, final Object request,
                                               final int timeoutMillis) throws RemotingException,
                                                                       InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeWithFuture(url, request, null, timeoutMillis);
     }
 
@@ -274,12 +289,14 @@ public class RpcClient extends AbstractBoltClient {
                                               final InvokeContext invokeContext,
                                               final int timeoutMillis) throws RemotingException,
                                                                       InterruptedException {
+        ensureStarted();
         return this.rpcRemoting.invokeWithFuture(url, request, invokeContext, timeoutMillis);
     }
 
     @Override
     public RpcResponseFuture invokeWithFuture(final Connection conn, final Object request,
                                               int timeoutMillis) throws RemotingException {
+        ensureStarted();
         return this.rpcRemoting.invokeWithFuture(conn, request, null, timeoutMillis);
     }
 
@@ -287,6 +304,7 @@ public class RpcClient extends AbstractBoltClient {
     public RpcResponseFuture invokeWithFuture(final Connection conn, final Object request,
                                               final InvokeContext invokeContext, int timeoutMillis)
                                                                                                    throws RemotingException {
+        ensureStarted();
         return this.rpcRemoting.invokeWithFuture(conn, request, invokeContext, timeoutMillis);
     }
 
@@ -295,6 +313,7 @@ public class RpcClient extends AbstractBoltClient {
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
+        ensureStarted();
         this.rpcRemoting.invokeWithCallback(address, request, null, invokeCallback, timeoutMillis);
     }
 
@@ -304,6 +323,7 @@ public class RpcClient extends AbstractBoltClient {
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
+        ensureStarted();
         this.rpcRemoting.invokeWithCallback(address, request, invokeContext, invokeCallback,
             timeoutMillis);
     }
@@ -313,6 +333,7 @@ public class RpcClient extends AbstractBoltClient {
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
+        ensureStarted();
         this.rpcRemoting.invokeWithCallback(url, request, null, invokeCallback, timeoutMillis);
     }
 
@@ -322,6 +343,7 @@ public class RpcClient extends AbstractBoltClient {
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
+        ensureStarted();
         this.rpcRemoting.invokeWithCallback(url, request, invokeContext, invokeCallback,
             timeoutMillis);
     }
@@ -330,6 +352,7 @@ public class RpcClient extends AbstractBoltClient {
     public void invokeWithCallback(final Connection conn, final Object request,
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
                                                                                                 throws RemotingException {
+        ensureStarted();
         this.rpcRemoting.invokeWithCallback(conn, request, null, invokeCallback, timeoutMillis);
     }
 
@@ -338,6 +361,7 @@ public class RpcClient extends AbstractBoltClient {
                                    final InvokeContext invokeContext,
                                    final InvokeCallback invokeCallback, final int timeoutMillis)
                                                                                                 throws RemotingException {
+        ensureStarted();
         this.rpcRemoting.invokeWithCallback(conn, request, invokeContext, invokeCallback,
             timeoutMillis);
     }
@@ -360,17 +384,20 @@ public class RpcClient extends AbstractBoltClient {
     @Override
     public Connection createStandaloneConnection(String ip, int port, int connectTimeout)
                                                                                          throws RemotingException {
+        ensureStarted();
         return this.connectionManager.create(ip, port, connectTimeout);
     }
 
     @Override
     public Connection createStandaloneConnection(String address, int connectTimeout)
                                                                                     throws RemotingException {
+        ensureStarted();
         return this.connectionManager.create(address, connectTimeout);
     }
 
     @Override
     public void closeStandaloneConnection(Connection conn) {
+        ensureStarted();
         if (null != conn) {
             conn.close();
         }
@@ -379,6 +406,7 @@ public class RpcClient extends AbstractBoltClient {
     @Override
     public Connection getConnection(String address, int connectTimeout) throws RemotingException,
                                                                        InterruptedException {
+        ensureStarted();
         Url url = this.addressParser.parse(address);
         return this.getConnection(url, connectTimeout);
     }
@@ -386,17 +414,20 @@ public class RpcClient extends AbstractBoltClient {
     @Override
     public Connection getConnection(Url url, int connectTimeout) throws RemotingException,
                                                                 InterruptedException {
+        ensureStarted();
         url.setConnectTimeout(connectTimeout);
         return this.connectionManager.getAndCreateIfAbsent(url);
     }
 
     @Override
     public Map<String, List<Connection>> getAllManagedConnections() {
+        ensureStarted();
         return this.connectionManager.getAll();
     }
 
     @Override
     public boolean checkConnection(String address) {
+        ensureStarted();
         Url url = this.addressParser.parse(address);
         Connection conn = this.connectionManager.get(url.getUniqueKey());
         try {
@@ -411,9 +442,10 @@ public class RpcClient extends AbstractBoltClient {
     /**
      * Close all connections of a address
      *
-     * @param addr
+     * @param addr address
      */
     public void closeConnection(String addr) {
+        ensureStarted();
         Url url = this.addressParser.parse(addr);
         if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
             reconnectManager.disableReconnect(url);
@@ -423,6 +455,7 @@ public class RpcClient extends AbstractBoltClient {
 
     @Override
     public void closeConnection(Url url) {
+        ensureStarted();
         if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
             reconnectManager.disableReconnect(url);
         }
@@ -431,12 +464,14 @@ public class RpcClient extends AbstractBoltClient {
 
     @Override
     public void enableConnHeartbeat(String address) {
+        ensureStarted();
         Url url = this.addressParser.parse(address);
         this.enableConnHeartbeat(url);
     }
 
     @Override
     public void enableConnHeartbeat(Url url) {
+        ensureStarted();
         if (null != url) {
             this.connectionManager.enableHeartbeat(this.connectionManager.get(url.getUniqueKey()));
         }
@@ -444,12 +479,14 @@ public class RpcClient extends AbstractBoltClient {
 
     @Override
     public void disableConnHeartbeat(String address) {
+        ensureStarted();
         Url url = this.addressParser.parse(address);
         this.disableConnHeartbeat(url);
     }
 
     @Override
     public void disableConnHeartbeat(Url url) {
+        ensureStarted();
         if (null != url) {
             this.connectionManager.disableHeartbeat(this.connectionManager.get(url.getUniqueKey()));
         }
