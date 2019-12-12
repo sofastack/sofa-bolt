@@ -23,6 +23,7 @@ import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
+
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -104,7 +105,9 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         bootstrap.group(workerGroup).channel(NettyEventLoopUtil.getClientSocketChannelClass())
             .option(ChannelOption.TCP_NODELAY, ConfigManager.tcp_nodelay())
             .option(ChannelOption.SO_REUSEADDR, ConfigManager.tcp_so_reuseaddr())
-            .option(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive());
+            .option(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive())
+            .option(ChannelOption.SO_SNDBUF, ConfigManager.tcp_so_sndbuf())
+            .option(ChannelOption.SO_RCVBUF, ConfigManager.tcp_so_rcvbuf());
 
         // init netty write buffer water mark
         initWriteBufferWaterMark();
@@ -152,6 +155,9 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     @Override
     public Connection createConnection(Url url) throws Exception {
         Channel channel = doCreateConnection(url.getIp(), url.getPort(), url.getConnectTimeout());
+        System.out.println(channel.config().getOption(ChannelOption.SO_SNDBUF));
+        System.out.println(channel.config().getOption(ChannelOption.SO_RCVBUF));
+
         Connection conn = new Connection(channel, ProtocolCode.fromBytes(url.getProtocol()),
             url.getVersion(), url);
         if (channel.isActive()) {
