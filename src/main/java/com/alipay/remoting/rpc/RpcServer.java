@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLEngine;
 import com.alipay.remoting.*;
+import com.alipay.remoting.config.BoltGenericOption;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.codec.Codec;
