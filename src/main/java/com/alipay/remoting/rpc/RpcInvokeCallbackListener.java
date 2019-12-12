@@ -147,7 +147,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                                 RpcResponseCommand resp = (RpcResponseCommand) response;
                                 resp.deserialize();
                                 Object ex = resp.getResponseObject();
-                                if (ex != null && ex instanceof Throwable) {
+                                if (ex instanceof Throwable) {
                                     e = new InvokeServerException(msg, (Throwable) ex);
                                 } else {
                                     e = new InvokeServerException(msg);

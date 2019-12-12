@@ -23,12 +23,12 @@ import com.alipay.remoting.BizContext;
 
 /**
  * Extends this to process user defined request in SYNC way.<br>
- * If you want process reqeuest in ASYNC way, please extends {@link AsynMultiInterestUserProcessor}.
+ * If you want process request in ASYNC way, please extends {@link AsyncMultiInterestUserProcessor}.
  *
  * @author muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:19 AM
  */
-public abstract class SyncMutiInterestUserProcessor<T> extends
-                                                       AbstractMultiInterestUserProcessor<T> {
+public abstract class SyncMultiInterestUserProcessor<T> extends
+                                                        AbstractMultiInterestUserProcessor<T> {
 
     /**
      * @see com.alipay.remoting.rpc.protocol.UserProcessor#handleRequest(com.alipay.remoting.BizContext, java.lang.Object)
@@ -44,7 +44,7 @@ public abstract class SyncMutiInterestUserProcessor<T> extends
     @Override
     public void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, T request) {
         throw new UnsupportedOperationException(
-            "ASYNC handle request is unsupported in SyncMutiInterestUserProcessor!");
+            "ASYNC handle request is unsupported in SyncMultiInterestUserProcessor!");
     }
 
     /**
