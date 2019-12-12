@@ -364,6 +364,12 @@ public class RpcServer extends AbstractRemotingServer {
 
     @Override
     protected boolean doStart() throws InterruptedException {
+        for (UserProcessor<?> userProcessor : userProcessors.values()) {
+            if (!userProcessor.isStarted()) {
+                userProcessor.startup();
+            }
+        }
+
         this.channelFuture = this.bootstrap.bind(new InetSocketAddress(ip(), port())).sync();
         if (port() == 0 && channelFuture.isSuccess()) {
             InetSocketAddress localAddress = (InetSocketAddress) channelFuture.channel()
@@ -393,6 +399,11 @@ public class RpcServer extends AbstractRemotingServer {
             && null != this.connectionManager) {
             this.connectionManager.shutdown();
             logger.warn("Close all connections from server side!");
+        }
+        for (UserProcessor<?> userProcessor : userProcessors.values()) {
+            if (userProcessor.isStarted()) {
+                userProcessor.shutdown();
+            }
         }
         logger.warn("Rpc Server stopped!");
         return true;
@@ -443,6 +454,10 @@ public class RpcServer extends AbstractRemotingServer {
     @Override
     public void registerUserProcessor(UserProcessor<?> processor) {
         UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
+        // startup the processor if it registered after component startup
+        if (isStarted() && !processor.isStarted()) {
+            processor.startup();
+        }
     }
 
     /**
