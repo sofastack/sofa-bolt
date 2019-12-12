@@ -41,7 +41,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Process Rpc request.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcRequestProcessor.java, v 0.1 2015-10-1 PM10:56:10 tao Exp $
  */
@@ -219,7 +219,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         final byte type = cmd.getType();
         // processor here must not be null, for it have been checked before
         UserProcessor processor = ctx.getUserProcessor(cmd.getRequestClass());
-        if (processor instanceof AsyncUserProcessor) {
+        if (processor instanceof AsyncUserProcessor || processor instanceof AsyncMultiInterestUserProcessor) {
             try {
                 processor.handleRequest(processor.preHandleRequest(ctx, cmd.getRequestObject()),
                     new RpcAsyncContext(ctx, cmd, this), cmd.getRequestObject());
