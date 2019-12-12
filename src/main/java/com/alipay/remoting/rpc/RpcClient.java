@@ -111,7 +111,9 @@ public class RpcClient extends AbstractBoltClient {
             connectionMonitor.shutdown();
         }
         for (UserProcessor<?> userProcessor : userProcessors.values()) {
-            userProcessor.shutdown();
+            if (userProcessor.isStarted()) {
+                userProcessor.shutdown();
+            }
         }
     }
 
@@ -120,7 +122,9 @@ public class RpcClient extends AbstractBoltClient {
         super.startup();
 
         for (UserProcessor<?> userProcessor : userProcessors.values()) {
-            userProcessor.startup();
+            if (!userProcessor.isStarted()) {
+                userProcessor.startup();
+            }
         }
 
         if (this.addressParser == null) {
@@ -348,7 +352,7 @@ public class RpcClient extends AbstractBoltClient {
     public void registerUserProcessor(UserProcessor<?> processor) {
         UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
         // startup the processor if it registered after component startup
-        if (isStarted()) {
+        if (isStarted() && !processor.isStarted()) {
             processor.startup();
         }
     }
