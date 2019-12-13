@@ -155,9 +155,6 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     @Override
     public Connection createConnection(Url url) throws Exception {
         Channel channel = doCreateConnection(url.getIp(), url.getPort(), url.getConnectTimeout());
-        System.out.println(channel.config().getOption(ChannelOption.SO_SNDBUF));
-        System.out.println(channel.config().getOption(ChannelOption.SO_RCVBUF));
-
         Connection conn = new Connection(channel, ProtocolCode.fromBytes(url.getProtocol()),
             url.getVersion(), url);
         if (channel.isActive()) {
