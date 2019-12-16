@@ -36,6 +36,10 @@ public class BoltGenericOption<T> extends BoltOption<T> {
                                                                                               "bolt.tcp.so.keepalive",
                                                                                               true);
 
+    public static final BoltOption<Integer>                  TCP_SO_SNDBUF                = valueOf("bolt.tcp.so.sndbuf");
+
+    public static final BoltOption<Integer>                  TCP_SO_RCVBUF                = valueOf("bolt.tcp.so.rcvbuf");
+
     public static final BoltOption<Integer>                  NETTY_IO_RATIO               = valueOf(
                                                                                               "bolt.netty.io.ratio",
                                                                                               70);

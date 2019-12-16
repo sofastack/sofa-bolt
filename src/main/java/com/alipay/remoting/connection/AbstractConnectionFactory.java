@@ -16,8 +16,13 @@
  */
 package com.alipay.remoting.connection;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.slf4j.Logger;
 
@@ -30,9 +35,13 @@ import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.config.ConfigurableInstance;
+import com.alipay.remoting.constant.Constants;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
+import com.alipay.remoting.rpc.RpcConfigManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
+import com.alipay.remoting.util.IoUtils;
 import com.alipay.remoting.util.NettyEventLoopUtil;
 
 import io.netty.bootstrap.Bootstrap;
@@ -47,6 +56,10 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 
 /**
@@ -92,7 +105,9 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         bootstrap.group(workerGroup).channel(NettyEventLoopUtil.getClientSocketChannelClass())
             .option(ChannelOption.TCP_NODELAY, ConfigManager.tcp_nodelay())
             .option(ChannelOption.SO_REUSEADDR, ConfigManager.tcp_so_reuseaddr())
-            .option(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive());
+            .option(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive())
+            .option(ChannelOption.SO_SNDBUF, ConfigManager.tcp_so_sndbuf())
+            .option(ChannelOption.SO_RCVBUF, ConfigManager.tcp_so_rcvbuf());
 
         // init netty write buffer water mark
         initWriteBufferWaterMark();
@@ -104,11 +119,22 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
+        final boolean flushConsolidationSwitch = this.confInstance.switches().isOn(
+            GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                if (RpcConfigManager.client_ssl_enable()) {
+                    SSLEngine engine = initSSLContext().newEngine(channel.alloc());
+                    engine.setUseClientMode(true);
+                    pipeline.addLast(Constants.SSL_HANDLER, new SslHandler(engine));
+                }
+                if (flushConsolidationSwitch) {
+                    pipeline.addLast("flushConsolidationHandler", new FlushConsolidationHandler(
+                        1024, true));
+                }
                 pipeline.addLast("decoder", codec.newDecoder());
                 pipeline.addLast("encoder", codec.newEncoder());
 
@@ -131,7 +157,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Channel channel = doCreateConnection(url.getIp(), url.getPort(), url.getConnectTimeout());
         Connection conn = new Connection(channel, ProtocolCode.fromBytes(url.getProtocol()),
             url.getVersion(), url);
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -142,7 +172,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
             new Url(targetIP, targetPort));
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -153,7 +187,11 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         Connection conn = new Connection(channel,
             ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
                 targetPort));
-        channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
         return conn;
     }
 
@@ -176,6 +214,26 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         }
         this.bootstrap.option(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(
             lowWaterMark, highWaterMark));
+    }
+
+    private SslContext initSSLContext() {
+        InputStream in = null;
+        try {
+            KeyStore ks = KeyStore.getInstance(RpcConfigManager.client_ssl_keystore_type());
+            in = new FileInputStream(RpcConfigManager.client_ssl_keystore());
+            char[] passChs = RpcConfigManager.client_ssl_keystore_pass().toCharArray();
+            ks.load(in, passChs);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(RpcConfigManager
+                .client_ssl_tmf_algorithm());
+            tmf.init(ks);
+            return SslContextBuilder.forClient().trustManager(tmf).build();
+        } catch (Exception e) {
+            logger.error("Fail to init SSL context for connection factory.", e);
+            throw new IllegalStateException("Fail to init SSL context", e);
+        } finally {
+            IoUtils.closeQuietly(in);
+        }
+
     }
 
     protected Channel doCreateConnection(String targetIP, int targetPort, int connectTimeout)

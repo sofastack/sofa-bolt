@@ -28,7 +28,7 @@ import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 
 /**
  * URL definition.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: Url.java, v 0.1 Mar 11, 2016 6:01:59 PM xiaomin.cxm Exp $
  */
@@ -65,7 +65,7 @@ public class Url {
 
     /**
      * Constructor with originUrl
-     * 
+     *
      * @param originUrl
      */
     protected Url(String originUrl) {
@@ -77,8 +77,8 @@ public class Url {
      * <ul>
      * <li>Initialize ip:port as {@link Url#originUrl} </li>
      * <li>Initialize {@link Url#originUrl} as {@link Url#uniqueKey} </li>
-     * </ul> 
-     * 
+     * </ul>
+     *
      * @param ip
      * @param port
      */
@@ -91,12 +91,12 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip and port
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize ip:port as {@link Url#uniqueKey} </li>
-     * </ul> 
-     * 
+     * </ul>
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -110,13 +110,13 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip, port and properties
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize ip:port as {@link Url#uniqueKey} </li>
      * <li>Initialize @param properties as {@link Url#properties} </li>
-     * </ul> 
-     * 
+     * </ul>
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -129,13 +129,13 @@ public class Url {
 
     /**
      * Constructor with originUrl, ip, port, uniqueKey and properties
-     * 
+     *
      * <ul>
      * <li>Initialize @param originUrl as {@link Url#originUrl} </li>
      * <li>Initialize @param uniqueKey as {@link Url#uniqueKey} </li>
      * <li>Initialize @param properties as {@link Url#properties} </li>
      * </ul>
-     * 
+     *
      * @param originUrl
      * @param ip
      * @param port
@@ -150,7 +150,7 @@ public class Url {
 
     /**
      * Get property value according to property key
-     * 
+     *
      * @param key property key
      * @return property value
      */
@@ -253,7 +253,7 @@ public class Url {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(32);
         sb.append("Origin url [").append(this.originUrl).append("], Unique key [")
             .append(this.uniqueKey).append("].");
         return sb.toString();

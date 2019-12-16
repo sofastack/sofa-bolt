@@ -1,9 +1,13 @@
 #.travis.yml
 language: java
 
+dist: trusty
+
 jdk:
   - oraclejdk8
   - openjdk7
+
+dist: trusty
 
 before_install:
   - echo "Downloading Maven 3.2.5"

@@ -18,12 +18,9 @@ package com.alipay.remoting.rpc;
 
 import java.util.concurrent.RejectedExecutionException;
 
+import com.alipay.remoting.*;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeCallbackListener;
-import com.alipay.remoting.InvokeFuture;
-import com.alipay.remoting.ResponseStatus;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.ConnectionClosedException;
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -35,7 +32,7 @@ import com.alipay.remoting.rpc.protocol.RpcResponseCommand;
 
 /**
  * Listener which listens the Rpc invoke result, and then invokes the call back.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcInvokeCallbackListener.java, v 0.1 2015-9-30 AM10:36:34 tao Exp $
  */
@@ -53,7 +50,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
         this.address = address;
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeCallbackListener#onResponse(com.alipay.remoting.InvokeFuture)
      */
     @Override
@@ -66,7 +63,23 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                 try {
                     callback.getExecutor().execute(task);
                 } catch (RejectedExecutionException e) {
-                    logger.warn("Callback thread pool busy.");
+                    if (callback instanceof RejectionProcessableInvokeCallback) {
+                        switch (((RejectionProcessableInvokeCallback) callback)
+                            .rejectedExecutionPolicy()) {
+                            case CALLER_RUNS:
+                                task.run();
+                                break;
+                            case CALLER_HANDLE_EXCEPTION:
+                                callback.onException(e);
+                                break;
+                            case DISCARD:
+                            default:
+                                logger.warn("Callback thread pool busy. discard the callback");
+                                break;
+                        }
+                    } else {
+                        logger.warn("Callback thread pool busy.");
+                    }
                 }
             } else {
                 task.run();
@@ -80,14 +93,14 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
         String       remoteAddress;
 
         /**
-         * 
+         *
          */
         public CallbackTask(String remoteAddress, InvokeFuture future) {
             this.remoteAddress = remoteAddress;
             this.future = future;
         }
 
-        /** 
+        /**
          * @see java.lang.Runnable#run()
          */
         @Override
@@ -134,7 +147,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                                 RpcResponseCommand resp = (RpcResponseCommand) response;
                                 resp.deserialize();
                                 Object ex = resp.getResponseObject();
-                                if (ex != null && ex instanceof Throwable) {
+                                if (ex instanceof Throwable) {
                                     e = new InvokeServerException(msg, (Throwable) ex);
                                 } else {
                                     e = new InvokeServerException(msg);
@@ -191,7 +204,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
         } // end of run
     }
 
-    /** 
+    /**
      * @see com.alipay.remoting.InvokeCallbackListener#getRemoteAddress()
      */
     @Override

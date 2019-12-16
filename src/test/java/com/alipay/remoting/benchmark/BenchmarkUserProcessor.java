@@ -14,14 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.benchmark;
+
+import com.alipay.remoting.AsyncContext;
+import com.alipay.remoting.BizContext;
+import com.alipay.remoting.rpc.protocol.AsyncUserProcessor;
 
 /**
- * Event triggered by connection state.
- * 
- * @author jiangping
- * @version $Id: ConnectionEventType.java, v 0.1 Mar 4, 2016 8:03:27 PM tao Exp $
+ *
+ * @author jiachun.fjc
  */
-public enum ConnectionEventType {
-    CONNECT, CONNECT_FAILED, CLOSE, EXCEPTION;
+public class BenchmarkUserProcessor extends AsyncUserProcessor<Request> {
+
+    @Override
+    public void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, Request request) {
+        asyncCtx.sendResponse(request.getData());
+    }
+
+    @Override
+    public String interest() {
+        return Request.class.getName();
+    }
 }

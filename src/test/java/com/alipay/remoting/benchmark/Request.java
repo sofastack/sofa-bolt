@@ -14,14 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.benchmark;
+
+import java.io.Serializable;
 
 /**
- * Event triggered by connection state.
- * 
- * @author jiangping
- * @version $Id: ConnectionEventType.java, v 0.1 Mar 4, 2016 8:03:27 PM tao Exp $
+ *
+ * @author jiachun.fjc
  */
-public enum ConnectionEventType {
-    CONNECT, CONNECT_FAILED, CLOSE, EXCEPTION;
+public class Request<T> implements Serializable {
+
+    private static final long serialVersionUID = -1L;
+
+    public Request(T data) {
+        this.data = data;
+    }
+
+    private T data;
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
 }
