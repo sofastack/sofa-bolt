@@ -38,7 +38,7 @@ public class DefaultConfigContainerTest {
         configContainer.set(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK,
             expected_int);
         Assert.assertEquals(expected_int,
-            configContainer.get(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK));
+                (int)configContainer.get(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK));
         Assert.assertNull(configContainer.get(ConfigType.CLIENT_SIDE,
             ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK));
         Assert.assertNull(configContainer.get(ConfigType.SERVER_SIDE,
@@ -77,13 +77,13 @@ public class DefaultConfigContainerTest {
         configContainer.set(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK,
             expected_int_overwrite);
         Assert.assertEquals(expected_int_overwrite,
-            configContainer.get(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK));
+                (int)configContainer.get(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK));
         Assert.assertEquals(expected_int,
-            configContainer.get(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK));
+                (int)configContainer.get(ConfigType.CLIENT_SIDE, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK));
         Assert.assertEquals(expected_int,
-            configContainer.get(ConfigType.SERVER_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK));
+                (int)configContainer.get(ConfigType.SERVER_SIDE, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK));
         Assert.assertEquals(expected_int,
-            configContainer.get(ConfigType.SERVER_SIDE, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK));
+                (int)configContainer.get(ConfigType.SERVER_SIDE, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK));
     }
 
     @Test
