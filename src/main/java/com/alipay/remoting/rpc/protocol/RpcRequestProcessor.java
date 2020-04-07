@@ -121,7 +121,13 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         }
 
         // use the final executor dispatch process task
-        executor.execute(new ProcessTask(ctx, cmd));
+        try {
+            executor.execute(new ProcessTask(ctx, cmd));
+        } catch (RejectedExecutionException e) {
+            logger.warn("RejectedExecutionException occurred when submit thread pool in RpcRequestProcessor");
+            sendResponseIfNecessary(ctx, cmd.getType(), this.getCommandFactory()
+                    .createExceptionResponse(cmd.getId(), ResponseStatus.SERVER_THREADPOOL_BUSY));
+        }
     }
 
     /**
