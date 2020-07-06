@@ -14,14 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.util;
+
+import java.io.Closeable;
+import java.io.IOException;
 
 /**
- * Event triggered by connection state.
+ * IO Utilities
  * 
- * @author jiangping
- * @version $Id: ConnectionEventType.java, v 0.1 Mar 4, 2016 8:03:27 PM tao Exp $
+ * @author boyan(boyan@antfin.com)
+ *
  */
-public enum ConnectionEventType {
-    CONNECT, CONNECT_FAILED, CLOSE, EXCEPTION;
+public class IoUtils {
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null) {
+                closeable.close();
+            }
+        } catch (IOException e) { // NOPMD
+            // ignore
+        }
+    }
 }

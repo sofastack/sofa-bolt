@@ -38,6 +38,7 @@ public class GlobalSwitch implements Switch {
     public static final int CONN_MONITOR_SWITCH             = 1;
     public static final int SERVER_MANAGE_CONNECTION_SWITCH = 2;
     public static final int SERVER_SYNC_STOP                = 3;
+    public static final int CODEC_FLUSH_CONSOLIDATION       = 4;
 
     /** user settings */
     private BitSet          userSettings                    = new BitSet();

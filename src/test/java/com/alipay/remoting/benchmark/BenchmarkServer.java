@@ -14,14 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
+package com.alipay.remoting.benchmark;
+
+import com.alipay.remoting.config.switches.GlobalSwitch;
+import com.alipay.remoting.rpc.RpcServer;
 
 /**
- * Event triggered by connection state.
- * 
- * @author jiangping
- * @version $Id: ConnectionEventType.java, v 0.1 Mar 4, 2016 8:03:27 PM tao Exp $
+ * @author jiachun.fjc
  */
-public enum ConnectionEventType {
-    CONNECT, CONNECT_FAILED, CLOSE, EXCEPTION;
+public class BenchmarkServer {
+
+    public static void main(String[] args) {
+        System.setProperty("bolt.netty.buffer.high.watermark", String.valueOf(64 * 1024 * 1024));
+        System.setProperty("bolt.netty.buffer.low.watermark", String.valueOf(32 * 1024 * 1024));
+        RpcServer rpcServer = new RpcServer(18090, true, true);
+        rpcServer.switches().turnOn(GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
+        rpcServer.registerUserProcessor(new BenchmarkUserProcessor());
+        rpcServer.startup();
+    }
 }

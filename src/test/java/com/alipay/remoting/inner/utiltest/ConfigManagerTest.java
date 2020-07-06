@@ -28,7 +28,7 @@ import com.alipay.remoting.config.Configs;
 
 /**
  * test ConfigManager get config
- * 
+ *
  * @author tsui
  * @version $Id: ConfigManagerTest.java, v 0.1 2017-08-03 21:51 tsui Exp $
  */
