@@ -47,6 +47,7 @@ public class ConnectionPool implements Scannable {
     public ConnectionPool(ConnectionSelectStrategy strategy) {
         this.strategy = strategy;
         this.connections = new CopyOnWriteArrayList<Connection>();
+        this.lastAccessTimestamp = System.currentTimeMillis();
         this.asyncCreationDone = true;
     }
 
