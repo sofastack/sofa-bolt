@@ -30,10 +30,10 @@ import com.alipay.remoting.util.StringUtils;
  * This is address parser for RPC.
  * <h3>Normal format</h3>
  * <pre>host:port?paramkey1=paramvalue1&amp;paramkey2=paramvalue2</pre>
- * 
+ *
  * <h4>Normal format example</h4>
  * <pre>127.0.0.1:12200?KEY1=VALUE1&KEY2=VALUE2</pre>
- * 
+ *
  * <h4>Illegal format example</h4>
  * <pre>
  * 127.0.0.1
@@ -42,7 +42,7 @@ import com.alipay.remoting.util.StringUtils;
  * 127.0.0.1:12200?key1=
  * 127.0.0.1:12200?key1=value1&
  * </pre>
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: RpcAddressParser.java, v 0.1 Mar 11, 2016 5:56:45 PM xiaomin.cxm Exp $
  */
@@ -267,7 +267,7 @@ public class RpcAddressParser implements RemotingAddressParser {
 
     /**
      * try get from cache
-     * 
+     *
      * @param url
      * @return
      */

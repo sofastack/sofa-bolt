@@ -17,11 +17,16 @@
 package com.alipay.remoting;
 
 /**
- * Event triggered by connection state.
- * 
- * @author jiangping
- * @version $Id: ConnectionEventType.java, v 0.1 Mar 4, 2016 8:03:27 PM tao Exp $
+ * RejectedExecutionPolicy determines how to deal with this situation that user executor rejected the {@link com.alipay.remoting.rpc.RpcInvokeCallbackListener.CallbackTask}.
+ *
+ * @author muyun
+ * @version $Id: RejectedExecutionPolicy.java, v 0.1 2019年12月05日 7:38 PM muyun Exp $
  */
-public enum ConnectionEventType {
-    CONNECT, CONNECT_FAILED, CLOSE, EXCEPTION;
+public enum RejectedExecutionPolicy {
+    /* discard the callback task */
+    DISCARD,
+    /* caller runs the callback in IO-thread */
+    CALLER_RUNS,
+    /* caller handle the task with exception strategy user provided */
+    CALLER_HANDLE_EXCEPTION
 }

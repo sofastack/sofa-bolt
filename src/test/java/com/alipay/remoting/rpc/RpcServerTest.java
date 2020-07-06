@@ -46,6 +46,14 @@ public class RpcServerTest {
         doTestStartAndStop(false);
     }
 
+    @Test
+    public void doTestRandomPortConstructor() {
+        RpcServer rpcServer = new RpcServer();
+        rpcServer.startup();
+        Assert.assertNotEquals(0, rpcServer.port());
+        rpcServer.shutdown();
+    }
+
     private void doTestStartAndStop(boolean syncStop) {
         // 1. start a rpc server successfully
         RpcServer rpcServer1 = new RpcServer(1111, false, syncStop);

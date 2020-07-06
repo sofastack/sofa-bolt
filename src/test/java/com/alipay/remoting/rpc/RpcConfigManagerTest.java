@@ -16,6 +16,8 @@
  */
 package com.alipay.remoting.rpc;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,5 +45,20 @@ public class RpcConfigManagerTest {
     @Test
     public void testSystemSettings() {
         Assert.assertTrue(RpcConfigManager.dispatch_msg_list_in_default_executor());
+
+        Assert.assertFalse(RpcConfigManager.server_ssl_enable());
+        Assert.assertFalse(RpcConfigManager.server_ssl_need_client_auth());
+        Assert.assertNull(RpcConfigManager.server_ssl_keystore_pass());
+        Assert.assertNull(RpcConfigManager.server_ssl_keystore());
+        Assert.assertNull(RpcConfigManager.server_ssl_keystore_type());
+        Assert.assertEquals(KeyManagerFactory.getDefaultAlgorithm(),
+            RpcConfigManager.server_ssl_kmf_algorithm());
+
+        Assert.assertFalse(RpcConfigManager.client_ssl_enable());
+        Assert.assertNull(RpcConfigManager.client_ssl_keystore_pass());
+        Assert.assertNull(RpcConfigManager.client_ssl_keystore());
+        Assert.assertNull(RpcConfigManager.client_ssl_keystore_type());
+        Assert.assertEquals(TrustManagerFactory.getDefaultAlgorithm(),
+            RpcConfigManager.client_ssl_tmf_algorithm());
     }
 }

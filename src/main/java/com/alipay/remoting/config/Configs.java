@@ -44,6 +44,11 @@ public class Configs {
     public static final String TCP_SO_KEEPALIVE                      = "bolt.tcp.so.keepalive";
     public static final String TCP_SO_KEEPALIVE_DEFAULT              = "true";
 
+    /** TCP SO_SNDBUF option */
+    public static final String TCP_SO_SNDBUF                         = "bolt.tcp.so.sndbuf";
+    /** TCP SO_RCVBUF option */
+    public static final String TCP_SO_RCVBUF                         = "bolt.tcp.so.rcvbuf";
+
     /** Netty ioRatio option*/
     public static final String NETTY_IO_RATIO                        = "bolt.netty.io.ratio";
     public static final String NETTY_IO_RATIO_DEFAULT                = "70";
