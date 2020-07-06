@@ -32,9 +32,12 @@ public interface ConnectionMonitorStrategy {
     /**
      * Filter connections to monitor
      *
-     * @param connections
+     * Deprecated this method, this should be a private method.
+     *
+     * @param connections connections from a connection pool
      */
-    public Map<String, List<Connection>> filter(List<Connection> connections);
+    @Deprecated
+    Map<String, List<Connection>> filter(List<Connection> connections);
 
     /**
      * Add a set of connections to monitor.
@@ -42,7 +45,7 @@ public interface ConnectionMonitorStrategy {
      * The previous connections in monitor of this protocol,
      * will be dropped by monitor automatically.
      *
-     * @param connPools
+     * @param connPools connection pools
      */
-    public void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools);
+    void monitor(Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools);
 }

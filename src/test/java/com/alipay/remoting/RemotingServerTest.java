@@ -16,12 +16,13 @@
  */
 package com.alipay.remoting;
 
-import com.alipay.remoting.rpc.RpcServer;
+import static org.mockito.Mockito.when;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import static org.mockito.Mockito.when;
+import com.alipay.remoting.rpc.RpcServer;
 
 /**
  * test {@link AbstractRemotingServer} apis

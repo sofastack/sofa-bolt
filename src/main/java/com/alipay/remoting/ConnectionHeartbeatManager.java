@@ -27,14 +27,14 @@ public interface ConnectionHeartbeatManager {
     /**
      * disable heart beat for a certain connection
      * 
-     * @param connection
+     * @param connection Connection
      */
-    public void disableHeartbeat(Connection connection);
+    void disableHeartbeat(Connection connection);
 
     /**
      * enable heart beat for a certain connection
      * 
-     * @param connection
+     * @param connection Connection
      */
-    public void enableHeartbeat(Connection connection);
+    void enableHeartbeat(Connection connection);
 }

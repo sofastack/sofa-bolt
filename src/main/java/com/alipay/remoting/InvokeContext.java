@@ -85,6 +85,7 @@ public class InvokeContext {
      * @param key
      * @return
      */
+    @SuppressWarnings("unchecked")
     public <T> T get(String key) {
         return (T) this.context.get(key);
     }
@@ -97,6 +98,7 @@ public class InvokeContext {
      * @param <T>
      * @return
      */
+    @SuppressWarnings("unchecked")
     public <T> T get(String key, T defaultIfNotFound) {
         return this.context.get(key) != null ? (T) this.context.get(key) : defaultIfNotFound;
     }

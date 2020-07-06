@@ -28,11 +28,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.Configs;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.CustomSerializerManager;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.InvokeContext;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
 import com.alipay.remoting.rpc.RpcClient;

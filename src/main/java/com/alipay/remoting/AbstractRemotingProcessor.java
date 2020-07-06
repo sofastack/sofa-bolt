@@ -52,7 +52,7 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
 
     /**
      * Constructor.
-     * @param executor
+     * @param executor ExecutorService
      */
     public AbstractRemotingProcessor(ExecutorService executor) {
         this.executor = executor;
@@ -60,7 +60,9 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
 
     /**
      * Constructor.
-     * @param executor
+     *
+     * @param commandFactory CommandFactory
+     * @param executor ExecutorService
      */
     public AbstractRemotingProcessor(CommandFactory commandFactory, ExecutorService executor) {
         this.commandFactory = commandFactory;
@@ -70,19 +72,17 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
     /**
      * Do the process.
      * 
-     * @param ctx
-     * @param msg
-     * @throws Exception
+     * @param ctx RemotingContext
+     * @param msg T
      */
     public abstract void doProcess(RemotingContext ctx, T msg) throws Exception;
 
     /**
      * Process the remoting command with its own executor or with the defaultExecutor if its own if null.
      * 
-     * @param ctx
-     * @param msg
-     * @param defaultExecutor
-     * @throws Exception
+     * @param ctx RemotingContext
+     * @param msg T
+     * @param defaultExecutor ExecutorService, default executor
      */
     @Override
     public void process(RemotingContext ctx, T msg, ExecutorService defaultExecutor)
@@ -100,6 +100,7 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
      * 
      * @return property value of executor
      */
+    @Override
     public ExecutorService getExecutor() {
         return executor;
     }
@@ -109,6 +110,7 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
      * 
      * @param executor value to be assigned to property executor
      */
+    @Override
     public void setExecutor(ExecutorService executor) {
         this.executor = executor;
     }
@@ -137,9 +139,6 @@ public abstract class AbstractRemotingProcessor<T extends RemotingCommand> imple
             this.msg = msg;
         }
 
-        /** 
-         * @see java.lang.Runnable#run()
-         */
         @Override
         public void run() {
             try {

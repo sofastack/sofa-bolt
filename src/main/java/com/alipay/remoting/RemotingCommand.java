@@ -18,9 +18,9 @@ package com.alipay.remoting;
 
 import java.io.Serializable;
 
+import com.alipay.remoting.config.switches.ProtocolSwitch;
 import com.alipay.remoting.exception.DeserializationException;
 import com.alipay.remoting.exception.SerializationException;
-import com.alipay.remoting.util.ProtocolSwitch;
 
 /**
  * Remoting command.
@@ -99,5 +99,5 @@ public interface RemotingCommand extends Serializable {
      * @param invokeContext
      * @throws DeserializationException
      */
-    void deserializeContent(InvokeContext invokeContext) throws DeserializationException;;
+    void deserializeContent(InvokeContext invokeContext) throws DeserializationException;
 }

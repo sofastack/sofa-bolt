@@ -21,6 +21,7 @@ import com.alipay.remoting.codec.ProtocolCodeBasedDecoder;
 import io.netty.buffer.ByteBuf;
 
 /**
+ * Rpc protocol decoder.
  *
  * @author tsui
  * @version $Id: RpcProtocolDecoder.java, v 0.1 2018-03-27 19:28 tsui Exp $

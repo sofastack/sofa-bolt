@@ -18,13 +18,15 @@ package com.alipay.remoting.rpc;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.AbstractLifeCycle;
+import com.alipay.remoting.LifeCycleException;
 import org.slf4j.Logger;
 
+import com.alipay.remoting.NamedThreadFactory;
 import com.alipay.remoting.Scannable;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
@@ -34,28 +36,29 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @author jiangping
  * @version $Id: RpcTaskScanner.java, v 0.1 Mar 4, 2016 3:30:52 PM tao Exp $
  */
-public class RpcTaskScanner {
-    private static final Logger      logger           = BoltLoggerFactory.getLogger("RpcRemoting");
-    private ScheduledExecutorService scheduledService = Executors
-                                                          .newSingleThreadScheduledExecutor(new ThreadFactory() {
-                                                              @Override
-                                                              public Thread newThread(Runnable r) {
-                                                                  return new Thread(r,
-                                                                      "RpcTaskScannerThread");
-                                                              }
-                                                          });
+public class RpcTaskScanner extends AbstractLifeCycle {
 
-    private List<Scannable>          scanlist         = new LinkedList<Scannable>();
+    private static final Logger      logger = BoltLoggerFactory.getLogger("RpcRemoting");
 
-    /**
-     * Start!
-     */
-    public void start() {
+    private final List<Scannable>    scanList;
+
+    private ScheduledExecutorService scheduledService;
+
+    public RpcTaskScanner() {
+        this.scanList = new LinkedList<Scannable>();
+    }
+
+    @Override
+    public void startup() throws LifeCycleException {
+        super.startup();
+
+        scheduledService = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory(
+            "RpcTaskScannerThread", true));
         scheduledService.scheduleWithFixedDelay(new Runnable() {
 
             @Override
             public void run() {
-                for (Scannable scanned : scanlist) {
+                for (Scannable scanned : scanList) {
                     try {
                         scanned.scan();
                     } catch (Throwable t) {
@@ -67,20 +70,26 @@ public class RpcTaskScanner {
         }, 10000, 10000, TimeUnit.MILLISECONDS);
     }
 
-    /**
-     * Add scan target.
-     * 
-     * @param target
-     */
-    public void add(Scannable target) {
-        scanlist.add(target);
+    @Override
+    public void shutdown() throws LifeCycleException {
+        super.shutdown();
+
+        scheduledService.shutdown();
     }
 
-    /** 
-     * Shutdown the scheduled service.
+    /**
+     * Use {@link RpcTaskScanner#startup()} instead
      */
-    public void shutdown() {
-        scheduledService.shutdown();
+    @Deprecated
+    public void start() {
+        startup();
+    }
+
+    /**
+     * Add scan target.
+     */
+    public void add(Scannable target) {
+        scanList.add(target);
     }
 
 }

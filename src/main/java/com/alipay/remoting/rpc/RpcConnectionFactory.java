@@ -18,41 +18,20 @@ package com.alipay.remoting.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.codec.Codec;
+import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.connection.DefaultConnectionFactory;
-
-import com.alipay.remoting.connection.ConnectionFactory;
-import com.alipay.remoting.NamedThreadFactory;
-import com.alipay.remoting.ProtocolCode;
-import com.alipay.remoting.codec.ProtocolCodeBasedEncoder;
-import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
-import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
-import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
-
-import io.netty.channel.ChannelHandler;
 
 /**
  * Default RPC connection factory impl.
  *
  * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:32
  */
-public class RpcConnectionFactory extends DefaultConnectionFactory implements ConnectionFactory {
+public class RpcConnectionFactory extends DefaultConnectionFactory {
 
-    public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
-        super(Runtime.getRuntime().availableProcessors() + 1, new NamedThreadFactory(
-            "Rpc-netty-client-worker", true), new Codec() {
-            @Override
-            public ChannelHandler newEncoder() {
-                return new ProtocolCodeBasedEncoder(
-                    ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE));
-
-            }
-
-            @Override
-            public ChannelHandler newDecoder() {
-                return new RpcProtocolDecoder(RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH);
-            }
-        }, new HeartbeatHandler(), new RpcHandler(userProcessors));
+    public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors,
+                                ConfigurableInstance configInstance) {
+        super(new RpcCodec(), new HeartbeatHandler(), new RpcHandler(userProcessors),
+            configInstance);
     }
 }

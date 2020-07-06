@@ -28,19 +28,16 @@ public interface Serializer {
     /**
      * Encode object into bytes.
      * 
-     * @param obj
-     * @return
-     * @throws CodecException
+     * @param obj target object
+     * @return serialized result
      */
-    public byte[] serialize(final Object obj) throws CodecException;
+    byte[] serialize(final Object obj) throws CodecException;
 
     /**
      * Decode bytes into Object.
      * 
-     * @param data
-     * @param classOfT
-     * @return
-     * @throws CodecException
+     * @param data serialized data
+     * @param classOfT class of original data
      */
-    public <T> T deserialize(final byte[] data, String classOfT) throws CodecException;
+    <T> T deserialize(final byte[] data, String classOfT) throws CodecException;
 }

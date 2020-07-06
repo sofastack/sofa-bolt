@@ -21,9 +21,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.alipay.remoting.AbstractRemotingServer;
+import com.alipay.remoting.ConnectionSelectStrategy;
+import com.alipay.remoting.DefaultServerConnectionManager;
 import org.slf4j.Logger;
 
+import com.alipay.remoting.AbstractRemotingServer;
 import com.alipay.remoting.CommandCode;
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
@@ -41,19 +43,16 @@ import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.RemotingProcessor;
 import com.alipay.remoting.RemotingServer;
 import com.alipay.remoting.ServerIdleHandler;
-import com.alipay.remoting.SystemProperties;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.codec.ProtocolCodeBasedEncoder;
+import com.alipay.remoting.codec.Codec;
+import com.alipay.remoting.config.ConfigManager;
+import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
-import com.alipay.remoting.rpc.protocol.RpcProtocolDecoder;
-import com.alipay.remoting.rpc.protocol.RpcProtocolManager;
-import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
-import com.alipay.remoting.util.GlobalSwitch;
+import com.alipay.remoting.rpc.protocol.UserProcessorRegisterHelper;
 import com.alipay.remoting.util.NettyEventLoopUtil;
 import com.alipay.remoting.util.RemotingUtil;
-import com.alipay.remoting.util.StringUtils;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -84,7 +83,7 @@ import io.netty.handler.timeout.IdleStateHandler;
  * @author jiangping
  * @version $Id: RpcServer.java, v 0.1 2015-8-31 PM5:22:22 tao Exp $
  */
-public class RpcServer extends AbstractRemotingServer implements RemotingServer {
+public class RpcServer extends AbstractRemotingServer {
 
     /** logger */
     private static final Logger                         logger                  = BoltLoggerFactory
@@ -94,9 +93,6 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
 
     /** channelFuture */
     private ChannelFuture                               channelFuture;
-
-    /** global switch */
-    private GlobalSwitch                                globalSwitch            = new GlobalSwitch();
 
     /** connection event handler */
     private ConnectionEventHandler                      connectionEventHandler;
@@ -129,16 +125,19 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     private RemotingAddressParser                       addressParser;
 
     /** connection manager */
-    private DefaultConnectionManager                    connectionManager;
+    private DefaultServerConnectionManager              connectionManager;
 
     /** rpc remoting */
     protected RpcRemoting                               rpcRemoting;
 
+    /** rpc codec */
+    private Codec                                       codec                   = new RpcCodec();
+
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
-            ((NioEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+            ((NioEventLoopGroup) workerGroup).setIoRatio(ConfigManager.netty_io_ratio());
         } else if (workerGroup instanceof EpollEventLoopGroup) {
-            ((EpollEventLoopGroup) workerGroup).setIoRatio(SystemProperties.netty_io_ratio());
+            ((EpollEventLoopGroup) workerGroup).setIoRatio(ConfigManager.netty_io_ratio());
         }
     }
 
@@ -182,7 +181,7 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         super(port);
         /* server connection management feature enabled or not, default value false, means disabled. */
         if (manageConnection) {
-            this.globalSwitch.turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
+            this.switches().turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
         }
     }
 
@@ -204,7 +203,7 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         super(ip, port);
         /* server connection management feature enabled or not, default value false, means disabled. */
         if (manageConnection) {
-            this.globalSwitch.turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
+            this.switches().turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
         }
     }
 
@@ -220,7 +219,7 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     public RpcServer(int port, boolean manageConnection, boolean syncStop) {
         this(port, manageConnection);
         if (syncStop) {
-            this.globalSwitch.turnOn(GlobalSwitch.SERVER_SYNC_STOP);
+            this.switches().turnOn(GlobalSwitch.SERVER_SYNC_STOP);
         }
     }
 
@@ -229,29 +228,33 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
         }
-        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
-            this.connectionEventHandler = new RpcConnectionEventHandler(globalSwitch);
-            this.connectionManager = new DefaultConnectionManager(new RandomSelectStrategy());
+        if (this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+            // in server side, do not care the connection service state, so use null instead of global switch
+            ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy(null);
+            this.connectionManager = new DefaultServerConnectionManager(connectionSelectStrategy);
+            this.connectionManager.startup();
+
+            this.connectionEventHandler = new RpcConnectionEventHandler(switches());
             this.connectionEventHandler.setConnectionManager(this.connectionManager);
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         } else {
-            this.connectionEventHandler = new ConnectionEventHandler(globalSwitch);
+            this.connectionEventHandler = new ConnectionEventHandler(switches());
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         }
         initRpcRemoting();
         this.bootstrap = new ServerBootstrap();
         this.bootstrap.group(bossGroup, workerGroup)
             .channel(NettyEventLoopUtil.getServerSocketChannelClass())
-            .option(ChannelOption.SO_BACKLOG, SystemProperties.tcp_so_backlog())
-            .option(ChannelOption.SO_REUSEADDR, SystemProperties.tcp_so_reuseaddr())
-            .childOption(ChannelOption.TCP_NODELAY, SystemProperties.tcp_nodelay())
-            .childOption(ChannelOption.SO_KEEPALIVE, SystemProperties.tcp_so_keepalive());
+            .option(ChannelOption.SO_BACKLOG, ConfigManager.tcp_so_backlog())
+            .option(ChannelOption.SO_REUSEADDR, ConfigManager.tcp_so_reuseaddr())
+            .childOption(ChannelOption.TCP_NODELAY, ConfigManager.tcp_nodelay())
+            .childOption(ChannelOption.SO_KEEPALIVE, ConfigManager.tcp_so_keepalive());
 
         // set write buffer water mark
         initWriteBufferWaterMark();
 
         // init byte buf allocator
-        if (SystemProperties.netty_buffer_pooled()) {
+        if (ConfigManager.netty_buffer_pooled()) {
             this.bootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
         } else {
@@ -262,20 +265,17 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         // enable trigger mode for epoll if need
         NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
-        final boolean idleSwitch = SystemProperties.tcp_idle_switch();
-        final int idleTime = SystemProperties.tcp_server_idle();
+        final boolean idleSwitch = ConfigManager.tcp_idle_switch();
+        final int idleTime = ConfigManager.tcp_server_idle();
         final ChannelHandler serverIdleHandler = new ServerIdleHandler();
         final RpcHandler rpcHandler = new RpcHandler(true, this.userProcessors);
         this.bootstrap.childHandler(new ChannelInitializer<SocketChannel>() {
 
+            @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
-                pipeline.addLast("decoder", new RpcProtocolDecoder(
-                    RpcProtocolManager.DEFAULT_PROTOCOL_CODE_LENGTH));
-                pipeline.addLast(
-                    "newEncoder",
-                    new ProtocolCodeBasedEncoder(ProtocolCode
-                        .fromBytes(RpcProtocolV2.PROTOCOL_CODE)));
+                pipeline.addLast("decoder", codec.newDecoder());
+                pipeline.addLast("encoder", codec.newEncoder());
                 if (idleSwitch) {
                     pipeline.addLast("idleStateHandler", new IdleStateHandler(0, 0, idleTime,
                         TimeUnit.MILLISECONDS));
@@ -295,7 +295,7 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
              */
             private void createConnection(SocketChannel channel) {
                 Url url = addressParser.parse(RemotingUtil.parseRemoteAddress(channel));
-                if (globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+                if (switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
                     connectionManager.add(new Connection(channel, url), url.getUniqueKey());
                 } else {
                     new Connection(channel, url);
@@ -321,13 +321,14 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
         if (null != this.channelFuture) {
             this.channelFuture.channel().close();
         }
-        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_SYNC_STOP)) {
+        if (this.switches().isOn(GlobalSwitch.SERVER_SYNC_STOP)) {
             this.bossGroup.shutdownGracefully().awaitUninterruptibly();
         } else {
             this.bossGroup.shutdownGracefully();
         }
-        if (this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
-            this.connectionManager.removeAll();
+        if (this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)
+            && null != this.connectionManager) {
+            this.connectionManager.shutdown();
             logger.warn("Close all connections from server side!");
         }
         logger.warn("Rpc Server stopped!");
@@ -372,21 +373,13 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
     }
 
     /**
+     * Use UserProcessorRegisterHelper{@link UserProcessorRegisterHelper} to help register user processor for server side.
+     *
      * @see AbstractRemotingServer#registerUserProcessor(com.alipay.remoting.rpc.protocol.UserProcessor)
      */
     @Override
     public void registerUserProcessor(UserProcessor<?> processor) {
-        if (processor == null || StringUtils.isBlank(processor.interest())) {
-            throw new RuntimeException("User processor or processor interest should not be blank!");
-        }
-        UserProcessor<?> preProcessor = this.userProcessors.putIfAbsent(processor.interest(),
-            processor);
-        if (preProcessor != null) {
-            String errMsg = "Processor with interest key ["
-                            + processor.interest()
-                            + "] has already been registered to rpc server, can not register again!";
-            throw new RuntimeException(errMsg);
-        }
+        UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
     }
 
     /**
@@ -891,7 +884,7 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
      * check whether connection manage feature enabled
      */
     private void check() {
-        if (!this.globalSwitch.isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+        if (!this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
             throw new UnsupportedOperationException(
                 "Please enable connection manage feature of Rpc Server before call this method! See comments in constructor RpcServer(int port, boolean manageConnection) to find how to enable!");
         }
@@ -901,8 +894,8 @@ public class RpcServer extends AbstractRemotingServer implements RemotingServer 
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
-        int lowWaterMark = SystemProperties.netty_buffer_low_watermark();
-        int highWaterMark = SystemProperties.netty_buffer_high_watermark();
+        int lowWaterMark = this.netty_buffer_low_watermark();
+        int highWaterMark = this.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
                 String

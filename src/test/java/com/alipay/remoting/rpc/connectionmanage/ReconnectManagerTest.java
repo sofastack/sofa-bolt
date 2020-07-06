@@ -23,11 +23,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alipay.remoting.Configs;
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
+import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcAddressParser;
 import com.alipay.remoting.rpc.RpcClient;
@@ -36,7 +36,6 @@ import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
 import com.alipay.remoting.rpc.common.DISCONNECTEventProcessor;
 import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
 import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
-import com.alipay.remoting.util.GlobalSwitch;
 
 /**
  *
@@ -106,9 +105,28 @@ public class ReconnectManagerTest {
         Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
         connection.close();
-        Thread.sleep(1000);
+        Thread.sleep(2000);
         Assert.assertEquals(1, clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(2, clientConnectProcessor.getConnectTimes());
+    }
+
+    @Test
+    public void testCancelReConnection() throws InterruptedException, RemotingException {
+        doInit(false, true);
+        client.enableReconnectSwitch();
+
+        String addr = "127.0.0.1:2014?zone=RZONE&_CONNECTIONNUM=1";
+        Url url = addressParser.parse(addr);
+
+        client.getConnection(url, 1000);
+        Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
+        Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
+
+        client.closeConnection(url);
+
+        Thread.sleep(1000);
+        Assert.assertEquals(1, clientDisConnectProcessor.getDisConnectTimes());
+        Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
     }
 
     private void doInit(boolean enableSystem, boolean enableUser) {
@@ -117,7 +135,6 @@ public class ReconnectManagerTest {
         } else {
             System.setProperty(Configs.CONN_RECONNECT_SWITCH, "false");
         }
-        GlobalSwitch.reinit();
         server = new BoltServer(port);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);

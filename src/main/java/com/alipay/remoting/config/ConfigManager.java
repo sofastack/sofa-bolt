@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting;
-
-import io.netty.channel.epoll.EpollMode;
+package com.alipay.remoting.config;
 
 /**
- * get configs from system properties
+ * get configs through system properties prior to default value
  *
  * @author tsui
- * @version $Id: SystemProperties.java, v 0.1 2017-08-03 19:21 tsui Exp $
+ * @version $Id: ConfigManager.java, v 0.1 2017-08-03 19:21 tsui Exp $
  */
-public class SystemProperties {
+public class ConfigManager {
     // ~~~ properties for bootstrap
     public static boolean tcp_nodelay() {
         return getBool(Configs.TCP_NODELAY, Configs.TCP_NODELAY_DEFAULT);
@@ -154,20 +152,20 @@ public class SystemProperties {
         return getByte(Configs.SERIALIZER, Configs.SERIALIZER_DEFAULT);
     }
 
-    // ~~~ private methods
-    protected static boolean getBool(String key, String defaultValue) {
+    // ~~~ public helper methods to retrieve system property
+    public static boolean getBool(String key, String defaultValue) {
         return Boolean.parseBoolean(System.getProperty(key, defaultValue));
     }
 
-    protected static int getInt(String key, String defaultValue) {
+    public static int getInt(String key, String defaultValue) {
         return Integer.parseInt(System.getProperty(key, defaultValue));
     }
 
-    protected static byte getByte(String key, String defaultValue) {
+    public static byte getByte(String key, String defaultValue) {
         return Byte.parseByte(System.getProperty(key, defaultValue));
     }
 
-    protected static long getLong(String key, String defaultValue) {
+    public static long getLong(String key, String defaultValue) {
         return Long.parseLong(System.getProperty(key, defaultValue));
     }
 }

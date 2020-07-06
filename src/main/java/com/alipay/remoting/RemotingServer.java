@@ -16,26 +16,35 @@
  */
 package com.alipay.remoting;
 
-import com.alipay.remoting.rpc.protocol.UserProcessor;
-
 import java.util.concurrent.ExecutorService;
+
+import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 /**
  * @author chengyi (mark.lx@antfin.com) 2018-06-16 06:55
  */
-public interface RemotingServer {
+public interface RemotingServer extends Configurable, LifeCycle {
 
     /**
-     * Start the server.
+     * init the server
      */
+    @Deprecated
+    void init();
+
+    /**
+     * Start the server. Use startup() instead.
+     */
+    @Deprecated
     boolean start();
 
     /**
-     * Stop the server.
+     * Stop the server. Use shutdown() instead.
      *
      * Remoting server can not be used any more after stop.
      * If you need, you should destroy it, and instantiate another one.
      */
+    @Deprecated
     boolean stop();
 
     /**
@@ -73,7 +82,8 @@ public interface RemotingServer {
     /**
      * Register user processor.
      *
-     * @param processor user processor
+     * @param processor user processor which can be a single-interest processor or a multi-interest processor
      */
     void registerUserProcessor(UserProcessor<?> processor);
+
 }

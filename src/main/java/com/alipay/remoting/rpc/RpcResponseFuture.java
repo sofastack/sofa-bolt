@@ -35,9 +35,6 @@ public class RpcResponseFuture {
 
     /**
      * Constructor
-     * 
-     * @param addr
-     * @param future
      */
     public RpcResponseFuture(String addr, InvokeFuture future) {
         this.addr = addr;
@@ -46,8 +43,6 @@ public class RpcResponseFuture {
 
     /**
      * Whether the future is done.
-     * 
-     * @return
      */
     public boolean isDone() {
         return this.future.isDone();
@@ -58,12 +53,6 @@ public class RpcResponseFuture {
      * 
      * if request done, resolve normal responseObject
      * if request not done, throws InvokeTimeoutException
-     * 
-     * @param timeoutMillis
-     * @return
-     * @throws InvokeTimeoutException
-     * @throws RemotingException 
-     * @throws InterruptedException 
      */
     public Object get(int timeoutMillis) throws InvokeTimeoutException, RemotingException,
                                         InterruptedException {
@@ -73,22 +62,13 @@ public class RpcResponseFuture {
         }
         ResponseCommand responseCommand = (ResponseCommand) this.future.waitResponse();
         responseCommand.setInvokeContext(this.future.getInvokeContext());
-        Object responseObject = RpcResponseResolver.resolveResponseObject(responseCommand, addr);
-        return responseObject;
+        return RpcResponseResolver.resolveResponseObject(responseCommand, addr);
     }
 
-    /**
-     * 
-     * 
-     * @return
-     * @throws RemotingException
-     * @throws InterruptedException
-     */
     public Object get() throws RemotingException, InterruptedException {
         ResponseCommand responseCommand = (ResponseCommand) this.future.waitResponse();
         responseCommand.setInvokeContext(this.future.getInvokeContext());
-        Object responseObject = RpcResponseResolver.resolveResponseObject(responseCommand, addr);
-        return responseObject;
+        return RpcResponseResolver.resolveResponseObject(responseCommand, addr);
     }
 
 }

@@ -16,27 +16,21 @@
  */
 package com.alipay.remoting.util;
 
-import java.util.BitSet;
-
 /**
- * switch interface
- *
- * @author tsui
- * @version $Id: Switch.java, v 0.1 2018-04-08 11:26 tsui Exp $
+ * @author chengyi (mark.lx@antfin.com) 2018-10-18 16:30
  */
-public interface Switch {
-    /**
-     * api for user to turn on a feature
-     *
-     * @param index the switch index of feature
-     */
-    void turnOn(int index);
+public class FutureTaskNotCompleted extends Exception {
 
-    /**
-     * check switch whether on
-     *
-     * @param index
-     * @return true if either system setting is on or user setting is on
-     */
-    boolean isOn(int index);
+    private static final long serialVersionUID = -3635466558774380138L;
+
+    public FutureTaskNotCompleted() {
+    }
+
+    public FutureTaskNotCompleted(String message) {
+        super(message);
+    }
+
+    public FutureTaskNotCompleted(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

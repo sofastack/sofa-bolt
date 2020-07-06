@@ -26,25 +26,31 @@ public class RpcConfigs {
     /**
      * Protocol key in url.
      */
-    public static final String URL_PROTOCOL          = "_PROTOCOL";
+    public static final String URL_PROTOCOL                                  = "_PROTOCOL";
 
     /**
      * Version key in url.
      */
-    public static final String URL_VERSION           = "_VERSION";
+    public static final String URL_VERSION                                   = "_VERSION";
 
     /**
      * Connection timeout key in url.
      */
-    public static final String CONNECT_TIMEOUT_KEY   = "_CONNECTTIMEOUT";
+    public static final String CONNECT_TIMEOUT_KEY                           = "_CONNECTTIMEOUT";
 
     /**
      * Connection number key of each address
      */
-    public static final String CONNECTION_NUM_KEY    = "_CONNECTIONNUM";
+    public static final String CONNECTION_NUM_KEY                            = "_CONNECTIONNUM";
 
     /**
      * whether need to warm up connections
      */
-    public static final String CONNECTION_WARMUP_KEY = "_CONNECTIONWARMUP";
+    public static final String CONNECTION_WARMUP_KEY                         = "_CONNECTIONWARMUP";
+
+    /**
+     * Whether to dispatch message list in default executor.
+     */
+    public static final String DISPATCH_MSG_LIST_IN_DEFAULT_EXECUTOR         = "bolt.rpc.dispatch-msg-list-in-default-executor";
+    public static final String DISPATCH_MSG_LIST_IN_DEFAULT_EXECUTOR_DEFAULT = "true";
 }
