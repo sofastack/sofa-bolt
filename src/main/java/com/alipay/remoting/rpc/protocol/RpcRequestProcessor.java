@@ -219,6 +219,14 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         final byte type = cmd.getType();
         // processor here must not be null, for it have been checked before
         UserProcessor processor = ctx.getUserProcessor(cmd.getRequestClass());
+
+        ClassLoader classLoader = null;
+        ClassLoader bizClassLoader = processor.getBizClassLoader();
+        if (bizClassLoader != null) {
+            classLoader = Thread.currentThread().getContextClassLoader();
+            Thread.currentThread().setContextClassLoader(bizClassLoader);
+        }
+
         if (processor instanceof AsyncUserProcessor
             || processor instanceof AsyncMultiInterestUserProcessor) {
             try {
@@ -254,6 +262,10 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 sendResponseIfNecessary(ctx, type, this.getCommandFactory()
                     .createExceptionResponse(id, t, errMsg));
             }
+        }
+
+        if (classLoader != null) {
+            Thread.currentThread().setContextClassLoader(classLoader);
         }
     }
 

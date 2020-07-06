@@ -70,6 +70,12 @@ public interface UserProcessor<T> extends LifeCycle {
     Executor getExecutor();
 
     /**
+     * Get business class loader
+     * @return ClassLoader
+     */
+    ClassLoader getBizClassLoader();
+
+    /**
      * Whether deserialize and process biz logic in io thread.
      * Notice: If return true, this will have a strong impact on performance.
      * @return true for processing in io thread
