@@ -448,10 +448,16 @@ public class RpcClient extends AbstractBoltClient {
                 try {
                     if (createAsync) {
                         this.connectionManager.createConnectionInManagement(url);
+                        return false;
                     } else {
-                        this.connectionManager.getAndCreateIfAbsent(url);
+                        Connection connection = this.connectionManager.getAndCreateIfAbsent(url);
+                        try {
+                            this.connectionManager.check(connection);
+                            return true;
+                        } catch (Exception ex0) {
+                            return false;
+                        }
                     }
-                    return true;
                 } catch (Exception ex) {
                     logger.warn("check failed and try create connection for {} also failed.", address, e);
                     return false;
