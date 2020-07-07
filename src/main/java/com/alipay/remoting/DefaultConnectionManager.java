@@ -425,6 +425,12 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
             while (iter.hasNext()) {
                 String poolKey = iter.next();
                 RunStateRecordedFutureTask<ConnectionPool> task = this.connTasks.get(poolKey);
+                if (task == null) {
+                    logger.info("task(poolKey={}) is null, do not scan the connection pool",
+                            poolKey);
+                    continue;
+                }
+
                 if (!task.isDone()) {
                     logger.info("task(poolKey={}) is not done, do not scan the connection pool",
                         poolKey);
@@ -462,6 +468,15 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
             logger.error("[NOTIFYME] bug detected! pool here must not be null!");
             return null;
         }
+    }
+
+    /**
+     * Always create connection in asynchronous way.
+     */
+    @Override
+    public void createConnectionInManagement(Url url) throws RemotingException, InterruptedException {
+        this.getConnectionPoolAndCreateIfAbsent(url.getUniqueKey(),
+                new ConnectionPoolCall(url, 0));
     }
 
     /**
@@ -695,6 +710,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
     private class ConnectionPoolCall implements Callable<ConnectionPool> {
         private boolean whetherInitConnection;
         private Url     url;
+        private int syncCreateNumWhenNotWarmup;
 
         /**
          * create a {@link ConnectionPool} but not init connections
@@ -711,6 +727,13 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
         public ConnectionPoolCall(Url url) {
             this.whetherInitConnection = true;
             this.url = url;
+            this.syncCreateNumWhenNotWarmup = 1;
+        }
+
+        public ConnectionPoolCall(Url url, int syncCreateNumWhenNotWarmup) {
+            this.whetherInitConnection = true;
+            this.url = url;
+            this.syncCreateNumWhenNotWarmup = syncCreateNumWhenNotWarmup;
         }
 
         @Override
@@ -718,7 +741,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
             final ConnectionPool pool = new ConnectionPool(connectionSelectStrategy);
             if (whetherInitConnection) {
                 try {
-                    doCreate(this.url, pool, this.getClass().getSimpleName(), 1);
+                    doCreate(this.url, pool, this.getClass().getSimpleName(), syncCreateNumWhenNotWarmup);
                 } catch (Exception e) {
                     pool.removeAllAndTryClose();
                     throw e;

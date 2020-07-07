@@ -538,6 +538,27 @@ public interface BoltClient extends Configurable, LifeCycle {
     boolean checkConnection(String address);
 
     /**
+     * check connection, the address format example - 127.0.0.1:12200?key1=value1&key2=value2
+     * and if there is no connection, try create new one
+     *
+     * @param address target address
+     * @param createIfAbsent if need to create
+     * @return true if and only if there is a connection, and the connection is active and writable, or can create a new one
+     */
+    boolean checkConnection(String address, boolean createIfAbsent);
+
+    /**
+     * check connection, the address format example - 127.0.0.1:12200?key1=value1&key2=value2
+     * and if there is no connection, try create new one in asynchronous
+     *
+     * @param address target address
+     * @param createIfAbsent if need to create
+     * @param createAsync create connection asynchronous
+     * @return true if and only if there is a connection, and the connection is active and writable
+     */
+    boolean checkConnection(String address, boolean createIfAbsent, boolean createAsync);
+
+    /**
      * Close all connections of a address
      *
      * @param address target address
