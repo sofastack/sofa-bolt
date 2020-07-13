@@ -427,13 +427,43 @@ public class RpcClient extends AbstractBoltClient {
 
     @Override
     public boolean checkConnection(String address) {
+        return checkConnection(address, false);
+    }
+
+    @Override
+    public boolean checkConnection(String address, boolean createIfAbsent) {
+        return checkConnection(address, createIfAbsent, false);
+    }
+
+    @Override
+    public boolean checkConnection(String address, boolean createIfAbsent, boolean createAsync) {
         ensureStarted();
         Url url = this.addressParser.parse(address);
         Connection conn = this.connectionManager.get(url.getUniqueKey());
         try {
             this.connectionManager.check(conn);
         } catch (Exception e) {
-            logger.warn("check failed. connection: {}", conn, e);
+            logger.warn("check failed. address: {}, connection: {}", address, conn, e);
+            if (createIfAbsent) {
+                try {
+                    if (createAsync) {
+                        this.connectionManager.createConnectionInManagement(url);
+                        return false;
+                    } else {
+                        Connection connection = this.connectionManager.getAndCreateIfAbsent(url);
+                        try {
+                            this.connectionManager.check(connection);
+                            return true;
+                        } catch (Exception ex0) {
+                            return false;
+                        }
+                    }
+                } catch (Exception ex) {
+                    logger.warn("check failed and try create connection for {} also failed.",
+                        address, e);
+                    return false;
+                }
+            }
             return false;
         }
         return true;

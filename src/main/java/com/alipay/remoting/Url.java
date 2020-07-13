@@ -55,7 +55,7 @@ public class Url {
     private byte       version = RpcProtocolV2.PROTOCOL_VERSION_1;
 
     /** URL agrs: connection number */
-    private int        connNum;
+    private int        connNum = Configs.DEFAULT_CONN_NUM_PER_URL;
 
     /** URL agrs: whether need warm up connection */
     private boolean    connWarmup;

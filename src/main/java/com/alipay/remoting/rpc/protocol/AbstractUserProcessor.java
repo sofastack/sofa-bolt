@@ -55,6 +55,11 @@ public abstract class AbstractUserProcessor<T> extends AbstractLifeCycle impleme
         return null;
     }
 
+    @Override
+    public ClassLoader getBizClassLoader() {
+        return null;
+    }
+
     /**
      * @see UserProcessor#getExecutorSelector()
      */
