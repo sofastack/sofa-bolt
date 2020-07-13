@@ -427,7 +427,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                 RunStateRecordedFutureTask<ConnectionPool> task = this.connTasks.get(poolKey);
                 if (task == null) {
                     logger.info("task(poolKey={}) is null, do not scan the connection pool",
-                            poolKey);
+                        poolKey);
                     continue;
                 }
 
@@ -474,9 +474,9 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
      * Always create connection in asynchronous way.
      */
     @Override
-    public void createConnectionInManagement(Url url) throws RemotingException, InterruptedException {
-        this.getConnectionPoolAndCreateIfAbsent(url.getUniqueKey(),
-                new ConnectionPoolCall(url, 0));
+    public void createConnectionInManagement(Url url) throws RemotingException,
+                                                     InterruptedException {
+        this.getConnectionPoolAndCreateIfAbsent(url.getUniqueKey(), new ConnectionPoolCall(url, 0));
     }
 
     /**
@@ -710,7 +710,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
     private class ConnectionPoolCall implements Callable<ConnectionPool> {
         private boolean whetherInitConnection;
         private Url     url;
-        private int syncCreateNumWhenNotWarmup;
+        private int     syncCreateNumWhenNotWarmup;
 
         /**
          * create a {@link ConnectionPool} but not init connections
@@ -741,7 +741,8 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
             final ConnectionPool pool = new ConnectionPool(connectionSelectStrategy);
             if (whetherInitConnection) {
                 try {
-                    doCreate(this.url, pool, this.getClass().getSimpleName(), syncCreateNumWhenNotWarmup);
+                    doCreate(this.url, pool, this.getClass().getSimpleName(),
+                        syncCreateNumWhenNotWarmup);
                 } catch (Exception e) {
                     pool.removeAllAndTryClose();
                     throw e;

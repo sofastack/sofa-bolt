@@ -459,7 +459,8 @@ public class RpcClient extends AbstractBoltClient {
                         }
                     }
                 } catch (Exception ex) {
-                    logger.warn("check failed and try create connection for {} also failed.", address, e);
+                    logger.warn("check failed and try create connection for {} also failed.",
+                        address, e);
                     return false;
                 }
             }

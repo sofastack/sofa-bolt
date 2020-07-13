@@ -174,5 +174,5 @@ public interface ConnectionManager extends Scannable, LifeCycle {
      * @param url {@link Url} contains connect infos.
      * @throws RemotingException if create failed
      */
-    void createConnectionInManagement(Url url) throws InterruptedException,RemotingException;
+    void createConnectionInManagement(Url url) throws InterruptedException, RemotingException;
 }
