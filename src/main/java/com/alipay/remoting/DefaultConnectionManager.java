@@ -828,16 +828,19 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                     public void run() {
                         try {
                             for (int i = pool.size(); i < url.getConnNum(); ++i) {
-                                Connection conn = null;
                                 try {
-                                    conn = create(url);
+                                    Connection conn = create(url);
+                                    pool.add(conn);
                                 } catch (RemotingException e) {
                                     logger
                                         .error(
                                             "Exception occurred in async create connection thread for {}, taskName {}",
                                             url.getUniqueKey(), taskName, e);
+                                    if (pool.isEmpty()) {
+                                        connTasks.remove(url.getUniqueKey());
+                                        break;
+                                    }
                                 }
-                                pool.add(conn);
                             }
                         } finally {
                             pool.markAsyncCreationDone();// mark the end of async
