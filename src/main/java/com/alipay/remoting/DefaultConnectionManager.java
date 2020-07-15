@@ -838,6 +838,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                                             url.getUniqueKey(), taskName, e);
                                     if (pool.isEmpty()) {
                                         connTasks.remove(url.getUniqueKey());
+                                        break;
                                     }
                                 }
                             }
