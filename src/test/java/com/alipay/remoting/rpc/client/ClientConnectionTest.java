@@ -101,9 +101,8 @@ public class ClientConnectionTest {
 
     @Test
     public void testCheckAndConnection() throws InterruptedException {
-        //        Assert.assertFalse(client.checkConnection(addr));
-        //
-        //        Assert.assertTrue(client.checkConnection(addr, true));
+        Assert.assertFalse(client.checkConnection(addr));
+        Assert.assertTrue(client.checkConnection(addr, true));
         try {
             client.getConnection(addr, 1);
         } catch (RemotingException e) {
