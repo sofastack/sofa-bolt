@@ -77,6 +77,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
                 super.startup();
 
                 this.healConnectionThreads = new Thread(new HealConnectionRunner());
+                this.healConnectionThreads.setName("Bolt-heal-connection-thread");
                 this.healConnectionThreads.start();
             }
         }
