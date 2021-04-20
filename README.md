@@ -51,24 +51,17 @@ Bolt 名字取自迪士尼动画-闪电狗，是一个基于 Netty 最佳实践�
 ![msg_protocol](.middleware-common/msg_protocol.png)
 
 # 4. 如何贡献
-开放代码允许在签署协议之后,提交贡献代码.
-具体参考[如何参与贡献 SOFABolt 代码](./CONTRIBUTING.md)
+开放代码允许在签署协议之后，提交贡献代码。具体参考[如何参与贡献 SOFABolt 代码](./CONTRIBUTING.md)。
 
-# 5. 版权协议
-对 SOFABolt 代码的修改和变更，需要遵守[版权协议](./LICENSE)
+对 SOFABolt 代码的修改和变更，需要遵守[版权协议](./LICENSE)。
 
-# 6. 多语言
+# 5. 多语言
 
 * [node](https://github.com/sofastack/sofa-bolt-node)
 * [python](https://github.com/sofastack/sofa-bolt-python)
 * [cpp](https://github.com/sofastack/sofa-bolt-cpp)
 
-# 7. 有用的链接
-* [ISSUES](https://github.com/sofastack/sofa-bolt/issues)
-* [用户手册](https://github.com/sofastack/sofa-bolt/wiki/SOFA-Bolt-Handbook)
-* [中文介绍文章: 蚂蚁通信框架实践](http://mp.weixin.qq.com/s/JRsbK1Un2av9GKmJ8DK7IQ)
-
-# 8. 用户
+# 6. 用户
 
 <div>
 <table>
@@ -256,7 +249,7 @@ Bolt 名字取自迪士尼动画-闪电狗，是一个基于 Netty 最佳实践�
 </table>
 </div>
 
-# 9. 联系我们
+# 7. 联系我们
 
 - 微信
   - 公众号：金融级分布式架构（Antfin_SOFA）：致力于打造一流的分布式技术在金融场景应用实践的技术交流平台，专注于交流金融科技行业内最前沿、可供参考的技术方案与实施路线。
