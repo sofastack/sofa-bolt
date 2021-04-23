@@ -17,11 +17,18 @@
 package com.alipay.remoting;
 
 /**
- * Event triggered by connection state.
- * 
- * @author jiangping
- * @version $Id: ConnectionEventType.java, v 0.1 Mar 4, 2016 8:03:27 PM tao Exp $
+ * InvokeCallback which support {@link RejectedExecutionPolicy} is able to process the task-rejected situation.
+ *
+ * @author muyun
+ * @version $Id: RejectionProcessableInvokeCallback.java, v 0.1 2019年12月05日 9:16 PM muyun Exp $
  */
-public enum ConnectionEventType {
-    CONNECT, CONNECT_FAILED, CLOSE, EXCEPTION;
+public interface RejectionProcessableInvokeCallback extends InvokeCallback {
+
+    /**
+     * when user executor rejected the {@link com.alipay.remoting.rpc.RpcInvokeCallbackListener.CallbackTask},
+     * bolt will handle the rejected task according to this {@link RejectedExecutionPolicy}
+     * @return rejectedExecution Policy
+     * @see com.alipay.remoting.rpc.RpcInvokeCallbackListener#onResponse(InvokeFuture)
+     */
+    RejectedExecutionPolicy rejectedExecutionPolicy();
 }

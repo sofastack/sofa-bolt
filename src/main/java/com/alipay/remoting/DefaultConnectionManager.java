@@ -116,7 +116,8 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
      * @param connectionSelectStrategy connection selection strategy
      */
     public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy) {
-        this();
+        this.connTasks = new ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>>();
+        this.healTasks = new ConcurrentHashMap<String, FutureTask<Integer>>();
         this.connectionSelectStrategy = connectionSelectStrategy;
     }
 
@@ -283,10 +284,8 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
     @Override
     public Map<String, List<Connection>> getAll() {
         Map<String, List<Connection>> allConnections = new HashMap<String, List<Connection>>();
-        Iterator<Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>>> iterator = this
-            .getConnPools().entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>> entry = iterator.next();
+        for (Map.Entry<String, RunStateRecordedFutureTask<ConnectionPool>> entry : this
+            .getConnPools().entrySet()) {
             ConnectionPool pool = FutureTaskUtil.getFutureTaskResult(entry.getValue(), logger);
             if (null != pool) {
                 allConnections.put(entry.getKey(), pool.getAll());
@@ -425,7 +424,20 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
             Iterator<String> iter = this.connTasks.keySet().iterator();
             while (iter.hasNext()) {
                 String poolKey = iter.next();
-                ConnectionPool pool = this.getConnectionPool(this.connTasks.get(poolKey));
+                RunStateRecordedFutureTask<ConnectionPool> task = this.connTasks.get(poolKey);
+                if (task == null) {
+                    logger.info("task(poolKey={}) is null, do not scan the connection pool",
+                        poolKey);
+                    continue;
+                }
+
+                if (!task.isDone()) {
+                    logger.info("task(poolKey={}) is not done, do not scan the connection pool",
+                        poolKey);
+                    continue;
+                }
+
+                ConnectionPool pool = this.getConnectionPool(task);
                 if (null != pool) {
                     pool.scan();
                     if (pool.isEmpty()) {
@@ -456,6 +468,15 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
             logger.error("[NOTIFYME] bug detected! pool here must not be null!");
             return null;
         }
+    }
+
+    /**
+     * Always create connection in asynchronous way.
+     */
+    @Override
+    public void createConnectionInManagement(Url url) throws RemotingException,
+                                                     InterruptedException {
+        this.getConnectionPoolAndCreateIfAbsent(url.getUniqueKey(), new ConnectionPoolCall(url, 0));
     }
 
     /**
@@ -689,6 +710,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
     private class ConnectionPoolCall implements Callable<ConnectionPool> {
         private boolean whetherInitConnection;
         private Url     url;
+        private int     syncCreateNumWhenNotWarmup;
 
         /**
          * create a {@link ConnectionPool} but not init connections
@@ -705,6 +727,13 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
         public ConnectionPoolCall(Url url) {
             this.whetherInitConnection = true;
             this.url = url;
+            this.syncCreateNumWhenNotWarmup = 1;
+        }
+
+        public ConnectionPoolCall(Url url, int syncCreateNumWhenNotWarmup) {
+            this.whetherInitConnection = true;
+            this.url = url;
+            this.syncCreateNumWhenNotWarmup = syncCreateNumWhenNotWarmup;
         }
 
         @Override
@@ -712,7 +741,8 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
             final ConnectionPool pool = new ConnectionPool(connectionSelectStrategy);
             if (whetherInitConnection) {
                 try {
-                    doCreate(this.url, pool, this.getClass().getSimpleName(), 1);
+                    doCreate(this.url, pool, this.getClass().getSimpleName(),
+                        syncCreateNumWhenNotWarmup);
                 } catch (Exception e) {
                     pool.removeAllAndTryClose();
                     throw e;
@@ -798,16 +828,19 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                     public void run() {
                         try {
                             for (int i = pool.size(); i < url.getConnNum(); ++i) {
-                                Connection conn = null;
                                 try {
-                                    conn = create(url);
+                                    Connection conn = create(url);
+                                    pool.add(conn);
                                 } catch (RemotingException e) {
                                     logger
                                         .error(
                                             "Exception occurred in async create connection thread for {}, taskName {}",
                                             url.getUniqueKey(), taskName, e);
+                                    if (pool.isEmpty()) {
+                                        connTasks.remove(url.getUniqueKey());
+                                        break;
+                                    }
                                 }
-                                pool.add(conn);
                             }
                         } finally {
                             pool.markAsyncCreationDone();// mark the end of async

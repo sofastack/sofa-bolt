@@ -20,15 +20,16 @@ import java.util.concurrent.Executor;
 
 import com.alipay.remoting.AsyncContext;
 import com.alipay.remoting.BizContext;
+import com.alipay.remoting.LifeCycle;
 import com.alipay.remoting.RemotingContext;
 
 /**
  * Defined all functions for biz to process user defined request.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: UserProcessor.java, v 0.1 May 19, 2016 2:16:13 PM xiaomin.cxm Exp $
  */
-public interface UserProcessor<T> {
+public interface UserProcessor<T> extends LifeCycle {
 
     /**
      * Pre handle request, to avoid expose {@link RemotingContext} directly to biz handle request logic.
@@ -67,6 +68,12 @@ public interface UserProcessor<T> {
      * @return executor
      */
     Executor getExecutor();
+
+    /**
+     * Get business class loader
+     * @return ClassLoader
+     */
+    ClassLoader getBizClassLoader();
 
     /**
      * Whether deserialize and process biz logic in io thread.

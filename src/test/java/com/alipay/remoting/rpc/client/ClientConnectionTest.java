@@ -100,6 +100,32 @@ public class ClientConnectionTest {
     }
 
     @Test
+    public void testCheckAndConnection() throws InterruptedException {
+        Assert.assertFalse(client.checkConnection(addr));
+        Assert.assertTrue(client.checkConnection(addr, true));
+        try {
+            client.getConnection(addr, 1);
+        } catch (RemotingException e) {
+            Assert.fail("should not reach here");
+        }
+
+        Assert.assertTrue(client.checkConnection(addr));
+        client.closeConnection(addr);
+        Assert.assertFalse(client.checkConnection(addr));
+
+        Assert.assertTrue(client.checkConnection(addr, true, true));
+        Thread.sleep(100);
+        try {
+            Connection connection = client.getConnection(addr, 1);
+            Assert.assertNotNull(connection);
+
+            client.closeConnection(addr);
+        } catch (RemotingException e) {
+            Assert.fail("should not reach here");
+        }
+    }
+
+    @Test
     public void testGetAll() throws InterruptedException {
         Connection conn = null;
         try {

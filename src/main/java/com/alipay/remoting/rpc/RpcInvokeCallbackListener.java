@@ -18,12 +18,9 @@ package com.alipay.remoting.rpc;
 
 import java.util.concurrent.RejectedExecutionException;
 
+import com.alipay.remoting.*;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.InvokeCallback;
-import com.alipay.remoting.InvokeCallbackListener;
-import com.alipay.remoting.InvokeFuture;
-import com.alipay.remoting.ResponseStatus;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.exception.ConnectionClosedException;
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -66,7 +63,23 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                 try {
                     callback.getExecutor().execute(task);
                 } catch (RejectedExecutionException e) {
-                    logger.warn("Callback thread pool busy.");
+                    if (callback instanceof RejectionProcessableInvokeCallback) {
+                        switch (((RejectionProcessableInvokeCallback) callback)
+                            .rejectedExecutionPolicy()) {
+                            case CALLER_RUNS:
+                                task.run();
+                                break;
+                            case CALLER_HANDLE_EXCEPTION:
+                                callback.onException(e);
+                                break;
+                            case DISCARD:
+                            default:
+                                logger.warn("Callback thread pool busy. discard the callback");
+                                break;
+                        }
+                    } else {
+                        logger.warn("Callback thread pool busy.");
+                    }
                 }
             } else {
                 task.run();

@@ -16,6 +16,8 @@
  */
 package com.alipay.remoting.config;
 
+import static java.lang.System.getProperty;
+
 /**
  * get configs through system properties prior to default value
  *
@@ -38,6 +40,14 @@ public class ConfigManager {
 
     public static boolean tcp_so_keepalive() {
         return getBool(Configs.TCP_SO_KEEPALIVE, Configs.TCP_SO_KEEPALIVE_DEFAULT);
+    }
+
+    public static Integer tcp_so_sndbuf() {
+        return getInteger(Configs.TCP_SO_SNDBUF, null);
+    }
+
+    public static Integer tcp_so_rcvbuf() {
+        return getInteger(Configs.TCP_SO_RCVBUF, null);
     }
 
     public static int netty_io_ratio() {
@@ -153,19 +163,28 @@ public class ConfigManager {
     }
 
     // ~~~ public helper methods to retrieve system property
-    public static boolean getBool(String key, String defaultValue) {
-        return Boolean.parseBoolean(System.getProperty(key, defaultValue));
+    public static boolean getBool(final String key, final String defaultValue) {
+        return Boolean.parseBoolean(getProperty(key, defaultValue));
     }
 
-    public static int getInt(String key, String defaultValue) {
-        return Integer.parseInt(System.getProperty(key, defaultValue));
+    public static int getInt(final String key, final String defaultValue) {
+        return Integer.parseInt(getProperty(key, defaultValue));
     }
 
-    public static byte getByte(String key, String defaultValue) {
-        return Byte.parseByte(System.getProperty(key, defaultValue));
+    public static Integer getInteger(final String key, final String defaultValue) {
+        String value = System.getProperty(key, null);
+        return value != null ? Integer.parseInt(value) : null;
     }
 
-    public static long getLong(String key, String defaultValue) {
-        return Long.parseLong(System.getProperty(key, defaultValue));
+    public static byte getByte(final String key, final String defaultValue) {
+        return Byte.parseByte(getProperty(key, defaultValue));
+    }
+
+    public static long getLong(final String key, final String defaultValue) {
+        return Long.parseLong(getProperty(key, defaultValue));
+    }
+
+    public static String getString(final String key, final String defaultValue) {
+        return getProperty(key, defaultValue);
     }
 }

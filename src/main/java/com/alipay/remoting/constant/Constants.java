@@ -26,11 +26,13 @@ public class Constants {
     /**
      * default expire time to remove connection pool, time unit: milliseconds
      */
-    public static final int DEFAULT_EXPIRE_TIME = 10 * 60 * 1000;
+    public static final int    DEFAULT_EXPIRE_TIME = 10 * 60 * 1000;
 
     /**
      * default retry times when failed to get result of FutureTask
      */
-    public static final int DEFAULT_RETRY_TIMES = 2;
+    public static final int    DEFAULT_RETRY_TIMES = 2;
+
+    public static final String SSL_HANDLER         = "sslHandler";
 
 }

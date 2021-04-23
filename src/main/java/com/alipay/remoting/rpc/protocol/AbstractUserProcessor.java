@@ -18,24 +18,26 @@ package com.alipay.remoting.rpc.protocol;
 
 import java.util.concurrent.Executor;
 
+import com.alipay.remoting.AbstractLifeCycle;
 import com.alipay.remoting.BizContext;
 import com.alipay.remoting.DefaultBizContext;
 import com.alipay.remoting.RemotingContext;
 
 /**
  * Implements common function and provide default value.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: AbstractUserProcessor.java, v 0.1 May 19, 2016 3:38:22 PM xiaomin.cxm Exp $
  */
-public abstract class AbstractUserProcessor<T> implements UserProcessor<T> {
+public abstract class AbstractUserProcessor<T> extends AbstractLifeCycle implements
+                                                                        UserProcessor<T> {
 
     /** executor selector, default null unless provide one using its setter method */
     protected ExecutorSelector executorSelector;
 
     /**
      * Provide a default - {@link DefaultBizContext} implementation of {@link BizContext}.
-     * 
+     *
      * @see com.alipay.remoting.rpc.protocol.UserProcessor#preHandleRequest(com.alipay.remoting.RemotingContext, java.lang.Object)
      */
     @Override
@@ -50,6 +52,11 @@ public abstract class AbstractUserProcessor<T> implements UserProcessor<T> {
      */
     @Override
     public Executor getExecutor() {
+        return null;
+    }
+
+    @Override
+    public ClassLoader getBizClassLoader() {
         return null;
     }
 
@@ -72,7 +79,7 @@ public abstract class AbstractUserProcessor<T> implements UserProcessor<T> {
     /**
      * By default, return false, means not deserialize and process biz logic in io thread
      *
-     * @see UserProcessor#processInIOThread() 
+     * @see UserProcessor#processInIOThread()
      */
     @Override
     public boolean processInIOThread() {

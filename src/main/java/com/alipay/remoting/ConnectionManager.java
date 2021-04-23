@@ -165,4 +165,14 @@ public interface ConnectionManager extends Scannable, LifeCycle {
      * @return the created {@link Connection}
      */
     Connection create(String ip, int port, int connectTimeout) throws RemotingException;
+
+    // ~~~ create connection managed by ConnectionManager
+
+    /**
+     * Create a connection in asynchronous way and add to {@link ConnectionPool}.
+     *
+     * @param url {@link Url} contains connect infos.
+     * @throws RemotingException if create failed
+     */
+    void createConnectionInManagement(Url url) throws InterruptedException, RemotingException;
 }

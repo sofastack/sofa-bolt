@@ -26,7 +26,7 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**
  * Reconnect manager.
- * 
+ *
  * @author yunliang.shi
  * @version $Id: ReconnectManager.java, v 0.1 Mar 11, 2016 5:20:50 PM yunliang.shi Exp $
  */
@@ -47,29 +47,40 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
         this.connectionManager = connectionManager;
         this.tasks = new LinkedBlockingQueue<ReconnectTask>();
         this.canceled = new CopyOnWriteArrayList<Url>();
+        // call startup in the constructor to be compatible with version 1.5.x
+        startup();
     }
 
     @Override
     public void reconnect(Url url) {
+        ensureStarted();
         tasks.add(new ReconnectTask(url));
     }
 
     @Override
     public void disableReconnect(Url url) {
+        ensureStarted();
         canceled.add(url);
     }
 
     @Override
     public void enableReconnect(Url url) {
+        ensureStarted();
         canceled.remove(url);
     }
 
     @Override
     public void startup() throws LifeCycleException {
-        super.startup();
+        // make the startup method idempotent to be compatible with version 1.5.x
+        synchronized (this) {
+            if (!isStarted()) {
+                super.startup();
 
-        this.healConnectionThreads = new Thread(new HealConnectionRunner());
-        this.healConnectionThreads.start();
+                this.healConnectionThreads = new Thread(new HealConnectionRunner());
+                this.healConnectionThreads.setName("Bolt-heal-connection-thread");
+                this.healConnectionThreads.start();
+            }
+        }
     }
 
     @Override
@@ -86,6 +97,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
      */
     @Deprecated
     public void addCancelUrl(Url url) {
+        ensureStarted();
         disableReconnect(url);
     }
 
@@ -94,6 +106,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
      */
     @Deprecated
     public void removeCancelUrl(Url url) {
+        ensureStarted();
         enableReconnect(url);
     }
 
@@ -102,6 +115,7 @@ public class ReconnectManager extends AbstractLifeCycle implements Reconnector {
      */
     @Deprecated
     public void addReconnectTask(Url url) {
+        ensureStarted();
         reconnect(url);
     }
 

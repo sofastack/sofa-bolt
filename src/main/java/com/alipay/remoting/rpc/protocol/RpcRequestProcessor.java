@@ -41,7 +41,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 /**
  * Process Rpc request.
- * 
+ *
  * @author jiangping
  * @version $Id: RpcRequestProcessor.java, v 0.1 2015-10-1 PM10:56:10 tao Exp $
  */
@@ -219,39 +219,57 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         final byte type = cmd.getType();
         // processor here must not be null, for it have been checked before
         UserProcessor processor = ctx.getUserProcessor(cmd.getRequestClass());
-        if (processor instanceof AsyncUserProcessor) {
-            try {
-                processor.handleRequest(processor.preHandleRequest(ctx, cmd.getRequestObject()),
-                    new RpcAsyncContext(ctx, cmd, this), cmd.getRequestObject());
-            } catch (RejectedExecutionException e) {
-                logger
-                    .warn("RejectedExecutionException occurred when do ASYNC process in RpcRequestProcessor");
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
-            } catch (Throwable t) {
-                String errMsg = "AYSNC process rpc request failed in RpcRequestProcessor, id=" + id;
-                logger.error(errMsg, t);
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, t, errMsg));
+
+        ClassLoader classLoader = null;
+        try {
+            ClassLoader bizClassLoader = processor.getBizClassLoader();
+            if (bizClassLoader != null) {
+                classLoader = Thread.currentThread().getContextClassLoader();
+                Thread.currentThread().setContextClassLoader(bizClassLoader);
             }
-        } else {
-            try {
-                Object responseObject = processor
-                    .handleRequest(processor.preHandleRequest(ctx, cmd.getRequestObject()),
+
+            if (processor instanceof AsyncUserProcessor
+                || processor instanceof AsyncMultiInterestUserProcessor) {
+                try {
+                    processor.handleRequest(
+                        processor.preHandleRequest(ctx, cmd.getRequestObject()),
+                        new RpcAsyncContext(ctx, cmd, this), cmd.getRequestObject());
+                } catch (RejectedExecutionException e) {
+                    logger
+                        .warn("RejectedExecutionException occurred when do ASYNC process in RpcRequestProcessor");
+                    sendResponseIfNecessary(ctx, type, this.getCommandFactory()
+                        .createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
+                } catch (Throwable t) {
+                    String errMsg = "AYSNC process rpc request failed in RpcRequestProcessor, id="
+                                    + id;
+                    logger.error(errMsg, t);
+                    sendResponseIfNecessary(ctx, type, this.getCommandFactory()
+                        .createExceptionResponse(id, t, errMsg));
+                }
+            } else {
+                try {
+                    Object responseObject = processor.handleRequest(
+                        processor.preHandleRequest(ctx, cmd.getRequestObject()),
                         cmd.getRequestObject());
 
-                sendResponseIfNecessary(ctx, type,
-                    this.getCommandFactory().createResponse(responseObject, cmd));
-            } catch (RejectedExecutionException e) {
-                logger
-                    .warn("RejectedExecutionException occurred when do SYNC process in RpcRequestProcessor");
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
-            } catch (Throwable t) {
-                String errMsg = "SYNC process rpc request failed in RpcRequestProcessor, id=" + id;
-                logger.error(errMsg, t);
-                sendResponseIfNecessary(ctx, type, this.getCommandFactory()
-                    .createExceptionResponse(id, t, errMsg));
+                    sendResponseIfNecessary(ctx, type,
+                        this.getCommandFactory().createResponse(responseObject, cmd));
+                } catch (RejectedExecutionException e) {
+                    logger
+                        .warn("RejectedExecutionException occurred when do SYNC process in RpcRequestProcessor");
+                    sendResponseIfNecessary(ctx, type, this.getCommandFactory()
+                        .createExceptionResponse(id, ResponseStatus.SERVER_THREADPOOL_BUSY));
+                } catch (Throwable t) {
+                    String errMsg = "SYNC process rpc request failed in RpcRequestProcessor, id="
+                                    + id;
+                    logger.error(errMsg, t);
+                    sendResponseIfNecessary(ctx, type, this.getCommandFactory()
+                        .createExceptionResponse(id, t, errMsg));
+                }
+            }
+        } finally {
+            if (classLoader != null) {
+                Thread.currentThread().setContextClassLoader(classLoader);
             }
         }
     }

@@ -47,6 +47,7 @@ public class ConnectionPool implements Scannable {
     public ConnectionPool(ConnectionSelectStrategy strategy) {
         this.strategy = strategy;
         this.connections = new CopyOnWriteArrayList<Connection>();
+        this.lastAccessTimestamp = System.currentTimeMillis();
         this.asyncCreationDone = true;
     }
 
@@ -110,7 +111,6 @@ public class ConnectionPool implements Scannable {
      * @return Connection
      */
     public Connection get() {
-        markAccess();
         if (null != connections) {
             List<Connection> snapshot = new ArrayList<Connection>(connections);
             if (snapshot.size() > 0) {
@@ -129,7 +129,6 @@ public class ConnectionPool implements Scannable {
      * @return Connection List
      */
     public List<Connection> getAll() {
-        markAccess();
         return new ArrayList<Connection>(connections);
     }
 

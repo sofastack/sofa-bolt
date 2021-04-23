@@ -4,6 +4,7 @@
 [![Coverage Status](https://codecov.io/gh/sofastack/sofa-bolt/branch/master/graph/badge.svg)](https://codecov.io/gh/sofastack/sofa-bolt)
 ![license](https://img.shields.io/badge/license-Apache--2.0-green.svg)
 ![version](https://img.shields.io/maven-central/v/com.alipay.sofa/bolt.svg?label=bolt)
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/sofastack/sofa-bolt.svg)](http://isitmaintained.com/project/sofastack/sofa-bolt "Percentage of issues still open")
 
 # 1. 介绍
 SOFABolt 是蚂蚁金融服务集团开发的一套基于 Netty 实现的网络通信框架。
@@ -50,19 +51,220 @@ Bolt 名字取自迪士尼动画-闪电狗，是一个基于 Netty 最佳实践�
 ![msg_protocol](.middleware-common/msg_protocol.png)
 
 # 4. 如何贡献
-开放代码允许在签署协议之后,提交贡献代码.
-具体参考[如何参与贡献 SOFABolt 代码](./CONTRIBUTING.md)
+开放代码允许在签署协议之后，提交贡献代码。具体参考[如何参与贡献 SOFABolt 代码](./CONTRIBUTING.md)。
 
-# 5. 版权协议
-对 SOFABolt 代码的修改和变更，需要遵守[版权协议](./LICENSE)
+对 SOFABolt 代码的修改和变更，需要遵守[版权协议](./LICENSE)。
 
-# 6. 多语言
+# 5. 多语言
 
 * [node](https://github.com/sofastack/sofa-bolt-node)
 * [python](https://github.com/sofastack/sofa-bolt-python)
 * [cpp](https://github.com/sofastack/sofa-bolt-cpp)
 
-# 7. 有用的链接
-* [ISSUES](https://github.com/sofastack/sofa-bolt/issues)
-* [用户手册](https://github.com/sofastack/sofa-bolt/wiki/SOFA-Bolt-Handbook)
-* [中文介绍文章: 蚂蚁通信框架实践](http://mp.weixin.qq.com/s/JRsbK1Un2av9GKmJ8DK7IQ)
+# 6. 用户
+
+<div>
+<table>
+    <tr>
+      <td align="center" valign="middle">
+			<img alt="蚂蚁集团" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*aK79TJUJykkAAAAAAAAAAAAAARQnAQ" height="60" />
+      </td>
+      <td align="center"  valign="middle">
+        <img alt="网商银行" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*uAmFRZQ0Z4YAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+        <img alt="恒生电子" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*_iGLRq0Ih-IAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+        <img alt="数立信息" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*JAgIRpjz-IgAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="Paytm" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*a0fvTKJ1Xv8AAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="天弘基金" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*99OQT7lDBsMAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="中国人保" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*P1BARJxwv1sAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="信美相互" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*jAzWQpIgFUAAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="南京银行" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*q9PMQI7hs8sAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="民生银行" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*GnUuSKmOtS4AAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="重庆农商行" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*FKrxSYhdi2wAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="中信证券" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*t-xbQb3WSjcAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="富滇银行" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*JCDYT6u6_asAAAAAAAAAAAAAARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="挖财" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*lVrVT4dpSDEAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="拍拍贷" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*TAePS6j56LsAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="OPPO金融" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*mU40QaJkwZYAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="运满满" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*_kBbQYUYdIQAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="译筑科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*wuKSTpZSEkEAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="杭州米雅信息科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*b-o5SITMKu0AAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="邦道科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*nsw1S5bt9DkAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="申通快递" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*C3ncSpDsjS8AAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="深圳大头兄弟文化" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*8AYmRowxSC0AAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="烽火科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*MjuuT4omCrwAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="亚信科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*vBBIRomYoEUAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="成都云智天下科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*p0OkQbC5RvsAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="上海溢米辅导" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*mJdtTJsn1PwAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="态赋科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*sfLDRL5TJx8AAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="风一科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*EGeMR4qprnkAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="武汉易企盈" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*31WRQ7zg3HIAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="极致医疗" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*cPOiS5q8NCwAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="京东" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*INhuS44qO8YAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="小象生鲜" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*K5ERQYbCRBgAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="北京云族佳" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*qzxjSZ2tlmIAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="欣亿云网" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*huOKQKvoLzwAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="山东网聪" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*INUFR7XIH1gAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="深圳市诺安赛威" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*eVGbR7RhDDkAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="上扬软件" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*VsqMT7n7p0AAAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="长沙点三" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*2eEzSqdPIc0AAAAAAAAAAABjARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="网易云音乐" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*66KbQ6seDqoAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="虎牙直播" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*uzr3RLUZ3RwAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="中国移动" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*vEo-T55XTOAAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="无纸科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*9aFQSLfyPhMAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="黄金钱包" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*tYZJRpANxNoAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="独木桥网络" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*GW6oTLIlAbcAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="wueasy" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*4uFWQacI-RwAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="北京攸乐科技" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*CD5VT50FXqMAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="易宝支付" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*oy0ZSquXXjAAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="威马汽车" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*LPf2TbTeJPwAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+    </tr>
+    <tr>
+      <td align="center" valign="middle">
+      <img alt="亿通国际" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*tlq4R7QqUaEAAAAAAAAAAABkARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="新华三" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*gw9uTbZvsbAAAAAAAAAAAAAAARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      <img alt="klilalagroup" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*0cskToqBSi8AAAAAAAAAAAAAARQnAQ" height="60" />
+      </td>
+      <td align="center" valign="middle">
+      </td>
+    </tr>
+</table>
+</div>
+
+# 7. 联系我们
+
+- 微信
+  - 公众号：金融级分布式架构（Antfin_SOFA）：致力于打造一流的分布式技术在金融场景应用实践的技术交流平台，专注于交流金融科技行业内最前沿、可供参考的技术方案与实施路线。
+    
+    <img alt="Wechat" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*LVCnR6KtEfEAAAAAAAAAAABjARQnAQ" height="250" />
+  
+- 钉钉
+  - 钉钉交流群：
+    - ~~金融级分布式架构 SOFAStack 1群，群号：23127468~~ 已满
+    - ~~金融级分布式架构 SOFAStack 2群，群号：23195297~~ 已满
+    - ~~金融级分布式架构 SOFAStack 3群，群号：23390449~~ 已满
+    - ~~金融级分布式架构 SOFAStack 4群，群号：23372465~~ 已满
+    - ~~金融级分布式架构 SOFAStack 5群，群号：30315793~~ 已满
+    - 金融级分布式架构 SOFAStack 6群，群号：34197075
+
+      <img alt="DingTalk" src="https://gw.alipayobjects.com/mdn/sofastack/afts/img/A*1DklS7SZFNMAAAAAAAAAAAAAARQnAQ" height="250" />
+
+  - 钉钉交流群：SOFAStack 金牌用户服务群，如果您已经在生产环境使用了 SOFAStack 相关组件，还请告知我们，我们将会邀请您加入到此群中，以便更加快捷的沟通和更加高效的线上使用问题支持。

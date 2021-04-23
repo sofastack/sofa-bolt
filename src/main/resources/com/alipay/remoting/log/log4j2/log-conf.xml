@@ -20,7 +20,7 @@
                 <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -37,7 +37,7 @@
                 <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -54,7 +54,7 @@
                 <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -71,7 +71,7 @@
                 <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -88,7 +88,7 @@
                 <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -105,7 +105,7 @@
                 <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -120,7 +120,7 @@
             <!-- only print error log -->
             <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
@@ -130,7 +130,7 @@
         <Console name="Console" target="SYSTEM_OUT">
             <ThresholdFilter level="${LOG_LEVEL}" onMatch="ACCEPT" onMismatch="DENY"/>
             <PatternLayout charset="${LOG_ENCODE}">
-                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n</pattern>
+                <pattern>%d %-5p [%C{1}#%L] [%t] %m%n%throwable</pattern>
             </PatternLayout>
         </Console>
 

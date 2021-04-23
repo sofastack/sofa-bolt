@@ -41,6 +41,10 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
     private final Random        random    = new Random();
     private final GlobalSwitch  globalSwitch;
 
+    public RandomSelectStrategy() {
+        this(null);
+    }
+
     public RandomSelectStrategy(GlobalSwitch globalSwitch) {
         this.globalSwitch = globalSwitch;
     }

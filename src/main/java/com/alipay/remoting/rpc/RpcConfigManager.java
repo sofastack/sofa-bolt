@@ -16,15 +16,64 @@
  */
 package com.alipay.remoting.rpc;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.TrustManagerFactory;
 import com.alipay.remoting.config.ConfigManager;
 
 /**
  * RPC framework config manager.
+ *
  * @author dennis
  */
 public class RpcConfigManager {
     public static boolean dispatch_msg_list_in_default_executor() {
         return ConfigManager.getBool(RpcConfigs.DISPATCH_MSG_LIST_IN_DEFAULT_EXECUTOR,
             RpcConfigs.DISPATCH_MSG_LIST_IN_DEFAULT_EXECUTOR_DEFAULT);
+    }
+
+    public static boolean server_ssl_enable() {
+        return ConfigManager.getBool(RpcConfigs.SRV_SSL_ENABLE, "false");
+    }
+
+    public static boolean server_ssl_need_client_auth() {
+        return ConfigManager.getBool(RpcConfigs.SRV_SSL_NEED_CLIENT_AUTH, "false");
+    }
+
+    public static String server_ssl_keystore() {
+        return ConfigManager.getString(RpcConfigs.SRV_SSL_KEYSTORE, null);
+    }
+
+    public static String server_ssl_keystore_pass() {
+        return ConfigManager.getString(RpcConfigs.SRV_SSL_KEYSTORE_PASS, null);
+    }
+
+    public static String server_ssl_keystore_type() {
+        return ConfigManager.getString(RpcConfigs.SRV_SSL_KEYTSTORE_YPE, null);
+    }
+
+    public static String server_ssl_kmf_algorithm() {
+        return ConfigManager.getString(RpcConfigs.SRV_SSL_KMF_ALGO,
+            KeyManagerFactory.getDefaultAlgorithm());
+    }
+
+    public static boolean client_ssl_enable() {
+        return ConfigManager.getBool(RpcConfigs.CLI_SSL_ENABLE, "false");
+    }
+
+    public static String client_ssl_keystore() {
+        return ConfigManager.getString(RpcConfigs.CLI_SSL_KEYSTORE, null);
+    }
+
+    public static String client_ssl_keystore_pass() {
+        return ConfigManager.getString(RpcConfigs.CLI_SSL_KEYSTORE_PASS, null);
+    }
+
+    public static String client_ssl_keystore_type() {
+        return ConfigManager.getString(RpcConfigs.CLI_SSL_KEYTSTORE_YPE, null);
+    }
+
+    public static String client_ssl_tmf_algorithm() {
+        return ConfigManager.getString(RpcConfigs.CLI_SSL_TMF_ALGO,
+            TrustManagerFactory.getDefaultAlgorithm());
     }
 }
