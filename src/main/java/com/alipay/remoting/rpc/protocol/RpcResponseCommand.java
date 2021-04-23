@@ -109,10 +109,10 @@ public class RpcResponseCommand extends ResponseCommand {
                 if (this.getCustomSerializer() != null
                     && this.getCustomSerializer().serializeContent(this)) {
                     return;
-                } else {
-                    this.setContent(SerializerManager.getSerializer(this.getSerializer())
-                        .serialize(this.responseObject));
                 }
+
+                this.setContent(SerializerManager.getSerializer(this.getSerializer()).serialize(
+                    this.responseObject));
             } catch (SerializationException e) {
                 throw e;
             } catch (Exception e) {
@@ -120,7 +120,7 @@ public class RpcResponseCommand extends ResponseCommand {
                     "Exception caught when serialize content of rpc response command!", e);
             }
         }
-    };
+    }
 
     @Override
     public void deserializeContent(InvokeContext invokeContext) throws DeserializationException {

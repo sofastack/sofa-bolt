@@ -78,7 +78,7 @@ public class RpcServerTest {
         try {
             rpcServer2.stop();
             Assert.fail("Should not reach here");
-        } catch (IllegalStateException e) {
+        } catch (Exception e) {
             // expect
         }
     }

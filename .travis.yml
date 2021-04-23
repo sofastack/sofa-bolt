@@ -1,15 +1,11 @@
 #.travis.yml
 language: java
 
-addons:
-  apt:
-    packages:
-      - openjdk-6-jdk
+dist: trusty
 
 jdk:
   - oraclejdk8
   - openjdk7
-  - openjdk6
 
 before_install:
   - echo "Downloading Maven 3.2.5"

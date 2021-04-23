@@ -87,7 +87,7 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                 new InvokeCallbackListener() {
                     @Override
                     public void onResponse(InvokeFuture future) {
-                        ResponseCommand response = null;
+                        ResponseCommand response;
                         try {
                             response = (ResponseCommand) future.waitResponse(0);
                         } catch (InterruptedException e) {
@@ -103,15 +103,16 @@ public class RpcHeartbeatTrigger implements HeartbeatTrigger {
                                     response.getId(),
                                     RemotingUtil.parseRemoteAddress(ctx.channel()));
                             }
-                            ctx.channel().attr(Connection.HEARTBEAT_COUNT).set(new Integer(0));
+                            ctx.channel().attr(Connection.HEARTBEAT_COUNT).set(0);
                         } else {
-                            if (response == null) {
+                            if (response != null
+                                && response.getResponseStatus() == ResponseStatus.TIMEOUT) {
                                 logger.error("Heartbeat timeout! The address is {}",
                                     RemotingUtil.parseRemoteAddress(ctx.channel()));
                             } else {
                                 logger.error(
                                     "Heartbeat exception caught! Error code={}, The address is {}",
-                                    response.getResponseStatus(),
+                                    response == null ? null : response.getResponseStatus(),
                                     RemotingUtil.parseRemoteAddress(ctx.channel()));
                             }
                             Integer times = ctx.channel().attr(Connection.HEARTBEAT_COUNT).get();

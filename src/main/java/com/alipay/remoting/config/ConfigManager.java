@@ -152,20 +152,20 @@ public class ConfigManager {
         return getByte(Configs.SERIALIZER, Configs.SERIALIZER_DEFAULT);
     }
 
-    // ~~~ private methods
-    protected static boolean getBool(String key, String defaultValue) {
+    // ~~~ public helper methods to retrieve system property
+    public static boolean getBool(String key, String defaultValue) {
         return Boolean.parseBoolean(System.getProperty(key, defaultValue));
     }
 
-    protected static int getInt(String key, String defaultValue) {
+    public static int getInt(String key, String defaultValue) {
         return Integer.parseInt(System.getProperty(key, defaultValue));
     }
 
-    protected static byte getByte(String key, String defaultValue) {
+    public static byte getByte(String key, String defaultValue) {
         return Byte.parseByte(System.getProperty(key, defaultValue));
     }
 
-    protected static long getLong(String key, String defaultValue) {
+    public static long getLong(String key, String defaultValue) {
         return Long.parseLong(System.getProperty(key, defaultValue));
     }
 }

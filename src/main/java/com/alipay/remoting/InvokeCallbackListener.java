@@ -28,12 +28,12 @@ public interface InvokeCallbackListener {
      * 
      * @param future
      */
-    public void onResponse(final InvokeFuture future);
+    void onResponse(final InvokeFuture future);
 
     /**
      * Get the remote address.
      * 
      * @return
      */
-    public String getRemoteAddress();
+    String getRemoteAddress();
 }

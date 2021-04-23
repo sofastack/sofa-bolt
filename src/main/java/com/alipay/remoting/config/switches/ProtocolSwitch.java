@@ -26,7 +26,7 @@ import java.util.BitSet;
  */
 public class ProtocolSwitch implements Switch {
 
-    // switche index
+    // switch index
     public static final int     CRC_SWITCH_INDEX         = 0x000;
 
     // default value
@@ -54,8 +54,6 @@ public class ProtocolSwitch implements Switch {
 
     /**
      * generate byte value according to the bit set in ProtocolSwitchStatus
-     * 
-     * @return
      */
     public byte toByte() {
         return toByte(this.bs);

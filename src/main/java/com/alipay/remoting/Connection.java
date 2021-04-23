@@ -95,7 +95,7 @@ public class Connection {
     /**
      * Constructor
      *
-     * @param channel
+     * @param channel associated channel
      */
     public Connection(Channel channel) {
         this.channel = channel;
@@ -105,8 +105,8 @@ public class Connection {
     /**
      * Constructor
      *
-     * @param channel
-     * @param url
+     * @param channel associated channel
+     * @param url associated url
      */
     public Connection(Channel channel, Url url) {
         this(channel);
@@ -117,9 +117,9 @@ public class Connection {
     /**
      * Constructor
      *
-     * @param channel
-     * @param protocolCode
-     * @param url
+     * @param channel associated channel
+     * @param protocolCode ProtocolCode
+     * @param url associated url
      */
     public Connection(Channel channel, ProtocolCode protocolCode, Url url) {
         this(channel, url);
@@ -128,11 +128,11 @@ public class Connection {
     }
 
     /**
-     * Constructor
      *
-     * @param channel
-     * @param protocolCode
-     * @param url
+     * @param channel associated channel
+     * @param protocolCode ProtocolCode
+     * @param version protocol version
+     * @param url associated url
      */
     public Connection(Channel channel, ProtocolCode protocolCode, byte version, Url url) {
         this(channel, url);
@@ -145,7 +145,7 @@ public class Connection {
      * Initialization.
      */
     private void init() {
-        this.channel.attr(HEARTBEAT_COUNT).set(new Integer(0));
+        this.channel.attr(HEARTBEAT_COUNT).set(0);
         this.channel.attr(PROTOCOL).set(this.protocolCode);
         this.channel.attr(VERSION).set(this.version);
         this.channel.attr(HEARTBEAT_SWITCH).set(true);
@@ -154,7 +154,7 @@ public class Connection {
     /**
      * to check whether the connection is fine to use
      *
-     * @return
+     * @return true if connection is fine
      */
     public boolean isFine() {
         return this.channel != null && this.channel.isActive();
@@ -177,7 +177,7 @@ public class Connection {
     /**
      * to check whether the reference count is 0
      *
-     * @return
+     * @return true if the reference count is 0
      */
     public boolean noRef() {
         return this.referenceCount.get() == NO_REFERENCE;
@@ -186,7 +186,7 @@ public class Connection {
     /**
      * Get the address of the remote peer.
      *
-     * @return
+     * @return remote address
      */
     public InetSocketAddress getRemoteAddress() {
         return (InetSocketAddress) this.channel.remoteAddress();
@@ -195,7 +195,7 @@ public class Connection {
     /**
      * Get the remote IP.
      *
-     * @return
+     * @return remote IP
      */
     public String getRemoteIP() {
         return RemotingUtil.parseRemoteIP(this.channel);
@@ -204,7 +204,7 @@ public class Connection {
     /**
      * Get the remote port.
      *
-     * @return
+     * @return remote port
      */
     public int getRemotePort() {
         return RemotingUtil.parseRemotePort(this.channel);
@@ -213,7 +213,7 @@ public class Connection {
     /**
      * Get the address of the local peer.
      *
-     * @return
+     * @return local address
      */
     public InetSocketAddress getLocalAddress() {
         return (InetSocketAddress) this.channel.localAddress();
@@ -222,7 +222,7 @@ public class Connection {
     /**
      * Get the local IP.
      *
-     * @return
+     * @return local IP
      */
     public String getLocalIP() {
         return RemotingUtil.parseLocalIP(this.channel);
@@ -231,7 +231,7 @@ public class Connection {
     /**
      * Get the local port.
      *
-     * @return
+     * @return local port
      */
     public int getLocalPort() {
         return RemotingUtil.parseLocalPort(this.channel);
@@ -240,7 +240,7 @@ public class Connection {
     /**
      * Get the netty channel of the connection.
      *
-     * @return
+     * @return Channel
      */
     public Channel getChannel() {
         return this.channel;
@@ -249,8 +249,8 @@ public class Connection {
     /**
      * Get the InvokeFuture with invokeId of id.
      *
-     * @param id
-     * @return
+     * @param id invoke id
+     * @return InvokeFuture
      */
     public InvokeFuture getInvokeFuture(int id) {
         return this.invokeFutureMap.get(id);
@@ -259,8 +259,8 @@ public class Connection {
     /**
      * Add an InvokeFuture
      *
-     * @param future
-     * @return
+     * @param future InvokeFuture
+     * @return previous InvokeFuture with same invoke id
      */
     public InvokeFuture addInvokeFuture(InvokeFuture future) {
         return this.invokeFutureMap.putIfAbsent(future.invokeId(), future);
@@ -269,8 +269,8 @@ public class Connection {
     /**
      * Remove InvokeFuture who's invokeId is id
      *
-     * @param id
-     * @return
+     * @param id invoke id
+     * @return associated InvokerFuture with the target id
      */
     public InvokeFuture removeInvokeFuture(int id) {
         return this.invokeFutureMap.remove(id);
@@ -333,7 +333,7 @@ public class Connection {
     /**
      * add a pool key to list
      *
-     * @param poolKey
+     * @param poolKey connection pool key
      */
     public void addPoolKey(String poolKey) {
         poolKeys.add(poolKey);
@@ -349,7 +349,7 @@ public class Connection {
     /**
      * remove pool key
      *
-     * @param poolKey
+     * @param poolKey connection pool key
      */
     public void removePoolKey(String poolKey) {
         poolKeys.remove(poolKey);
@@ -367,8 +367,8 @@ public class Connection {
     /**
      * add Id to group Mapping
      *
-     * @param id
-     * @param poolKey
+     * @param id invoke id
+     * @param poolKey connection pool key
      */
     public void addIdPoolKeyMapping(Integer id, String poolKey) {
         this.id2PoolKey.put(id, poolKey);
@@ -377,8 +377,8 @@ public class Connection {
     /**
      * remove id to group Mapping
      *
-     * @param id
-     * @return
+     * @param id connection pool key
+     * @return connection pool key
      */
     public String removeIdPoolKeyMapping(Integer id) {
         return this.id2PoolKey.remove(id);
@@ -387,8 +387,8 @@ public class Connection {
     /**
      * Set attribute key=value.
      *
-     * @param key
-     * @param value
+     * @param key attribute key
+     * @param value attribute value
      */
     public void setAttribute(String key, Object value) {
         attributes.put(key, value);
@@ -397,9 +397,9 @@ public class Connection {
     /**
      * set attribute if key absent.
      *
-     * @param key
-     * @param value
-     * @return
+     * @param key attribute key
+     * @param value attribute value
+     * @return previous value
      */
     public Object setAttributeIfAbsent(String key, Object value) {
         return attributes.putIfAbsent(key, value);
@@ -408,7 +408,7 @@ public class Connection {
     /**
      * Remove attribute.
      *
-     * @param key
+     * @param key attribute key
      */
     public void removeAttribute(String key) {
         attributes.remove(key);
@@ -417,8 +417,8 @@ public class Connection {
     /**
      * Get attribute.
      *
-     * @param key
-     * @return
+     * @param key attribute key
+     * @return attribute value
      */
     public Object getAttribute(String key) {
         return attributes.get(key);

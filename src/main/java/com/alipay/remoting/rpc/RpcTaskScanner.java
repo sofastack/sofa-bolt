@@ -22,6 +22,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.AbstractLifeCycle;
+import com.alipay.remoting.LifeCycleException;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.NamedThreadFactory;
@@ -34,19 +36,24 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @author jiangping
  * @version $Id: RpcTaskScanner.java, v 0.1 Mar 4, 2016 3:30:52 PM tao Exp $
  */
-public class RpcTaskScanner {
-    private static final Logger      logger           = BoltLoggerFactory.getLogger("RpcRemoting");
+public class RpcTaskScanner extends AbstractLifeCycle {
 
-    private ScheduledExecutorService scheduledService = new ScheduledThreadPoolExecutor(1,
-                                                          new NamedThreadFactory(
-                                                              "RpcTaskScannerThread", true));
+    private static final Logger      logger = BoltLoggerFactory.getLogger("RpcRemoting");
 
-    private List<Scannable>          scanList         = new LinkedList<Scannable>();
+    private final List<Scannable>    scanList;
 
-    /**
-     * Start!
-     */
-    public void start() {
+    private ScheduledExecutorService scheduledService;
+
+    public RpcTaskScanner() {
+        this.scanList = new LinkedList<Scannable>();
+    }
+
+    @Override
+    public void startup() throws LifeCycleException {
+        super.startup();
+
+        scheduledService = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory(
+            "RpcTaskScannerThread", true));
         scheduledService.scheduleWithFixedDelay(new Runnable() {
 
             @Override
@@ -63,20 +70,26 @@ public class RpcTaskScanner {
         }, 10000, 10000, TimeUnit.MILLISECONDS);
     }
 
+    @Override
+    public void shutdown() throws LifeCycleException {
+        super.shutdown();
+
+        scheduledService.shutdown();
+    }
+
+    /**
+     * Use {@link RpcTaskScanner#startup()} instead
+     */
+    @Deprecated
+    public void start() {
+        startup();
+    }
+
     /**
      * Add scan target.
-     * 
-     * @param target
      */
     public void add(Scannable target) {
         scanList.add(target);
-    }
-
-    /** 
-     * Shutdown the scheduled service.
-     */
-    public void shutdown() {
-        scheduledService.shutdown();
     }
 
 }

@@ -36,7 +36,6 @@ import io.netty.util.internal.StringUtil;
  * <pre>
  *   if (msg instanceof List) {
  *       processorManager.getDefaultExecutor().execute(new Runnable() {
- *           @Override
  *           public void run() {
  *               // batch submit to an executor
  *               for (Object m : (List<?>) msg) {
@@ -232,9 +231,8 @@ public abstract class AbstractBatchDecoder extends ChannelInboundHandlerAdapter 
      * local variable {@code RecyclableArrayList out}. If has decoded more than one msg,
      * then construct an array list to submit all decoded msgs to the pipeline.
      *
-     * @param ctx
-     * @param msg
-     * @throws Exception
+     * @param ctx channel handler context
+     * @param msg data
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {

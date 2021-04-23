@@ -32,7 +32,7 @@ public interface CommandHandler {
      * @param msg
      * @throws Exception
      */
-    public void handleCommand(RemotingContext ctx, Object msg) throws Exception;
+    void handleCommand(RemotingContext ctx, Object msg) throws Exception;
 
     /**
      * Register processor for command with specified code.
@@ -40,18 +40,18 @@ public interface CommandHandler {
      * @param cmd
      * @param processor
      */
-    public void registerProcessor(CommandCode cmd, RemotingProcessor<?> processor);
+    void registerProcessor(CommandCode cmd, RemotingProcessor<?> processor);
 
     /**
      * Register default executor for the handler.
      * 
      * @param executor
      */
-    public void registerDefaultExecutor(ExecutorService executor);
+    void registerDefaultExecutor(ExecutorService executor);
 
     /**
      * Get default executor for the handler.
      */
-    public ExecutorService getDefaultExecutor();
+    ExecutorService getDefaultExecutor();
 
 }

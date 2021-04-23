@@ -18,6 +18,7 @@ package com.alipay.remoting.inner.connection;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.alipay.remoting.DefaultClientConnectionManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,7 +31,6 @@ import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.ConnectionSelectStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.RandomSelectStrategy;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
@@ -56,8 +56,9 @@ public class ConcurrentCreateConnectionTest {
                                                                                      .getLogger(RpcConnectionManagerTest.class);
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors           = new ConcurrentHashMap<String, UserProcessor<?>>();
 
-    private DefaultConnectionManager                    cm;
-    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy();
+    private DefaultClientConnectionManager              cm;
+    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy(
+                                                                                     null);
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
                                                                                      userProcessors,
@@ -74,10 +75,10 @@ public class ConcurrentCreateConnectionTest {
 
     @Before
     public void init() {
-        cm = new DefaultConnectionManager(connectionSelectStrategy, connectionFactory,
+        cm = new DefaultClientConnectionManager(connectionSelectStrategy, connectionFactory,
             connectionEventHandler, connectionEventListener);
         cm.setAddressParser(addressParser);
-        cm.init();
+        cm.startup();
         server = new BoltServer(port);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);

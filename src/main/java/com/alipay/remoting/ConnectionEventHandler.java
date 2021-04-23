@@ -52,7 +52,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     private ConnectionEventExecutor eventExecutor;
 
-    private ReconnectManager        reconnectManager;
+    private Reconnector             reconnectManager;
 
     private GlobalSwitch            globalSwitch;
 
@@ -144,7 +144,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                 && this.globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
                 Connection conn = (Connection) attr.get();
                 if (reconnectManager != null) {
-                    reconnectManager.addReconnectTask(conn.getUrl());
+                    reconnectManager.reconnect(conn.getUrl());
                 }
             }
             // trigger close connection event
@@ -168,7 +168,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
                     }
                     break;
                 default:
-                    return;
+                    break;
             }
         } else {
             super.userEventTriggered(ctx, event);
@@ -186,12 +186,6 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         ctx.channel().close();
     }
 
-    /**
-     *
-     * @param conn
-     * @param remoteAddress
-     * @param type
-     */
     private void onEvent(final Connection conn, final String remoteAddress,
                          final ConnectionEventType type) {
         if (this.eventListener != null) {
@@ -246,12 +240,16 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     }
 
     /**
-     * Setter method for property <tt>reconnectManager<tt>.
-     *
+     * please use {@link ConnectionEventHandler#setReconnector(Reconnector)} instead
      * @param reconnectManager value to be assigned to property reconnectManager
      */
+    @Deprecated
     public void setReconnectManager(ReconnectManager reconnectManager) {
         this.reconnectManager = reconnectManager;
+    }
+
+    public void setReconnector(Reconnector reconnector) {
+        this.reconnectManager = reconnector;
     }
 
     /**
@@ -269,22 +267,17 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         /**
          * Process event.
          * 
-         * @param event
+         * @param runnable Runnable
          */
-        public void onEvent(Runnable event) {
+        public void onEvent(Runnable runnable) {
             try {
-                executor.execute(event);
+                executor.execute(runnable);
             } catch (Throwable t) {
                 logger.error("Exception caught when execute connection event!", t);
             }
         }
     }
 
-    /**
-     * print info log
-     * @param format
-     * @param addr
-     */
     private void infoLog(String format, String addr) {
         if (logger.isInfoEnabled()) {
             if (StringUtils.isNotEmpty(addr)) {

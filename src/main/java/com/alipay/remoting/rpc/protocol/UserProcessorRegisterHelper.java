@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.alipay.remoting.util.StringUtils;
 
 /**
- * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:22 AM
+ * @author muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:22 AM
  */
 public class UserProcessorRegisterHelper {
 
@@ -30,7 +30,6 @@ public class UserProcessorRegisterHelper {
      *
      * @param processor  the processor need to be registered
      * @param userProcessors   the map of user processors
-     * @throws RuntimeException
      */
     public static void registerUserProcessor(UserProcessor<?> processor,
                                              ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
@@ -60,7 +59,6 @@ public class UserProcessorRegisterHelper {
      *
      * @param processor  the processor with multi-interest need to be registered
      * @param userProcessors    the map of user processors
-     * @throws RuntimeException
      */
     private static void registerUserProcessor(MultiInterestUserProcessor<?> processor,
                                               ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {

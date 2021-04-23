@@ -35,8 +35,8 @@ public class CodecException extends RemotingException {
 
     /**
      * Constructor.
-     * 
-     * @param message
+     *
+     * @param message the detail message.
      */
     public CodecException(String message) {
         super(message);
@@ -44,9 +44,9 @@ public class CodecException extends RemotingException {
 
     /**
      * Constructor.
-     * 
-     * @param message
-     * @param cause
+     *
+     * @param message the detail message
+     * @param cause the cause
      */
     public CodecException(String message, Throwable cause) {
         super(message, cause);

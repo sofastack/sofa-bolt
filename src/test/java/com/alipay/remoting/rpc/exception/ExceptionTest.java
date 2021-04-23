@@ -44,7 +44,7 @@ import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
 
 /**
  * exception test
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: ExceptionTest.java, v 0.1 Apr 6, 2016 9:41:53 PM xiaomin.cxm Exp $
  */
@@ -82,7 +82,7 @@ public class ExceptionTest {
     public void testSyncNoProcessor() {
         server.registerUserProcessor(new SimpleServerUserProcessor());
         try {
-            client.invokeSync(addr, new String("No processor for String now!"), 3000);
+            client.invokeSync(addr, "No processor for String now!", 3000);
         } catch (Exception e) {
             Assert.assertEquals(InvokeServerException.class, e.getClass());
         }

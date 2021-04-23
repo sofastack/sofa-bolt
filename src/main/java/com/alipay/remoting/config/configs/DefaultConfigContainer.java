@@ -42,11 +42,12 @@ public class DefaultConfigContainer implements ConfigContainer {
     @Override
     public boolean contains(ConfigType configType, ConfigItem configItem) {
         validate(configType, configItem);
-        return null != userConfigs.get(configType) ? userConfigs.get(configType).containsKey(
-            configItem) : false;
+        return null != userConfigs.get(configType)
+               && userConfigs.get(configType).containsKey(configItem);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T get(ConfigType configType, ConfigItem configItem) {
         validate(configType, configItem);
         if (userConfigs.containsKey(configType)) {

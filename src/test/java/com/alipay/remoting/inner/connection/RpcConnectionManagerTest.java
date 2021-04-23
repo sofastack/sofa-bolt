@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.alipay.remoting.DefaultClientConnectionManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,8 +59,9 @@ public class RpcConnectionManagerTest {
 
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors           = new ConcurrentHashMap<String, UserProcessor<?>>();
 
-    private DefaultConnectionManager                    cm;
-    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy();
+    private DefaultClientConnectionManager              cm;
+    private ConnectionSelectStrategy                    connectionSelectStrategy = new RandomSelectStrategy(
+                                                                                     null);
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
                                                                                      userProcessors,
@@ -79,10 +81,10 @@ public class RpcConnectionManagerTest {
 
     @Before
     public void init() {
-        cm = new DefaultConnectionManager(connectionSelectStrategy, connectionFactory,
+        cm = new DefaultClientConnectionManager(connectionSelectStrategy, connectionFactory,
             connectionEventHandler, connectionEventListener);
         cm.setAddressParser(addressParser);
-        cm.init();
+        cm.startup();
         server = new BoltServer(port);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);

@@ -29,114 +29,105 @@ import io.netty.util.Timeout;
 public interface InvokeFuture {
     /**
      * Wait response with timeout.
-     * 
-     * @param timeoutMillis
-     * @return
-     * @throws InterruptedException
+     *
+     * @param timeoutMillis time out in millisecond
+     * @return remoting command
+     * @throws InterruptedException if interrupted
      */
-    public RemotingCommand waitResponse(final long timeoutMillis) throws InterruptedException;
+    RemotingCommand waitResponse(final long timeoutMillis) throws InterruptedException;
 
     /**
      * Wait response with unlimit timeout
      *
-     * @return
-     * @throws InterruptedException
+     * @return remoting command
+     * @throws InterruptedException if interrupted
      */
-    public RemotingCommand waitResponse() throws InterruptedException;
+    RemotingCommand waitResponse() throws InterruptedException;
 
     /**
      * Create a remoting command response when connection closed
      *
-     * @param responseHost
-     * @return
+     * @param responseHost target host
+     * @return remoting command
      */
-    public RemotingCommand createConnectionClosedResponse(InetSocketAddress responseHost);
+    RemotingCommand createConnectionClosedResponse(InetSocketAddress responseHost);
 
     /**
      * Put the response to the future.
-     * 
-     * @param response
+     *
+     * @param response remoting command
      */
-    public void putResponse(final RemotingCommand response);
+    void putResponse(final RemotingCommand response);
 
     /**
      * Get the id of the invocation.
-     * 
-     * @return
+     * @return invoke id
      */
-    public int invokeId();
+    int invokeId();
 
     /**
      * Execute the callback.
      */
-    public void executeInvokeCallback();
+    void executeInvokeCallback();
 
     /**
      * Asynchronous execute the callback abnormally.
      */
-    public void tryAsyncExecuteInvokeCallbackAbnormally();
+    void tryAsyncExecuteInvokeCallbackAbnormally();
 
     /**
      * Set the cause if exception caught.
-     * 
-     * @param cause
      */
-    public void setCause(Throwable cause);
+    void setCause(Throwable cause);
 
     /**
      * Get the cause of exception of the future.
-     * 
-     * @return
+     * @return the cause
      */
-    public Throwable getCause();
+    Throwable getCause();
 
     /**
      * Get the application callback of the future.
-     * 
-     * @return
+     * @return get invoke callback
      */
-    public InvokeCallback getInvokeCallback();
+    InvokeCallback getInvokeCallback();
 
     /**
      * Add timeout for the future.
-     * 
-     * @param timeout
      */
-    public void addTimeout(Timeout timeout);
+    void addTimeout(Timeout timeout);
 
     /**
      * Cancel the timeout.
      */
-    public void cancelTimeout();
+    void cancelTimeout();
 
     /**
      * Whether the future is done.
-     * 
-     * @return
+     * @return true if the future is done
      */
-    public boolean isDone();
+    boolean isDone();
 
     /**
+     * Get application classloader.
      * @return application classloader
      */
-    public ClassLoader getAppClassLoader();
+    ClassLoader getAppClassLoader();
 
     /**
      * Get the protocol code of command.
-     * 
-     * @return
+     * @return protocol code
      */
-    public byte getProtocolCode();
+    byte getProtocolCode();
 
     /**
      * set invoke context
-     * @param invokeContext
      */
-    public void setInvokeContext(InvokeContext invokeContext);
+    void setInvokeContext(InvokeContext invokeContext);
 
     /**
-     * get invoke context
-     * @return
+     * Get invoke context.
+     * @return the invoke context
      */
-    public InvokeContext getInvokeContext();
+    InvokeContext getInvokeContext();
 }
