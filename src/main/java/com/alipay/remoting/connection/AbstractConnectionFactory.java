@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -223,10 +224,16 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             in = new FileInputStream(RpcConfigManager.client_ssl_keystore());
             char[] passChs = RpcConfigManager.client_ssl_keystore_pass().toCharArray();
             ks.load(in, passChs);
+
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(RpcConfigManager
+                    .server_ssl_kmf_algorithm());
+            kmf.init(ks, passChs);
+
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(RpcConfigManager
                 .client_ssl_tmf_algorithm());
             tmf.init(ks);
-            return SslContextBuilder.forClient().trustManager(tmf).build();
+
+            return SslContextBuilder.forClient().keyManager(kmf).trustManager(tmf).build();
         } catch (Exception e) {
             logger.error("Fail to init SSL context for connection factory.", e);
             throw new IllegalStateException("Fail to init SSL context", e);

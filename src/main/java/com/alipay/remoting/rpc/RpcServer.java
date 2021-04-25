@@ -24,7 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.TrustManagerFactory;
+
 import com.alipay.remoting.*;
 import com.alipay.remoting.config.BoltGenericOption;
 import org.slf4j.Logger;
@@ -352,7 +355,11 @@ public class RpcServer extends AbstractRemotingServer {
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(RpcConfigManager
                 .server_ssl_kmf_algorithm());
             kmf.init(ks, passChs);
-            return SslContextBuilder.forServer(kmf).build();
+
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(RpcConfigManager
+                .client_ssl_tmf_algorithm());
+            tmf.init(ks);
+            return SslContextBuilder.forServer(kmf).trustManager(tmf).build();
         } catch (Exception e) {
             logger.error("Fail to init SSL context for server.", e);
             throw new IllegalStateException("Fail to init SSL context", e);
