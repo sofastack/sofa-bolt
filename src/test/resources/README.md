@@ -13,16 +13,20 @@ keytool -genkey -alias securebolt -keysize 2048 -validity  365 -keyalg RSA -dnam
 keytool -export -alias securebolt -keystore bolt.pfx -storepass sfbolt -file bolt.cer
 ```
 
-Then generate client keystore:
+Then, generate client keystore and export it's certificate file:
 
 ```sh
 keytool -genkey -alias smcc -keysize 2048 -validity 365 -keyalg RSA -dname "CN=localhost" -keypass sfbolt -storepass sfbolt -keystore cbolt.pfx -deststoretype pkcs12
+
+keytool -export -alias smcc -keystore cbolt.pfx -storepass sfbolt -file cbolt.cer
 ```
 
-Finally, import server's certificate into client's keystore:
+Finally, import server's certificate into client's keystore, and import the client's certificate into the server's keystore:
 
 ```sh
 keytool -import -trustcacerts -alias securebolt -file bolt.cer -storepass sfbolt -keystore cbolt.pfx
+
+keytool -import -trustcacerts -alias smcc -file cbolt.cer -storepass sfbolt -keystore bolt.pfx
 ```
 
 

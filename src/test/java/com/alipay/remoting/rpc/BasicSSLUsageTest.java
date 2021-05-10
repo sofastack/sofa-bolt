@@ -16,6 +16,11 @@
  */
 package com.alipay.remoting.rpc;
 
+import com.alipay.remoting.exception.RemotingException;
+import com.alipay.remoting.rpc.common.RequestBody;
+import org.junit.Assert;
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import java.io.File;
 
@@ -30,6 +35,7 @@ public class BasicSSLUsageTest extends BasicUsageTest {
 
         // For server
         System.setProperty(RpcConfigs.SRV_SSL_ENABLE, "true");
+        System.setProperty(RpcConfigs.SRV_SSL_NEED_CLIENT_AUTH, "true");
         System.setProperty(RpcConfigs.SRV_SSL_KEYSTORE, getResourceFile("bolt.pfx")
             .getAbsolutePath());
         System.setProperty(RpcConfigs.SRV_SSL_KEYSTORE_PASS, PASSWORD);
@@ -58,6 +64,30 @@ public class BasicSSLUsageTest extends BasicUsageTest {
         System.setProperty(RpcConfigs.CLI_SSL_ENABLE, "false");
         assertFalse(RpcConfigManager.server_ssl_enable());
         assertFalse(RpcConfigManager.client_ssl_enable());
+    }
+
+    @Test
+    public void testSync0() throws InterruptedException {
+        RequestBody req = new RequestBody(1, "hello world sync");
+        for (int i = 0; i < invokeTimes; i++) {
+            try {
+                String res = (String) client.invokeSync(addr, req, 3000);
+                logger.warn("Result received in sync: " + res);
+                Assert.assertEquals(RequestBody.DEFAULT_SERVER_RETURN_STR, res);
+            } catch (RemotingException e) {
+                String errMsg = "RemotingException caught in sync!";
+                logger.error(errMsg, e);
+                Assert.fail(errMsg);
+            } catch (InterruptedException e) {
+                String errMsg = "InterruptedException caught in sync!";
+                logger.error(errMsg, e);
+                Assert.fail(errMsg);
+            }
+        }
+
+        Assert.assertTrue(serverConnectProcessor.isConnected());
+        Assert.assertEquals(1, serverConnectProcessor.getConnectTimes());
+        Assert.assertEquals(invokeTimes, serverUserProcessor.getInvokeTimes());
     }
 
 }
