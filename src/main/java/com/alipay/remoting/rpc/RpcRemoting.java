@@ -16,12 +16,12 @@
  */
 package com.alipay.remoting.rpc;
 
+import com.alipay.remoting.ConnectionManager;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.BaseRemoting;
 import com.alipay.remoting.CommandFactory;
 import com.alipay.remoting.Connection;
-import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.InvokeFuture;
@@ -48,13 +48,13 @@ public abstract class RpcRemoting extends BaseRemoting {
         RpcProtocolManager.initProtocols();
     }
     /** logger */
-    private static final Logger        logger = BoltLoggerFactory.getLogger("RpcRemoting");
+    private static final Logger     logger = BoltLoggerFactory.getLogger("RpcRemoting");
 
     /** address parser to get custom args */
-    protected RemotingAddressParser    addressParser;
+    protected RemotingAddressParser addressParser;
 
     /** connection manager */
-    protected DefaultConnectionManager connectionManager;
+    protected ConnectionManager     connectionManager;
 
     /**
      * default constructor
@@ -68,7 +68,7 @@ public abstract class RpcRemoting extends BaseRemoting {
      * @param connectionManager
      */
     public RpcRemoting(CommandFactory commandFactory, RemotingAddressParser addressParser,
-                       DefaultConnectionManager connectionManager) {
+                       ConnectionManager connectionManager) {
         this(commandFactory);
         this.addressParser = addressParser;
         this.connectionManager = connectionManager;
@@ -183,9 +183,8 @@ public abstract class RpcRemoting extends BaseRemoting {
             timeoutMillis);
         responseCommand.setInvokeContext(invokeContext);
 
-        Object responseObject = RpcResponseResolver.resolveResponseObject(responseCommand,
+        return RpcResponseResolver.resolveResponseObject(responseCommand,
             RemotingUtil.parseRemoteAddress(conn.getChannel()));
-        return responseObject;
     }
 
     /**
@@ -339,7 +338,7 @@ public abstract class RpcRemoting extends BaseRemoting {
             // enable crc by default, user can disable by set invoke context `false` for key `InvokeContext.BOLT_CRC_SWITCH`
             Boolean crcSwitch = invokeContext.get(InvokeContext.BOLT_CRC_SWITCH,
                 ProtocolSwitch.CRC_SWITCH_DEFAULT_VALUE);
-            if (null != crcSwitch && crcSwitch) {
+            if (crcSwitch == null || crcSwitch) {
                 command.setProtocolSwitch(ProtocolSwitch
                     .create(new int[] { ProtocolSwitch.CRC_SWITCH_INDEX }));
             }
@@ -359,9 +358,6 @@ public abstract class RpcRemoting extends BaseRemoting {
     protected abstract void preProcessInvokeContext(InvokeContext invokeContext,
                                                     RemotingCommand cmd, Connection connection);
 
-    /**
-     * @param requestCommand
-     */
     private void logDebugInfo(RemotingCommand requestCommand) {
         if (logger.isDebugEnabled()) {
             logger.debug("Send request, requestId=" + requestCommand.getId());

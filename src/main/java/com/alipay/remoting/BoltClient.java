@@ -653,7 +653,14 @@ public interface BoltClient extends Configurable, LifeCycle {
      *
      * @return property value of connectionManager
      */
-    DefaultConnectionManager getConnectionManager();
+    ConnectionManager getConnectionManager();
+
+    /**
+     * Setter method for property <tt>connectionManager</tt>.
+     *
+     * @param connectionManager ConnectionManager
+     */
+    void setConnectionManager(ConnectionManager connectionManager);
 
     /**
      * Getter method for property <tt>addressParser</tt>.

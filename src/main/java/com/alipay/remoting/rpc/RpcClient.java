@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.AbstractBoltClient;
+import com.alipay.remoting.ConnectionManager;
 import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultClientConnectionManager;
 import com.alipay.remoting.LifeCycleException;
@@ -34,7 +35,6 @@ import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventProcessor;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.ConnectionMonitorStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.DefaultConnectionMonitor;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.InvokeContext;
@@ -65,7 +65,7 @@ public class RpcClient extends AbstractBoltClient {
     private final ConnectionEventHandler                      connectionEventHandler;
     private final ConnectionEventListener                     connectionEventListener;
 
-    private DefaultClientConnectionManager                    connectionManager;
+    private ConnectionManager                                 connectionManager;
     private Reconnector                                       reconnectManager;
     private RemotingAddressParser                             addressParser;
     private DefaultConnectionMonitor                          connectionMonitor;
@@ -135,11 +135,14 @@ public class RpcClient extends AbstractBoltClient {
         if (connectionSelectStrategy == null) {
             connectionSelectStrategy = new RandomSelectStrategy(switches());
         }
-        this.connectionManager = new DefaultClientConnectionManager(connectionSelectStrategy,
-            new RpcConnectionFactory(userProcessors, this), connectionEventHandler,
-            connectionEventListener, switches());
-        this.connectionManager.setAddressParser(this.addressParser);
-        this.connectionManager.startup();
+        if (this.connectionManager == null) {
+            DefaultClientConnectionManager defaultConnectionManager = new DefaultClientConnectionManager(
+                connectionSelectStrategy, new RpcConnectionFactory(userProcessors, this),
+                connectionEventHandler, connectionEventListener, switches());
+            defaultConnectionManager.setAddressParser(this.addressParser);
+            defaultConnectionManager.startup();
+            this.connectionManager = defaultConnectionManager;
+        }
         this.rpcRemoting = new RpcClientRemoting(new RpcCommandFactory(), this.addressParser,
             this.connectionManager);
         this.taskScanner.add(this.connectionManager);
@@ -157,7 +160,7 @@ public class RpcClient extends AbstractBoltClient {
             logger.warn("Switch on connection monitor");
         }
         if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
-            reconnectManager = new ReconnectManager(connectionManager);
+            reconnectManager = new ReconnectManager(this.connectionManager);
             reconnectManager.startup();
 
             connectionEventHandler.setReconnector(reconnectManager);
@@ -553,8 +556,13 @@ public class RpcClient extends AbstractBoltClient {
     }
 
     @Override
-    public DefaultConnectionManager getConnectionManager() {
+    public ConnectionManager getConnectionManager() {
         return this.connectionManager;
+    }
+
+    @Override
+    public void setConnectionManager(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     @Override
