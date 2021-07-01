@@ -74,14 +74,14 @@ public class BoltLoggerFactory {
 
     public static Logger getLogger(Class<?> clazz) {
         if (clazz == null) {
-            return null;
+            return getLogger("");
         }
         return getLogger(clazz.getCanonicalName());
     }
 
     public static Logger getLogger(String name) {
         if (name == null || name.isEmpty()) {
-            return null;
+            return LoggerSpaceManager.getLoggerBySpace("", BOLT_LOG_SPACE);
         }
         return LoggerSpaceManager.getLoggerBySpace(name, BOLT_LOG_SPACE);
     }

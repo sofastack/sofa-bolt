@@ -238,11 +238,14 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
     protected Channel doCreateConnection(String targetIP, int targetPort, int connectTimeout)
                                                                                              throws Exception {
-        // prevent unreasonable value, at least 1000
-        connectTimeout = Math.max(connectTimeout, 1000);
         String address = targetIP + ":" + targetPort;
         if (logger.isDebugEnabled()) {
             logger.debug("connectTimeout of address [{}] is [{}].", address, connectTimeout);
+        }
+        if (connectTimeout <= 0) {
+            throw new IllegalArgumentException(String.format(
+                "illegal timeout for creating connection, address: %s, timeout: %d", address,
+                connectTimeout));
         }
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
         ChannelFuture future = bootstrap.connect(new InetSocketAddress(targetIP, targetPort));
