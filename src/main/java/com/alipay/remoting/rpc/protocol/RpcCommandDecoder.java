@@ -19,6 +19,7 @@ package com.alipay.remoting.rpc.protocol;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+import com.alipay.remoting.util.ThreadLocalArriveTimeHolder;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandCode;
@@ -96,6 +97,8 @@ public class RpcCommandDecoder implements CommandDecoder {
                             byte[] clazz = null;
                             byte[] header = null;
                             byte[] content = null;
+
+                            ThreadLocalArriveTimeHolder.arrive(requestId);
                             if (in.readableBytes() >= classLen + headerLen + contentLen) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
@@ -117,7 +120,7 @@ public class RpcCommandDecoder implements CommandDecoder {
                             if (cmdCode == CommandCode.HEARTBEAT_VALUE) {
                                 command = new HeartbeatCommand();
                             } else {
-                                command = createRequestCommand(cmdCode);
+                                command = createRequestCommand(cmdCode, requestId);
                             }
                             command.setType(type);
                             command.setVersion(ver2);
@@ -207,10 +210,11 @@ public class RpcCommandDecoder implements CommandDecoder {
         return command;
     }
 
-    private RpcRequestCommand createRequestCommand(short cmdCode) {
+    private RpcRequestCommand createRequestCommand(short cmdCode, int requestId) {
         RpcRequestCommand command = new RpcRequestCommand();
         command.setCmdCode(RpcCommandCode.valueOf(cmdCode));
         command.setArriveTime(System.currentTimeMillis());
+        command.setArriveTimeInNano(ThreadLocalArriveTimeHolder.getAndClear(requestId));
         return command;
     }
 
