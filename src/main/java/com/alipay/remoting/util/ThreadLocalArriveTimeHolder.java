@@ -28,25 +28,30 @@ import java.util.Map;
 public class ThreadLocalArriveTimeHolder {
     private static FastThreadLocal<Map<String, Long>> arriveTimeInNano = new FastThreadLocal<Map<String, Long>>();
 
-    static {
-        arriveTimeInNano.set(new HashMap<String, Long>(256));
-    }
-
     public static void arrive(String key) {
-
-        Map<String, Long> map = arriveTimeInNano.get();
+        Map<String, Long> map = getArriveTimeMap();
         if (map.get(key) == null) {
             map.put(key, System.nanoTime());
         }
     }
 
     public static long getAndClear(String key) {
-        Map<String, Long> map = arriveTimeInNano.get();
+        Map<String, Long> map = getArriveTimeMap();
         Long result = map.remove(key);
         if (result == null) {
             return -1;
         }
         return result;
+    }
+
+    private static Map<String, Long> getArriveTimeMap() {
+        Map<String, Long> map = arriveTimeInNano.get();
+        if (map == null) {
+            arriveTimeInNano.set(new HashMap<String, Long>(256));
+            return arriveTimeInNano.get();
+        } else {
+            return map;
+        }
     }
 
 }

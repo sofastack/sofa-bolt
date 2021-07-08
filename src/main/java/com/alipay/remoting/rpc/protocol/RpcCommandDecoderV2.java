@@ -107,7 +107,7 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
 
                             SocketAddress socketAddress = ctx.channel().remoteAddress();
                             String uniqueKey = null;
-                            if(socketAddress != null){
+                            if (socketAddress != null) {
                                 String remoteAddress = socketAddress.toString();
                                 uniqueKey = remoteAddress + requestId;
                                 ThreadLocalArriveTimeHolder.arrive(uniqueKey);
