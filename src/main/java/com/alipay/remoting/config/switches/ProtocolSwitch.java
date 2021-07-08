@@ -127,8 +127,8 @@ public class ProtocolSwitch implements Switch {
     public static BitSet toBitSet(int value) {
         if (value < 0 || value > Byte.MAX_VALUE) {
             throw new IllegalArgumentException(
-                "The value " + value + " is out of byte range, should be limited between ["
-                        + 0 + "] to [" + Byte.MAX_VALUE + "]");
+                "The value " + value + " is out of byte range, should be limited between [" + 0
+                        + "] to [" + Byte.MAX_VALUE + "]");
         }
         BitSet bs = new BitSet();
         int index = 0;

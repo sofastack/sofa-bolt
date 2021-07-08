@@ -36,4 +36,10 @@ public class ThreadLocalArriveTimeHolderTest {
         Assert.assertTrue(time <= end);
         Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear("a"));
     }
+
+    @Test
+    public void testRemoveNull() {
+        Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear(null));
+
+    }
 }

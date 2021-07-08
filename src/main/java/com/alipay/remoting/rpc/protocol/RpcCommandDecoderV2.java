@@ -17,6 +17,7 @@
 package com.alipay.remoting.rpc.protocol;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.List;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -88,7 +89,6 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                     in.readByte(); //protocol code
                     byte version = in.readByte(); //protocol version
                     byte type = in.readByte(); //type
-                    String socketAddress = ctx.channel().remoteAddress().toString();
                     if (type == RpcCommandType.REQUEST || type == RpcCommandType.REQUEST_ONEWAY) {
                         //decode request
                         if (in.readableBytes() >= RpcProtocolV2.getRequestHeaderLength() - 3) {
@@ -105,8 +105,13 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             byte[] header = null;
                             byte[] content = null;
 
-                            String uniqueKey = socketAddress + requestId;
-                            ThreadLocalArriveTimeHolder.arrive(uniqueKey);
+                            SocketAddress socketAddress = ctx.channel().remoteAddress();
+                            String uniqueKey = null;
+                            if(socketAddress != null){
+                                String remoteAddress = socketAddress.toString();
+                                uniqueKey = remoteAddress + requestId;
+                                ThreadLocalArriveTimeHolder.arrive(uniqueKey);
+                            }
                             // decide the at-least bytes length for each version
                             int lengthAtLeastForV1 = classLen + headerLen + contentLen;
                             boolean crcSwitchOn = ProtocolSwitch.isOn(

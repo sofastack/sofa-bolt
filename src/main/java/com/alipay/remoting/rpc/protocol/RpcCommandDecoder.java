@@ -17,6 +17,7 @@
 package com.alipay.remoting.rpc.protocol;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.List;
 
 import com.alipay.remoting.util.ThreadLocalArriveTimeHolder;
@@ -97,9 +98,14 @@ public class RpcCommandDecoder implements CommandDecoder {
                             byte[] clazz = null;
                             byte[] header = null;
                             byte[] content = null;
-                            String remoteAddress = ctx.channel().remoteAddress().toString();
-                            String uniqueKey = remoteAddress + requestId;
-                            ThreadLocalArriveTimeHolder.arrive(uniqueKey);
+                            SocketAddress socketAddress = ctx.channel().remoteAddress();
+                            String uniqueKey = null;
+                            if(socketAddress != null){
+                                String remoteAddress = socketAddress.toString();
+                                uniqueKey = remoteAddress + requestId;
+                                ThreadLocalArriveTimeHolder.arrive(uniqueKey);
+                            }
+
                             if (in.readableBytes() >= classLen + headerLen + contentLen) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
