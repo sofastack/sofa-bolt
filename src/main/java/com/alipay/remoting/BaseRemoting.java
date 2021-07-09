@@ -61,6 +61,7 @@ public abstract class BaseRemoting {
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
         conn.addInvokeFuture(future);
         final int requestId = request.getId();
+        InvokeContext invokeContext = request.getInvokeContext();
         try {
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
@@ -75,6 +76,10 @@ public abstract class BaseRemoting {
                 }
 
             });
+
+            if (null != invokeContext) {
+                invokeContext.put("REQUEST_SEND", System.nanoTime());
+            }
         } catch (Exception e) {
             conn.removeInvokeFuture(requestId);
             future.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));

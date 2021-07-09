@@ -17,11 +17,11 @@
 package com.alipay.remoting.rpc.protocol;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.List;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.ThreadLocalArriveTimeHolder;
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.CommandCode;
@@ -105,13 +105,9 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             byte[] header = null;
                             byte[] content = null;
 
-                            SocketAddress socketAddress = ctx.channel().remoteAddress();
-                            String uniqueKey = null;
-                            if (socketAddress != null) {
-                                String remoteAddress = socketAddress.toString();
-                                uniqueKey = remoteAddress + requestId;
-                                ThreadLocalArriveTimeHolder.arrive(uniqueKey);
-                            }
+                            Channel channel = ctx.channel();
+                            ThreadLocalArriveTimeHolder.arrive(channel, requestId);
+
                             // decide the at-least bytes length for each version
                             int lengthAtLeastForV1 = classLen + headerLen + contentLen;
                             boolean crcSwitchOn = ProtocolSwitch.isOn(
@@ -144,11 +140,15 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                                 in.resetReaderIndex();
                                 return;
                             }
+
+                            long headerArriveTimeInNano = ThreadLocalArriveTimeHolder.getAndClear(
+                                channel, requestId);
+
                             RequestCommand command;
                             if (cmdCode == CommandCode.HEARTBEAT_VALUE) {
                                 command = new HeartbeatCommand();
                             } else {
-                                command = createRequestCommand(cmdCode, uniqueKey);
+                                command = createRequestCommand(cmdCode, headerArriveTimeInNano);
                             }
                             command.setType(type);
                             command.setVersion(ver2);
@@ -270,11 +270,11 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
         return command;
     }
 
-    private RpcRequestCommand createRequestCommand(short cmdCode, String key) {
+    private RpcRequestCommand createRequestCommand(short cmdCode, long headerArriveTimeInNano) {
         RpcRequestCommand command = new RpcRequestCommand();
         command.setCmdCode(RpcCommandCode.valueOf(cmdCode));
         command.setArriveTime(System.currentTimeMillis());
-        command.setArriveHeaderTimeInNano(ThreadLocalArriveTimeHolder.getAndClear(key));
+        command.setArriveHeaderTimeInNano(headerArriveTimeInNano);
         command.setArriveBodyTimeInNano(System.nanoTime());
 
         return command;

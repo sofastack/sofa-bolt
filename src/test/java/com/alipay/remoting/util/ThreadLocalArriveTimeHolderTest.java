@@ -16,6 +16,7 @@
  */
 package com.alipay.remoting.util;
 
+import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,43 +31,46 @@ public class ThreadLocalArriveTimeHolderTest {
 
     @Test
     public void test() {
+        EmbeddedChannel channel = new EmbeddedChannel();
         long start = System.nanoTime();
-        ThreadLocalArriveTimeHolder.arrive("a");
+        ThreadLocalArriveTimeHolder.arrive(channel, 1);
         long end = System.nanoTime();
-        ThreadLocalArriveTimeHolder.arrive("a");
-        long time = ThreadLocalArriveTimeHolder.getAndClear("a");
+        ThreadLocalArriveTimeHolder.arrive(channel, 1);
+        long time = ThreadLocalArriveTimeHolder.getAndClear(channel, 1);
         Assert.assertTrue(time >= start);
         Assert.assertTrue(time <= end);
-        Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear("a"));
+        Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear(channel, 1));
     }
 
     @Test
     public void testRemoveNull() {
-        Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear(null));
+        EmbeddedChannel channel = new EmbeddedChannel();
+        Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear(channel, 1));
     }
 
     @Test
     public void testMultiThread() throws InterruptedException {
+        final EmbeddedChannel channel = new EmbeddedChannel();
         final CountDownLatch countDownLatch = new CountDownLatch(1);
         long start = System.nanoTime();
-        ThreadLocalArriveTimeHolder.arrive("a");
+        ThreadLocalArriveTimeHolder.arrive(channel, 1);
         long end = System.nanoTime();
-        ThreadLocalArriveTimeHolder.arrive("a");
-        long time = ThreadLocalArriveTimeHolder.getAndClear("a");
+        ThreadLocalArriveTimeHolder.arrive(channel, 1);
+        long time = ThreadLocalArriveTimeHolder.getAndClear(channel, 1);
         Assert.assertTrue(time >= start);
         Assert.assertTrue(time <= end);
-        Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear("a"));
+        Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear(channel, 1));
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 long start = System.nanoTime();
-                ThreadLocalArriveTimeHolder.arrive("a");
+                ThreadLocalArriveTimeHolder.arrive(channel, 1);
                 long end = System.nanoTime();
-                long time = ThreadLocalArriveTimeHolder.getAndClear("a");
+                long time = ThreadLocalArriveTimeHolder.getAndClear(channel, 1);
                 Assert.assertTrue(time >= start);
                 Assert.assertTrue(time <= end);
-                Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear("a"));
+                Assert.assertEquals(-1, ThreadLocalArriveTimeHolder.getAndClear(channel, 1));
                 countDownLatch.countDown();
             }
         };

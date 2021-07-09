@@ -16,27 +16,29 @@
  */
 package com.alipay.remoting.util;
 
+import io.netty.channel.Channel;
 import io.netty.util.concurrent.FastThreadLocal;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * @author zhaowang
  * @version : ThreadLocalTimeHolder.java, v 0.1 2021年07月01日 3:05 下午 zhaowang
  */
 public class ThreadLocalArriveTimeHolder {
-    private static FastThreadLocal<Map<String, Long>> arriveTimeInNano = new FastThreadLocal<Map<String, Long>>();
+    private static FastThreadLocal<WeakHashMap<Channel, Map<Integer, Long>>> arriveTimeInNano = new FastThreadLocal<WeakHashMap<Channel, Map<Integer, Long>>>();
 
-    public static void arrive(String key) {
-        Map<String, Long> map = getArriveTimeMap();
+    public static void arrive(Channel channel, Integer key) {
+        Map<Integer, Long> map = getArriveTimeMap(channel);
         if (map.get(key) == null) {
             map.put(key, System.nanoTime());
         }
     }
 
-    public static long getAndClear(String key) {
-        Map<String, Long> map = getArriveTimeMap();
+    public static long getAndClear(Channel channel, Integer key) {
+        Map<Integer, Long> map = getArriveTimeMap(channel);
         Long result = map.remove(key);
         if (result == null) {
             return -1;
@@ -44,14 +46,17 @@ public class ThreadLocalArriveTimeHolder {
         return result;
     }
 
-    private static Map<String, Long> getArriveTimeMap() {
-        Map<String, Long> map = arriveTimeInNano.get();
+    private static Map<Integer, Long> getArriveTimeMap(Channel channel) {
+        WeakHashMap<Channel, Map<Integer, Long>> map = arriveTimeInNano.get();
         if (map == null) {
-            arriveTimeInNano.set(new HashMap<String, Long>(256));
-            return arriveTimeInNano.get();
-        } else {
-            return map;
+            arriveTimeInNano.set(new WeakHashMap<Channel, Map<Integer, Long>>(256));
+            map = arriveTimeInNano.get();
         }
+        Map<Integer, Long> subMap = map.get(channel);
+        if (subMap == null) {
+            map.put(channel, new HashMap<Integer, Long>());
+        }
+        return map.get(channel);
     }
 
 }
