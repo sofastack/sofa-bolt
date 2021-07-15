@@ -58,6 +58,13 @@ public class InvokeContext {
     public final static String                BOLT_CUSTOM_SERIALIZER               = "bolt.invoke.custom.serializer";
     public final static String                BOLT_CRC_SWITCH                      = "bolt.invoke.crc.switch";
 
+    /** time before send request to net in nano seconds , collected by System.nanoTime() **/
+    public final static String                BOLT_PROCESS_CLIENT_BEFORE_SEND      = "bolt.invoke.client.before.send";
+    /** time after send request to net in nano seconds , collected by System.nanoTime() **/
+    public final static String                BOLT_PROCESS_CLIENT_AFTER_SEND       = "bolt.invoke.client.after.send";
+    /** time after receive response from server in nano seconds , collected by System.nanoTime() **/
+    public final static String                BOLT_PROCESS_CLIENT_RECEIVED         = "bolt.invoke.client.received";
+
     // ~~~ constants
     public final static int                   INITIAL_SIZE                         = 8;
 
