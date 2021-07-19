@@ -59,10 +59,7 @@ public class ClassCustomSerializerTest {
     RpcClient                 client;
 
     int                       port                      = PortScan.select();
-    String                    ip                        = "127.0.0.1";
     String                    addr                      = "127.0.0.1:" + port;
-
-    int                       invokeTimes               = 5;
 
     SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor();
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();

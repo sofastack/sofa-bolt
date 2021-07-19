@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
@@ -28,7 +29,7 @@ import com.alipay.remoting.config.BoltClientOption;
 import com.alipay.remoting.config.BoltGenericOption;
 import com.alipay.remoting.config.BoltServerOption;
 import com.alipay.remoting.config.Configurable;
-import io.netty.handler.traffic.AbstractTrafficShapingHandler;
+import com.alipay.remoting.ExtendedNettyChannelHandler;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -129,10 +130,15 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
-                AbstractTrafficShapingHandler trafficShapingHandler = configuration
-                    .option(BoltGenericOption.NETTY_TRAFFIC_SHAPING_HANDLER);
-                if (trafficShapingHandler != null) {
-                    pipeline.addLast("trafficShapingHandler", trafficShapingHandler);
+                ExtendedNettyChannelHandler extendedHandlers = configuration
+                    .option(BoltClientOption.EXTENDED_NETTY_CHANNEL_HANDLER);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> frontHandlers = extendedHandlers.frontChannelHandlers();
+                    if (frontHandlers != null) {
+                        for (ChannelHandler channelHandler : frontHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
                 }
                 if (RpcConfigManager.client_ssl_enable()) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
@@ -156,6 +162,14 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
                 pipeline.addLast("handler", handler);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> frontHandlers = extendedHandlers.backChannelHandlers();
+                    if (frontHandlers != null) {
+                        for (ChannelHandler channelHandler : frontHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
+                }
             }
         });
     }

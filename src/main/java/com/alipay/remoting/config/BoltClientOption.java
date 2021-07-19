@@ -47,7 +47,7 @@ public class BoltClientOption<T> extends BoltGenericOption<T> {
                                                                               "bolt.conn.reconnect",
                                                                               false);
     public static final BoltOption<Boolean> CONN_MONITOR_SWITCH           = valueOf(
-                                                                              "bolt.conn.reconnect",
+                                                                              "bolt.conn.monitor",
                                                                               false);
 
     private BoltClientOption(String name, T defaultValue) {

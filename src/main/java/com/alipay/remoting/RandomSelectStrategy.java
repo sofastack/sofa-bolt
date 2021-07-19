@@ -58,7 +58,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
             }
 
             Connection result;
-            if (configuration.option(BoltClientOption.CONN_MONITOR_SWITCH)) {
+            if (configuration != null && configuration.option(BoltClientOption.CONN_MONITOR_SWITCH)) {
                 List<Connection> serviceStatusOnConnections = new ArrayList<Connection>();
                 for (Connection conn : connections) {
                     String serviceStatus = (String) conn.getAttribute(Configs.CONN_SERVICE_STATUS);
