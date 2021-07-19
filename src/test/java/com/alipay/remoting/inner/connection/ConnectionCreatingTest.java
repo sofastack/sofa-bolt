@@ -120,9 +120,10 @@ public class ConnectionCreatingTest {
         }
 
         public MockConnectionManager() {
-            super(new RandomSelectStrategy(null), new RpcConnectionFactory(
-                new ConcurrentHashMap<String, UserProcessor<?>>(), new RpcClient()),
-                new RpcConnectionEventHandler(), new ConnectionEventListener());
+            super(new RandomSelectStrategy(null),
+                new RpcConnectionFactory(new ConcurrentHashMap<String, UserProcessor<?>>(),
+                    new RpcClient(), new RpcClient()), new RpcConnectionEventHandler(),
+                new ConnectionEventListener());
         }
 
         @Override

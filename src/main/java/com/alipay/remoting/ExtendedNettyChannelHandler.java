@@ -14,24 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.connection;
-
-import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.Configurable;
-import com.alipay.remoting.config.ConfigurableInstance;
+package com.alipay.remoting;
 
 import io.netty.channel.ChannelHandler;
 
-/**
- * Default connection factory.
- *
- * @author chengyi (mark.lx@antfin.com) 2018-06-20 15:18
- */
-public class DefaultConnectionFactory extends AbstractConnectionFactory {
+import java.util.List;
 
-    public DefaultConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                    ChannelHandler handler, ConfigurableInstance configInstance,
-                                    Configurable configuration) {
-        super(codec, heartbeatHandler, handler, configInstance, configuration);
-    }
+/**
+ * Leave it to external expansion and
+ * support the addition of extended handler in the channel pipeline.
+ */
+public interface ExtendedNettyChannelHandler {
+
+    /**
+     * Netty ChannelHandlers to be added before Bolt's built-in Handler.
+     * @return Netty ChannelHandler list
+     */
+    List<ChannelHandler> frontChannelHandlers();
+
+    /**
+     * Netty ChannelHandlers to be added after Bolt's built-in Handler.
+     * @return Netty ChannelHandler list
+     */
+    List<ChannelHandler> backChannelHandlers();
 }
