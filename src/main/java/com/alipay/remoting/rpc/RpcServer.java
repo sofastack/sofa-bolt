@@ -309,10 +309,18 @@ public class RpcServer extends AbstractRemotingServer {
                         }
                     }
                 }
-                if (RpcConfigManager.server_ssl_enable()) {
+
+                Boolean sslEnable = option(BoltServerOption.SRV_SSL_ENABLE);
+                if (!sslEnable) {
+                    // fixme: remove in next version
+                    sslEnable = RpcConfigManager.server_ssl_enable();
+                }
+                if (sslEnable) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(false);
-                    engine.setNeedClientAuth(RpcConfigManager.server_ssl_need_client_auth());
+                    // fixme: update in next version
+                    engine.setNeedClientAuth(option(BoltServerOption.SRV_SSL_NEED_CLIENT_AUTH)
+                                             || RpcConfigManager.server_ssl_need_client_auth());
                     pipeline.addLast(Constants.SSL_HANDLER, new SslHandler(engine));
                 }
 
@@ -362,12 +370,28 @@ public class RpcServer extends AbstractRemotingServer {
     private SslContext initSSLContext() {
         InputStream in = null;
         try {
-            KeyStore ks = KeyStore.getInstance(RpcConfigManager.server_ssl_keystore_type());
-            in = new FileInputStream(RpcConfigManager.server_ssl_keystore());
-            char[] passChs = RpcConfigManager.server_ssl_keystore_pass().toCharArray();
+            String keyStoreType = option(BoltServerOption.SRV_SSL_KEYSTORE_TYPE);
+            if (keyStoreType == null) {
+                keyStoreType = RpcConfigManager.server_ssl_keystore_type();
+            }
+            KeyStore ks = KeyStore.getInstance(keyStoreType);
+            String filePath = option(BoltServerOption.SRV_SSL_KEYSTORE);
+            if (filePath == null) {
+                filePath = RpcConfigManager.server_ssl_keystore();
+            }
+            in = new FileInputStream(filePath);
+
+            String keyStorePass = option(BoltServerOption.SRV_SSL_KEYSTORE_PASS);
+            if (keyStorePass == null) {
+                keyStorePass = RpcConfigManager.server_ssl_keystore_pass();
+            }
+            char[] passChs = keyStorePass.toCharArray();
             ks.load(in, passChs);
-            KeyManagerFactory kmf = KeyManagerFactory.getInstance(RpcConfigManager
-                .server_ssl_kmf_algorithm());
+            String sslAlgorithm = RpcConfigManager.server_ssl_kmf_algorithm();
+            if (sslAlgorithm == null) {
+                sslAlgorithm = option(BoltServerOption.SRV_SSL_KMF_ALGO);
+            }
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(sslAlgorithm);
             kmf.init(ks, passChs);
             return SslContextBuilder.forServer(kmf).build();
         } catch (Exception e) {

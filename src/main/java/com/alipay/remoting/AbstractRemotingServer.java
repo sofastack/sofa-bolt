@@ -21,7 +21,7 @@ import java.net.InetSocketAddress;
 import com.alipay.remoting.config.BoltOption;
 import com.alipay.remoting.config.BoltOptions;
 import com.alipay.remoting.config.BoltServerOption;
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.config.configs.ConfigContainer;
 import com.alipay.remoting.config.configs.DefaultConfigContainer;
@@ -145,7 +145,7 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
     }
 
     @Override
-    public <T> Configurable option(BoltOption<T> option, T value) {
+    public <T> Configuration option(BoltOption<T> option, T value) {
         options.option(option, value);
         return this;
     }

@@ -17,7 +17,7 @@
 package com.alipay.remoting.connection;
 
 import com.alipay.remoting.codec.Codec;
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 
 import io.netty.channel.ChannelHandler;
 
@@ -29,7 +29,7 @@ import io.netty.channel.ChannelHandler;
 public class DefaultConnectionFactory extends AbstractConnectionFactory {
 
     public DefaultConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                    ChannelHandler handler, Configurable configuration) {
+                                    ChannelHandler handler, Configuration configuration) {
         super(codec, heartbeatHandler, handler, configuration);
     }
 }

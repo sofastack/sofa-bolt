@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import com.alipay.remoting.config.BoltClientOption;
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -55,13 +55,13 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     private Reconnector             reconnectManager;
 
-    private Configurable            configuration;
+    private Configuration           configuration;
 
     public ConnectionEventHandler() {
 
     }
 
-    public ConnectionEventHandler(Configurable configuration) {
+    public ConnectionEventHandler(Configuration configuration) {
         this.configuration = configuration;
     }
 

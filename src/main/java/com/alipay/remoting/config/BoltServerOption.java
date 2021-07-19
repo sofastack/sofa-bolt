@@ -16,6 +16,8 @@
  */
 package com.alipay.remoting.config;
 
+import javax.net.ssl.KeyManagerFactory;
+
 /**
  * Supported options in server side.
  *
@@ -42,6 +44,26 @@ public class BoltServerOption<T> extends BoltGenericOption<T> {
     public static final BoltOption<Boolean> SERVER_SYNC_STOP                = valueOf(
                                                                                 "bolt.server.sync.stop",
                                                                                 false);
+
+    public static final BoltOption<Boolean> SRV_SSL_ENABLE                  = valueOf(
+                                                                                "bolt.server.ssl.enable",
+                                                                                false);
+    public static final BoltOption<String>  SRV_SSL_KEYSTORE_TYPE           = valueOf(
+                                                                                "bolt.server.ssl.keystore.type",
+                                                                                null);
+    public static final BoltOption<Boolean> SRV_SSL_NEED_CLIENT_AUTH        = valueOf(
+                                                                                "bolt.server.ssl.clientAuth",
+                                                                                false);
+    public static final BoltOption<String>  SRV_SSL_KEYSTORE                = valueOf(
+                                                                                "bolt.server.ssl.keystore",
+                                                                                null);
+    public static final BoltOption<String>  SRV_SSL_KEYSTORE_PASS           = valueOf(
+                                                                                "bolt.server.ssl.keystore.password",
+                                                                                null);
+    public static final BoltOption<String>  SRV_SSL_KMF_ALGO                = valueOf(
+                                                                                "bolt.server.ssl.kmf.algorithm",
+                                                                                KeyManagerFactory
+                                                                                    .getDefaultAlgorithm());
 
     private BoltServerOption(String name, T defaultValue) {
         super(name, defaultValue);

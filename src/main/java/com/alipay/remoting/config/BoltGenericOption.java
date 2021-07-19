@@ -78,6 +78,10 @@ public class BoltGenericOption<T> extends BoltOption<T> {
                                                                                                    "bolt.tp.keepalive",
                                                                                                    60);
 
+    /*------------ Thread Pool Config End ------------*/
+
+    public static final BoltOption<ConnectionSelectStrategy>    CONNECTION_SELECT_STRATEGY     = valueOf("CONNECTION_SELECT_STRATEGY");
+
     public static final BoltOption<Boolean>                     NETTY_FLUSH_CONSOLIDATION      = valueOf(
                                                                                                    "bolt.netty.flush_consolidation",
                                                                                                    false);
@@ -85,10 +89,6 @@ public class BoltGenericOption<T> extends BoltOption<T> {
     public static final BoltOption<ExtendedNettyChannelHandler> EXTENDED_NETTY_CHANNEL_HANDLER = valueOf(
                                                                                                    "bolt.extend.netty.channel.handler",
                                                                                                    null);
-
-    /*------------ Thread Pool Config End ------------*/
-
-    public static final BoltOption<ConnectionSelectStrategy>    CONNECTION_SELECT_STRATEGY     = valueOf("CONNECTION_SELECT_STRATEGY");
 
     protected BoltGenericOption(String name, T defaultValue) {
         super(name, defaultValue);

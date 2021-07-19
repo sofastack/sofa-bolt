@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.alipay.remoting.config.BoltClientOption;
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.config.Configs;
@@ -40,9 +40,9 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
 
     private static final int    MAX_TIMES = 5;
     private final Random        random    = new Random();
-    private final Configurable  configuration;
+    private final Configuration configuration;
 
-    public RandomSelectStrategy(Configurable configuration) {
+    public RandomSelectStrategy(Configuration configuration) {
         this.configuration = configuration;
     }
 

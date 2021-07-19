@@ -28,7 +28,7 @@ import javax.net.ssl.TrustManagerFactory;
 import com.alipay.remoting.config.BoltClientOption;
 import com.alipay.remoting.config.BoltGenericOption;
 import com.alipay.remoting.config.BoltServerOption;
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.ExtendedNettyChannelHandler;
 import org.slf4j.Logger;
 
@@ -81,7 +81,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
                                                         new NamedThreadFactory(
                                                             "bolt-netty-client-worker", true));
 
-    private final Configurable          configuration;
+    private final Configuration         configuration;
     private final Codec                 codec;
     private final ChannelHandler        heartbeatHandler;
     private final ChannelHandler        handler;
@@ -89,7 +89,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     protected Bootstrap                 bootstrap;
 
     public AbstractConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                     ChannelHandler handler, Configurable configuration) {
+                                     ChannelHandler handler, Configuration configuration) {
         if (codec == null) {
             throw new IllegalArgumentException("null codec");
         }
@@ -140,7 +140,12 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
                         }
                     }
                 }
-                if (RpcConfigManager.client_ssl_enable()) {
+                Boolean sslEnable = configuration.option(BoltClientOption.CLI_SSL_ENABLE);
+                if (!sslEnable) {
+                    // fixme: remove in next version
+                    sslEnable = RpcConfigManager.client_ssl_enable();
+                }
+                if (sslEnable) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(true);
                     pipeline.addLast(Constants.SSL_HANDLER, new SslHandler(engine));
@@ -252,12 +257,28 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     private SslContext initSSLContext() {
         InputStream in = null;
         try {
-            KeyStore ks = KeyStore.getInstance(RpcConfigManager.client_ssl_keystore_type());
-            in = new FileInputStream(RpcConfigManager.client_ssl_keystore());
-            char[] passChs = RpcConfigManager.client_ssl_keystore_pass().toCharArray();
+            String sslKeyStoreType = configuration.option(BoltClientOption.CLI_SSL_KEYSTORE_TYPE);
+            if (sslKeyStoreType == null) {
+                // fixme: remove in next version
+                sslKeyStoreType = RpcConfigManager.client_ssl_keystore_type();
+            }
+            KeyStore ks = KeyStore.getInstance(sslKeyStoreType);
+            String sslKeyStore = configuration.option(BoltClientOption.CLI_SSL_KEYSTORE);
+            if (sslKeyStore == null) {
+                sslKeyStore = RpcConfigManager.client_ssl_keystore();
+            }
+            in = new FileInputStream(sslKeyStore);
+            String keyStorePass = configuration.option(BoltClientOption.CLI_SSL_KEYSTORE_PASS);
+            if (keyStorePass == null) {
+                keyStorePass = RpcConfigManager.client_ssl_keystore_pass();
+            }
+            char[] passChs = keyStorePass.toCharArray();
             ks.load(in, passChs);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(RpcConfigManager
-                .client_ssl_tmf_algorithm());
+            String sslAlgorithm = RpcConfigManager.client_ssl_tmf_algorithm();
+            if (sslAlgorithm == null) {
+                sslAlgorithm = configuration.option(BoltClientOption.CLI_SSL_TMF_ALGO);
+            }
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(sslAlgorithm);
             tmf.init(ks);
             return SslContextBuilder.forClient().trustManager(tmf).build();
         } catch (Exception e) {
