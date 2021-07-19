@@ -24,6 +24,11 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
 
+import com.alipay.remoting.config.BoltClientOption;
+import com.alipay.remoting.config.BoltGenericOption;
+import com.alipay.remoting.config.BoltServerOption;
+import com.alipay.remoting.config.Configurable;
+import io.netty.handler.traffic.AbstractTrafficShapingHandler;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -34,9 +39,7 @@ import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.constant.Constants;
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.RpcConfigManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
@@ -77,7 +80,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
                                                         new NamedThreadFactory(
                                                             "bolt-netty-client-worker", true));
 
-    private final ConfigurableInstance  confInstance;
+    private final Configurable          configuration;
     private final Codec                 codec;
     private final ChannelHandler        heartbeatHandler;
     private final ChannelHandler        handler;
@@ -85,7 +88,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     protected Bootstrap                 bootstrap;
 
     public AbstractConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                     ChannelHandler handler, ConfigurableInstance confInstance) {
+                                     ChannelHandler handler, Configurable configuration) {
         if (codec == null) {
             throw new IllegalArgumentException("null codec");
         }
@@ -93,7 +96,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             throw new IllegalArgumentException("null handler");
         }
 
-        this.confInstance = confInstance;
+        this.configuration = configuration;
         this.codec = codec;
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
@@ -119,13 +122,18 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
-        final boolean flushConsolidationSwitch = this.confInstance.switches().isOn(
-            GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
+        final boolean flushConsolidationSwitch = this.configuration
+            .option(BoltClientOption.NETTY_FLUSH_CONSOLIDATION);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                AbstractTrafficShapingHandler trafficShapingHandler = configuration
+                    .option(BoltGenericOption.NETTY_TRAFFIC_SHAPING_HANDLER);
+                if (trafficShapingHandler != null) {
+                    pipeline.addLast("trafficShapingHandler", trafficShapingHandler);
+                }
                 if (RpcConfigManager.client_ssl_enable()) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(true);
@@ -199,8 +207,19 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
-        int lowWaterMark = this.confInstance.netty_buffer_low_watermark();
-        int highWaterMark = this.confInstance.netty_buffer_high_watermark();
+        // init with system properties
+        Integer lowWaterMarkConfig = ConfigManager.netty_buffer_low_watermark();
+        if (lowWaterMarkConfig != null) {
+            configuration.option(BoltServerOption.NETTY_BUFFER_LOW_WATER_MARK, lowWaterMarkConfig);
+        }
+        Integer highWaterMarkConfig = ConfigManager.netty_buffer_high_watermark();
+        if (highWaterMarkConfig != null) {
+            configuration
+                .option(BoltServerOption.NETTY_BUFFER_HIGH_WATER_MARK, highWaterMarkConfig);
+        }
+
+        int lowWaterMark = configuration.option(BoltGenericOption.NETTY_BUFFER_LOW_WATER_MARK);
+        int highWaterMark = configuration.option(BoltGenericOption.NETTY_BUFFER_HIGH_WATER_MARK);
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
                 String

@@ -89,7 +89,7 @@ public class ConnectionCreatingTest {
         ThreadTestUtils.sleep(1000);
 
         RpcClient rpcClient = new RpcClient();
-        MockConnectionManager connectionManager = new MockConnectionManager();
+        MockConnectionManager connectionManager = new MockConnectionManager(rpcClient);
         connectionManager.setSleepTime(500);
         connectionManager.startup();
         rpcClient.setConnectionManager(connectionManager);
@@ -119,9 +119,9 @@ public class ConnectionCreatingTest {
             this.sleepTime = sleepTime;
         }
 
-        public MockConnectionManager() {
+        public MockConnectionManager(RpcClient rpcClient) {
             super(new RandomSelectStrategy(null), new RpcConnectionFactory(
-                new ConcurrentHashMap<String, UserProcessor<?>>(), new RpcClient()),
+                new ConcurrentHashMap<String, UserProcessor<?>>(), rpcClient),
                 new RpcConnectionEventHandler(), new ConnectionEventListener());
         }
 

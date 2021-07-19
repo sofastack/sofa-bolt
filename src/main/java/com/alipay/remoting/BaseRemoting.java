@@ -39,7 +39,7 @@ public abstract class BaseRemoting {
 
     private final static Logger LOGGER                       = BoltLoggerFactory
                                                                  .getLogger("CommonDefault");
-    private final static long   ABANDONING_REQUEST_THRESHOLD = 1L;
+    private final static long   ABANDONING_REQUEST_THRESHOLD = 0L;
 
     protected CommandFactory    commandFactory;
 

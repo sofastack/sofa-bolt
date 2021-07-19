@@ -43,11 +43,11 @@ public class ConfigManager {
     }
 
     public static Integer tcp_so_sndbuf() {
-        return getInteger(Configs.TCP_SO_SNDBUF, null);
+        return getInteger(Configs.TCP_SO_SNDBUF);
     }
 
     public static Integer tcp_so_rcvbuf() {
-        return getInteger(Configs.TCP_SO_RCVBUF, null);
+        return getInteger(Configs.TCP_SO_RCVBUF);
     }
 
     public static int netty_io_ratio() {
@@ -58,14 +58,12 @@ public class ConfigManager {
         return getBool(Configs.NETTY_BUFFER_POOLED, Configs.NETTY_BUFFER_POOLED_DEFAULT);
     }
 
-    public static int netty_buffer_low_watermark() {
-        return getInt(Configs.NETTY_BUFFER_LOW_WATERMARK,
-            Configs.NETTY_BUFFER_LOW_WATERMARK_DEFAULT);
+    public static Integer netty_buffer_low_watermark() {
+        return getInteger(Configs.NETTY_BUFFER_LOW_WATERMARK);
     }
 
-    public static int netty_buffer_high_watermark() {
-        return getInt(Configs.NETTY_BUFFER_HIGH_WATERMARK,
-            Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT);
+    public static Integer netty_buffer_high_watermark() {
+        return getInteger(Configs.NETTY_BUFFER_HIGH_WATERMARK);
     }
 
     public static boolean netty_epoll() {
@@ -171,7 +169,7 @@ public class ConfigManager {
         return Integer.parseInt(getProperty(key, defaultValue));
     }
 
-    public static Integer getInteger(final String key, final String defaultValue) {
+    public static Integer getInteger(final String key) {
         String value = System.getProperty(key, null);
         return value != null ? Integer.parseInt(value) : null;
     }

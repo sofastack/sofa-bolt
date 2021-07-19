@@ -43,6 +43,13 @@ public class BoltClientOption<T> extends BoltGenericOption<T> {
                                                                               "bolt.conn.create.tp.keepalive",
                                                                               60);
 
+    public static final BoltOption<Boolean> CONN_RECONNECT_SWITCH         = valueOf(
+                                                                              "bolt.conn.reconnect",
+                                                                              false);
+    public static final BoltOption<Boolean> CONN_MONITOR_SWITCH           = valueOf(
+                                                                              "bolt.conn.reconnect",
+                                                                              false);
+
     private BoltClientOption(String name, T defaultValue) {
         super(name, defaultValue);
     }

@@ -58,7 +58,7 @@ public class ConnectionExceptionTest {
         connection.getChannel().close();
 
         Thread.sleep(100);
-        Assert.assertTrue("127.0.0.1:1024".equals(closedUrl[0]));
+        Assert.assertEquals("127.0.0.1:1024", closedUrl[0]);
 
         // connection has been created by ReconnectManager
         Thread.sleep(1000 * 2);

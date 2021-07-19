@@ -27,11 +27,12 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLEngine;
 import com.alipay.remoting.*;
 import com.alipay.remoting.config.BoltGenericOption;
+import com.alipay.remoting.config.BoltServerOption;
+import io.netty.handler.traffic.AbstractTrafficShapingHandler;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.constant.Constants;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -196,7 +197,7 @@ public class RpcServer extends AbstractRemotingServer {
         super(port);
         /* server connection management feature enabled or not, default value false, means disabled. */
         if (manageConnection) {
-            this.switches().turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
+            option(BoltServerOption.SERVER_MANAGE_CONNECTION_SWITCH, true);
         }
     }
 
@@ -218,7 +219,7 @@ public class RpcServer extends AbstractRemotingServer {
         super(ip, port);
         /* server connection management feature enabled or not, default value false, means disabled. */
         if (manageConnection) {
-            this.switches().turnOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH);
+            option(BoltServerOption.SERVER_MANAGE_CONNECTION_SWITCH, true);
         }
     }
 
@@ -234,7 +235,7 @@ public class RpcServer extends AbstractRemotingServer {
     public RpcServer(int port, boolean manageConnection, boolean syncStop) {
         this(port, manageConnection);
         if (syncStop) {
-            this.switches().turnOn(GlobalSwitch.SERVER_SYNC_STOP);
+            option(BoltServerOption.SERVER_SYNC_STOP, true);
         }
     }
 
@@ -243,17 +244,17 @@ public class RpcServer extends AbstractRemotingServer {
         if (this.addressParser == null) {
             this.addressParser = new RpcAddressParser();
         }
-        if (this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+        if (option(BoltServerOption.SERVER_MANAGE_CONNECTION_SWITCH)) {
             // in server side, do not care the connection service state, so use null instead of global switch
-            ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy(null);
+            ConnectionSelectStrategy connectionSelectStrategy = new RandomSelectStrategy(this);
             this.connectionManager = new DefaultServerConnectionManager(connectionSelectStrategy);
             this.connectionManager.startup();
 
-            this.connectionEventHandler = new RpcConnectionEventHandler(switches());
+            this.connectionEventHandler = new RpcConnectionEventHandler(this);
             this.connectionEventHandler.setConnectionManager(this.connectionManager);
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         } else {
-            this.connectionEventHandler = new ConnectionEventHandler(switches());
+            this.connectionEventHandler = new ConnectionEventHandler(this);
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         }
         initRpcRemoting();
@@ -290,8 +291,7 @@ public class RpcServer extends AbstractRemotingServer {
         NettyEventLoopUtil.enableTriggeredMode(bootstrap);
 
         final boolean idleSwitch = ConfigManager.tcp_idle_switch();
-        final boolean flushConsolidationSwitch = switches().isOn(
-            GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
+        final boolean flushConsolidationSwitch = option(BoltServerOption.NETTY_FLUSH_CONSOLIDATION);
         final int idleTime = ConfigManager.tcp_server_idle();
         final ChannelHandler serverIdleHandler = new ServerIdleHandler();
         final RpcHandler rpcHandler = new RpcHandler(true, this.userProcessors);
@@ -300,6 +300,11 @@ public class RpcServer extends AbstractRemotingServer {
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                AbstractTrafficShapingHandler trafficShapingHandler = option(BoltGenericOption.NETTY_TRAFFIC_SHAPING_HANDLER);
+                if (trafficShapingHandler != null) {
+                    pipeline.addLast("trafficShapingHandler", trafficShapingHandler);
+                }
+
                 if (RpcConfigManager.server_ssl_enable()) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(false);
@@ -332,7 +337,7 @@ public class RpcServer extends AbstractRemotingServer {
              */
             private void createConnection(SocketChannel channel) {
                 Url url = addressParser.parse(RemotingUtil.parseRemoteAddress(channel));
-                if (switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+                if (option(BoltServerOption.SERVER_MANAGE_CONNECTION_SWITCH)) {
                     connectionManager.add(new Connection(channel, url), url.getUniqueKey());
                 } else {
                     new Connection(channel, url);
@@ -381,7 +386,7 @@ public class RpcServer extends AbstractRemotingServer {
     }
 
     /**
-     * Notice: only {@link GlobalSwitch#SERVER_MANAGE_CONNECTION_SWITCH} switch on, will close all connections.
+     * Notice: only RpcServer#option(BoltServerOption.SERVER_MANAGE_CONNECTION_SWITCH, true) switch on, will close all connections.
      *
      * @see AbstractRemotingServer#doStop()
      */
@@ -390,12 +395,12 @@ public class RpcServer extends AbstractRemotingServer {
         if (null != this.channelFuture) {
             this.channelFuture.channel().close();
         }
-        if (this.switches().isOn(GlobalSwitch.SERVER_SYNC_STOP)) {
+        if (option(BoltServerOption.SERVER_SYNC_STOP)) {
             this.bossGroup.shutdownGracefully().awaitUninterruptibly();
         } else {
             this.bossGroup.shutdownGracefully();
         }
-        if (this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)
+        if (option(BoltServerOption.SERVER_MANAGE_CONNECTION_SWITCH)
             && null != this.connectionManager) {
             this.connectionManager.shutdown();
             logger.warn("Close all connections from server side!");
@@ -988,7 +993,7 @@ public class RpcServer extends AbstractRemotingServer {
      * check whether connection manage feature enabled
      */
     private void check() {
-        if (!this.switches().isOn(GlobalSwitch.SERVER_MANAGE_CONNECTION_SWITCH)) {
+        if (!option(BoltServerOption.SERVER_MANAGE_CONNECTION_SWITCH)) {
             throw new UnsupportedOperationException(
                 "Please enable connection manage feature of Rpc Server before call this method! See comments in constructor RpcServer(int port, boolean manageConnection) to find how to enable!");
         }
@@ -998,6 +1003,16 @@ public class RpcServer extends AbstractRemotingServer {
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
+        // init with system properties
+        Integer lowWaterMarkConfig = ConfigManager.netty_buffer_low_watermark();
+        if (lowWaterMarkConfig != null) {
+            option(BoltServerOption.NETTY_BUFFER_LOW_WATER_MARK, lowWaterMarkConfig);
+        }
+        Integer highWaterMarkConfig = ConfigManager.netty_buffer_high_watermark();
+        if (highWaterMarkConfig != null) {
+            option(BoltServerOption.NETTY_BUFFER_HIGH_WATER_MARK, highWaterMarkConfig);
+        }
+
         int lowWaterMark = this.netty_buffer_low_watermark();
         int highWaterMark = this.netty_buffer_high_watermark();
         if (lowWaterMark > highWaterMark) {

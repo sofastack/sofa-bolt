@@ -18,8 +18,6 @@ package com.alipay.remoting.config.switches;
 
 import java.util.BitSet;
 
-import com.alipay.remoting.config.ConfigManager;
-
 /**
  * Global switches used in client or server
  * <p>
@@ -33,15 +31,8 @@ import com.alipay.remoting.config.ConfigManager;
  */
 public class GlobalSwitch implements Switch {
 
-    // switches
-    public static final int CONN_RECONNECT_SWITCH           = 0;
-    public static final int CONN_MONITOR_SWITCH             = 1;
-    public static final int SERVER_MANAGE_CONNECTION_SWITCH = 2;
-    public static final int SERVER_SYNC_STOP                = 3;
-    public static final int CODEC_FLUSH_CONSOLIDATION       = 4;
-
     /** user settings */
-    private BitSet          userSettings                    = new BitSet();
+    private BitSet userSettings = new BitSet();
 
     /**
      * Init with system default value
@@ -50,17 +41,7 @@ public class GlobalSwitch implements Switch {
      * All these settings can be overwrite by user api settings.
      */
     public GlobalSwitch() {
-        if (ConfigManager.conn_reconnect_switch()) {
-            userSettings.set(CONN_RECONNECT_SWITCH);
-        } else {
-            userSettings.clear(CONN_RECONNECT_SWITCH);
-        }
 
-        if (ConfigManager.conn_monitor_switch()) {
-            userSettings.set(CONN_MONITOR_SWITCH);
-        } else {
-            userSettings.clear(CONN_MONITOR_SWITCH);
-        }
     }
 
     // ~~~ public methods
