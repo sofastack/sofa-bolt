@@ -29,6 +29,7 @@ import com.alipay.remoting.log.BoltLoggerFactory;
  * @author tsui
  * @version $Id: DefaultConfigContainer.java, v 0.1 2018-07-28 18:11 tsui Exp $$
  */
+@Deprecated
 public class DefaultConfigContainer implements ConfigContainer {
     /** logger */
     private static final Logger                      logger      = BoltLoggerFactory

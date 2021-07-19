@@ -29,6 +29,7 @@ import java.util.BitSet;
  * @author tsui
  * @version $Id: GlobalSwitch.java, v 0.1 2017-08-03 15:50 tsui Exp $
  */
+@Deprecated
 public class GlobalSwitch implements Switch {
 
     /** user settings */

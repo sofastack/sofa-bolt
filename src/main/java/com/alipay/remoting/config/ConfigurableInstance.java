@@ -32,12 +32,14 @@ public interface ConfigurableInstance {
      *
      * @return the config container
      */
+    @Deprecated
     ConfigContainer conf();
 
     /**
      * get the global switch for current instance
      * @return the global switch
      */
+    @Deprecated
     GlobalSwitch switches();
 
     /**

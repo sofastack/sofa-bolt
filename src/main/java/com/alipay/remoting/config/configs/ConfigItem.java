@@ -25,8 +25,12 @@ package com.alipay.remoting.config.configs;
  * @author tsui
  * @version $Id: ConfigItem.java, v 0.1 2018-07-28 17:43 tsui Exp $$ 
  */
+// fixme: remove in next version
+@Deprecated
 public enum ConfigItem {
     // ~~~ netty related
+    @Deprecated
     NETTY_BUFFER_LOW_WATER_MARK, // netty writer buffer low water mark
+    @Deprecated
     NETTY_BUFFER_HIGH_WATER_MARK // netty writer buffer high water mark
 }
