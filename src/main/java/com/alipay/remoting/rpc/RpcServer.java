@@ -332,9 +332,9 @@ public class RpcServer extends AbstractRemotingServer {
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
                 pipeline.addLast("handler", rpcHandler);
                 if (extendedHandlers != null) {
-                    List<ChannelHandler> frontHandlers = extendedHandlers.backChannelHandlers();
-                    if (frontHandlers != null) {
-                        for (ChannelHandler channelHandler : frontHandlers) {
+                    List<ChannelHandler> backHandlers = extendedHandlers.backChannelHandlers();
+                    if (backHandlers != null) {
+                        for (ChannelHandler channelHandler : backHandlers) {
                             pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
                         }
                     }
