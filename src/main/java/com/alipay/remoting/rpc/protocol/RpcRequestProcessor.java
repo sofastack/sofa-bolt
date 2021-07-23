@@ -121,6 +121,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         }
 
         // use the final executor dispatch process task
+        cmd.setBeforeEnterQueueTime(System.nanoTime());
         executor.execute(new ProcessTask(ctx, cmd));
     }
 
@@ -299,6 +300,14 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         ctx.setRpcCommandType(cmd.getType());
         ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_WAIT_TIME,
             currentTimestamp - cmd.getArriveTime());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_ARRIVE_HEADER_IN_NANO,
+            cmd.getArriveHeaderTimeInNano());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_ARRIVE_BODY_IN_NANO,
+            cmd.getArriveBodyTimeInNano());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_BEFORE_DISPATCH_IN_NANO,
+            cmd.getBeforeEnterQueueTime());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_START_PROCESS_IN_NANO,
+            System.nanoTime());
     }
 
     /**
