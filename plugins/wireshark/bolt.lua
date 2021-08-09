@@ -1,6 +1,6 @@
 -- ######################################################################################################
 --
--- WARN(yingming.dhw):
+-- WARN(dunjut):
 --
 -- This is just an alpha version of wireshark bolt protocol dissector, potential bugs could mislead your
 -- troubleshooting to a wrong direction (for example fields may not be correctly parsed in corner cases).
@@ -69,8 +69,8 @@
 --  +------------------------------------------------------------------------------------------------+
 --  respstatus: response status
 -- 
--- Author yingming.dhw 
--- modified by JervyShi
+-- Author: dunjut
+-- Modified by JervyShi
 
 
 bolt_protocol = Proto("Bolt", "SOFA Bolt Protocol")
