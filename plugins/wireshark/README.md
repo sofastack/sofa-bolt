@@ -1,8 +1,14 @@
 # Bolt wireshark plugin
 
 How to use it:
+
+* For Mac or Linux:
 ```
 $ sh install.sh
+```
+* For Windows:
+```
+$ .\install.bat
 ```
 
 Then open wireshark and decode package as BOLT.
