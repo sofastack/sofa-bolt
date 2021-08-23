@@ -29,7 +29,7 @@ import com.alipay.remoting.util.RemotingUtil;
 
 /**
  * Rpc client remoting
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: RpcClientRemoting.java, v 0.1 Apr 14, 2016 11:58:56 AM xiaomin.cxm Exp $
  */
@@ -119,6 +119,8 @@ public class RpcClientRemoting extends RpcRemoting {
                                                                                                 throws RemotingException,
                                                                                                 InterruptedException {
         long start = System.currentTimeMillis();
+        long startInNano = System.nanoTime();
+
         Connection conn;
         try {
             conn = this.connectionManager.getAndCreateIfAbsent(url);
@@ -126,6 +128,10 @@ public class RpcClientRemoting extends RpcRemoting {
             if (null != invokeContext) {
                 invokeContext.putIfAbsent(InvokeContext.CLIENT_CONN_CREATETIME,
                     (System.currentTimeMillis() - start));
+                invokeContext.putIfAbsent(InvokeContext.CLIENT_CONN_CREATE_START_IN_NANO,
+                    startInNano);
+                invokeContext.putIfAbsent(InvokeContext.CLIENT_CONN_CREATE_END_IN_NANO,
+                    System.nanoTime());
             }
         }
         return conn;
