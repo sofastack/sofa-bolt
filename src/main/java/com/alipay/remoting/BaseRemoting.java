@@ -75,6 +75,10 @@ public abstract class BaseRemoting {
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
         conn.addInvokeFuture(future);
         final int requestId = request.getId();
+        InvokeContext invokeContext = request.getInvokeContext();
+        if (null != invokeContext) {
+            invokeContext.put(InvokeContext.BOLT_PROCESS_CLIENT_BEFORE_SEND, System.nanoTime());
+        }
         try {
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
@@ -89,12 +93,19 @@ public abstract class BaseRemoting {
                 }
 
             });
+            if (null != invokeContext) {
+                invokeContext.put(InvokeContext.BOLT_PROCESS_CLIENT_AFTER_SEND, System.nanoTime());
+            }
         } catch (Exception e) {
             conn.removeInvokeFuture(requestId);
             future.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
             LOGGER.error("Exception caught when sending invocation, id={}", requestId, e);
         }
         RemotingCommand response = future.waitResponse(remainingTime);
+
+        if (null != invokeContext) {
+            invokeContext.put(InvokeContext.BOLT_PROCESS_CLIENT_RECEIVED, System.nanoTime());
+        }
 
         if (response == null) {
             conn.removeInvokeFuture(requestId);
