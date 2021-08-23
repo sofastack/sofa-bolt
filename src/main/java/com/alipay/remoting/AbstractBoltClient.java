@@ -19,7 +19,6 @@ package com.alipay.remoting;
 import com.alipay.remoting.config.BoltClientOption;
 import com.alipay.remoting.config.BoltOption;
 import com.alipay.remoting.config.BoltOptions;
-import com.alipay.remoting.config.BoltServerOption;
 import com.alipay.remoting.config.ConfigManager;
 import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.config.ConfigurableInstance;
@@ -79,17 +78,17 @@ public abstract class AbstractBoltClient extends AbstractLifeCycle implements Bo
 
     @Override
     public void initWriteBufferWaterMark(int low, int high) {
-        option(BoltServerOption.NETTY_BUFFER_LOW_WATER_MARK, low);
-        option(BoltServerOption.NETTY_BUFFER_HIGH_WATER_MARK, high);
+        option(BoltClientOption.NETTY_BUFFER_LOW_WATER_MARK, low);
+        option(BoltClientOption.NETTY_BUFFER_HIGH_WATER_MARK, high);
     }
 
     @Override
     public int netty_buffer_low_watermark() {
-        return option(BoltServerOption.NETTY_BUFFER_LOW_WATER_MARK);
+        return option(BoltClientOption.NETTY_BUFFER_LOW_WATER_MARK);
     }
 
     @Override
     public int netty_buffer_high_watermark() {
-        return option(BoltServerOption.NETTY_BUFFER_HIGH_WATER_MARK);
+        return option(BoltClientOption.NETTY_BUFFER_HIGH_WATER_MARK);
     }
 }
