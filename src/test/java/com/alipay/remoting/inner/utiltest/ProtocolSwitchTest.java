@@ -187,6 +187,15 @@ public class ProtocolSwitchTest {
         for (int i = 0; i <= 6; ++i) {
             Assert.assertTrue(bs.get(i));
         }
+
+        Exception exception = null;
+        try {
+            ProtocolSwitch.toBitSet(-1);
+        } catch (Exception e) {
+            exception = e;
+        }
+        Assert.assertNotNull(exception);
+        Assert.assertTrue(exception instanceof IllegalArgumentException);
     }
 
     @Test
