@@ -226,7 +226,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             ks.load(in, passChs);
 
             KeyManagerFactory kmf = KeyManagerFactory.getInstance(RpcConfigManager
-                    .server_ssl_kmf_algorithm());
+                .server_ssl_kmf_algorithm());
             kmf.init(ks, passChs);
 
             TrustManagerFactory tmf = TrustManagerFactory.getInstance(RpcConfigManager
