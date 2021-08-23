@@ -21,10 +21,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.AbstractBoltClient;
+import com.alipay.remoting.ConnectionManager;
 import com.alipay.remoting.ConnectionSelectStrategy;
 import com.alipay.remoting.DefaultClientConnectionManager;
 import com.alipay.remoting.LifeCycleException;
 import com.alipay.remoting.Reconnector;
+import com.alipay.remoting.config.BoltClientOption;
 import com.alipay.remoting.config.BoltGenericOption;
 import org.slf4j.Logger;
 
@@ -34,7 +36,6 @@ import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventProcessor;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.ConnectionMonitorStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.DefaultConnectionMonitor;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.InvokeContext;
@@ -43,7 +44,6 @@ import com.alipay.remoting.ReconnectManager;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.ScheduledDisconnectStrategy;
 import com.alipay.remoting.Url;
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
@@ -65,7 +65,7 @@ public class RpcClient extends AbstractBoltClient {
     private final ConnectionEventHandler                      connectionEventHandler;
     private final ConnectionEventListener                     connectionEventListener;
 
-    private DefaultClientConnectionManager                    connectionManager;
+    private ConnectionManager                                 connectionManager;
     private Reconnector                                       reconnectManager;
     private RemotingAddressParser                             addressParser;
     private DefaultConnectionMonitor                          connectionMonitor;
@@ -77,7 +77,7 @@ public class RpcClient extends AbstractBoltClient {
     public RpcClient() {
         this.taskScanner = new RpcTaskScanner();
         this.userProcessors = new ConcurrentHashMap<String, UserProcessor<?>>();
-        this.connectionEventHandler = new RpcConnectionEventHandler(switches());
+        this.connectionEventHandler = new RpcConnectionEventHandler(this);
         this.connectionEventListener = new ConnectionEventListener();
     }
 
@@ -133,19 +133,22 @@ public class RpcClient extends AbstractBoltClient {
 
         ConnectionSelectStrategy connectionSelectStrategy = option(BoltGenericOption.CONNECTION_SELECT_STRATEGY);
         if (connectionSelectStrategy == null) {
-            connectionSelectStrategy = new RandomSelectStrategy(switches());
+            connectionSelectStrategy = new RandomSelectStrategy(this);
         }
-        this.connectionManager = new DefaultClientConnectionManager(connectionSelectStrategy,
-            new RpcConnectionFactory(userProcessors, this), connectionEventHandler,
-            connectionEventListener, switches());
-        this.connectionManager.setAddressParser(this.addressParser);
-        this.connectionManager.startup();
+        if (this.connectionManager == null) {
+            DefaultClientConnectionManager defaultConnectionManager = new DefaultClientConnectionManager(
+                connectionSelectStrategy, new RpcConnectionFactory(userProcessors, this),
+                connectionEventHandler, connectionEventListener);
+            defaultConnectionManager.setAddressParser(this.addressParser);
+            defaultConnectionManager.startup();
+            this.connectionManager = defaultConnectionManager;
+        }
         this.rpcRemoting = new RpcClientRemoting(new RpcCommandFactory(), this.addressParser,
             this.connectionManager);
         this.taskScanner.add(this.connectionManager);
         this.taskScanner.startup();
 
-        if (switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
+        if (isConnectionMonitorSwitchOn()) {
             if (monitorStrategy == null) {
                 connectionMonitor = new DefaultConnectionMonitor(new ScheduledDisconnectStrategy(),
                     this.connectionManager);
@@ -156,8 +159,8 @@ public class RpcClient extends AbstractBoltClient {
             connectionMonitor.startup();
             logger.warn("Switch on connection monitor");
         }
-        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH)) {
-            reconnectManager = new ReconnectManager(connectionManager);
+        if (isReconnectSwitchOn()) {
+            reconnectManager = new ReconnectManager(this.connectionManager);
             reconnectManager.startup();
 
             connectionEventHandler.setReconnector(reconnectManager);
@@ -477,7 +480,7 @@ public class RpcClient extends AbstractBoltClient {
     public void closeConnection(String addr) {
         ensureStarted();
         Url url = this.addressParser.parse(addr);
-        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+        if (isReconnectSwitchOn() && reconnectManager != null) {
             reconnectManager.disableReconnect(url);
         }
         this.connectionManager.remove(url.getUniqueKey());
@@ -486,7 +489,7 @@ public class RpcClient extends AbstractBoltClient {
     @Override
     public void closeConnection(Url url) {
         ensureStarted();
-        if (switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+        if (isReconnectSwitchOn() && reconnectManager != null) {
             reconnectManager.disableReconnect(url);
         }
         this.connectionManager.remove(url.getUniqueKey());
@@ -523,38 +526,49 @@ public class RpcClient extends AbstractBoltClient {
     }
 
     @Override
+    @Deprecated
     public void enableReconnectSwitch() {
-        this.switches().turnOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
+        option(BoltClientOption.CONN_RECONNECT_SWITCH, true);
     }
 
     @Override
+    @Deprecated
     public void disableReconnectSwith() {
-        this.switches().turnOff(GlobalSwitch.CONN_RECONNECT_SWITCH);
+        option(BoltClientOption.CONN_RECONNECT_SWITCH, false);
     }
 
     @Override
+    @Deprecated
     public boolean isReconnectSwitchOn() {
-        return this.switches().isOn(GlobalSwitch.CONN_RECONNECT_SWITCH);
+        return option(BoltClientOption.CONN_RECONNECT_SWITCH);
     }
 
     @Override
+    @Deprecated
     public void enableConnectionMonitorSwitch() {
-        this.switches().turnOn(GlobalSwitch.CONN_MONITOR_SWITCH);
+        option(BoltClientOption.CONN_MONITOR_SWITCH, true);
     }
 
     @Override
+    @Deprecated
     public void disableConnectionMonitorSwitch() {
-        this.switches().turnOff(GlobalSwitch.CONN_MONITOR_SWITCH);
+        option(BoltClientOption.CONN_MONITOR_SWITCH, false);
     }
 
     @Override
+    @Deprecated
     public boolean isConnectionMonitorSwitchOn() {
-        return this.switches().isOn(GlobalSwitch.CONN_MONITOR_SWITCH);
+        return option(BoltClientOption.CONN_MONITOR_SWITCH);
     }
 
     @Override
-    public DefaultConnectionManager getConnectionManager() {
+    public ConnectionManager getConnectionManager() {
         return this.connectionManager;
+    }
+
+    @Override
+    public void setConnectionManager(ConnectionManager connectionManager) {
+        this.connectionManager = connectionManager;
     }
 
     @Override

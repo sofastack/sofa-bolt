@@ -18,7 +18,7 @@ package com.alipay.remoting.rpc;
 
 import com.alipay.remoting.CommandFactory;
 import com.alipay.remoting.Connection;
-import com.alipay.remoting.DefaultConnectionManager;
+import com.alipay.remoting.ConnectionManager;
 import com.alipay.remoting.InvokeCallback;
 import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.RemotingAddressParser;
@@ -36,7 +36,7 @@ import com.alipay.remoting.util.RemotingUtil;
 public class RpcClientRemoting extends RpcRemoting {
 
     public RpcClientRemoting(CommandFactory commandFactory, RemotingAddressParser addressParser,
-                             DefaultConnectionManager connectionManager) {
+                             ConnectionManager connectionManager) {
         super(commandFactory, addressParser, connectionManager);
     }
 
@@ -47,6 +47,9 @@ public class RpcClientRemoting extends RpcRemoting {
     public void oneway(Url url, Object request, InvokeContext invokeContext)
                                                                             throws RemotingException,
                                                                             InterruptedException {
+        if (invokeContext == null) {
+            invokeContext = new InvokeContext();
+        }
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         this.oneway(conn, request, invokeContext);
@@ -59,6 +62,11 @@ public class RpcClientRemoting extends RpcRemoting {
     public Object invokeSync(Url url, Object request, InvokeContext invokeContext, int timeoutMillis)
                                                                                                      throws RemotingException,
                                                                                                      InterruptedException {
+        // Use the specified timeout to overwrite the configuration in the url
+        url.setConnectTimeout(timeoutMillis);
+        if (invokeContext == null) {
+            invokeContext = new InvokeContext();
+        }
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         return this.invokeSync(conn, request, invokeContext, timeoutMillis);
@@ -71,6 +79,10 @@ public class RpcClientRemoting extends RpcRemoting {
     public RpcResponseFuture invokeWithFuture(Url url, Object request, InvokeContext invokeContext,
                                               int timeoutMillis) throws RemotingException,
                                                                 InterruptedException {
+        url.setConnectTimeout(timeoutMillis);
+        if (invokeContext == null) {
+            invokeContext = new InvokeContext();
+        }
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         return this.invokeWithFuture(conn, request, invokeContext, timeoutMillis);
@@ -84,6 +96,10 @@ public class RpcClientRemoting extends RpcRemoting {
                                    InvokeCallback invokeCallback, int timeoutMillis)
                                                                                     throws RemotingException,
                                                                                     InterruptedException {
+        url.setConnectTimeout(timeoutMillis);
+        if (invokeContext == null) {
+            invokeContext = new InvokeContext();
+        }
         final Connection conn = getConnectionAndInitInvokeContext(url, invokeContext);
         this.connectionManager.check(conn);
         this.invokeWithCallback(conn, request, invokeContext, invokeCallback, timeoutMillis);

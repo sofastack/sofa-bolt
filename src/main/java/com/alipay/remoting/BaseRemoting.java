@@ -36,8 +36,10 @@ import io.netty.util.TimerTask;
  * @version $Id: BaseRemoting.java, v 0.1 Mar 4, 2016 12:09:56 AM tao Exp $
  */
 public abstract class BaseRemoting {
-    /** logger */
-    private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
+
+    private final static Logger LOGGER                       = BoltLoggerFactory
+                                                                 .getLogger("CommonDefault");
+    private final static long   ABANDONING_REQUEST_THRESHOLD = 0L;
 
     protected CommandFactory    commandFactory;
 
@@ -58,6 +60,18 @@ public abstract class BaseRemoting {
     protected RemotingCommand invokeSync(final Connection conn, final RemotingCommand request,
                                          final int timeoutMillis) throws RemotingException,
                                                                  InterruptedException {
+        int remainingTime = remainingTime(request, timeoutMillis);
+        if (remainingTime <= ABANDONING_REQUEST_THRESHOLD) {
+            // already timeout
+            LOGGER
+                .warn(
+                    "already timeout before writing to the network, requestId: {}, remoting address: {}",
+                    request.getId(),
+                    conn.getUrl() != null ? conn.getUrl() : RemotingUtil.parseRemoteAddress(conn
+                        .getChannel()));
+            return this.commandFactory.createTimeoutResponse(conn.getRemoteAddress());
+        }
+
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
         conn.addInvokeFuture(future);
         final int requestId = request.getId();
@@ -70,7 +84,7 @@ public abstract class BaseRemoting {
                         conn.removeInvokeFuture(requestId);
                         future.putResponse(commandFactory.createSendFailedResponse(
                             conn.getRemoteAddress(), f.cause()));
-                        logger.error("Invoke send failed, id={}", requestId, f.cause());
+                        LOGGER.error("Invoke send failed, id={}", requestId, f.cause());
                     }
                 }
 
@@ -78,14 +92,14 @@ public abstract class BaseRemoting {
         } catch (Exception e) {
             conn.removeInvokeFuture(requestId);
             future.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
-            logger.error("Exception caught when sending invocation, id={}", requestId, e);
+            LOGGER.error("Exception caught when sending invocation, id={}", requestId, e);
         }
-        RemotingCommand response = future.waitResponse(timeoutMillis);
+        RemotingCommand response = future.waitResponse(remainingTime);
 
         if (response == null) {
             conn.removeInvokeFuture(requestId);
             response = this.commandFactory.createTimeoutResponse(conn.getRemoteAddress());
-            logger.warn("Wait response, request id={} timeout!", requestId);
+            LOGGER.warn("Wait response, request id={} timeout!", requestId);
         }
 
         return response;
@@ -104,6 +118,18 @@ public abstract class BaseRemoting {
                                       final InvokeCallback invokeCallback, final int timeoutMillis) {
         final InvokeFuture future = createInvokeFuture(conn, request, request.getInvokeContext(),
             invokeCallback);
+        int remainingTime = remainingTime(request, timeoutMillis);
+        if (remainingTime <= ABANDONING_REQUEST_THRESHOLD) {
+            LOGGER
+                .warn(
+                    "already timeout before writing to the network, requestId: {}, remoting address: {}",
+                    request.getId(),
+                    conn.getUrl() != null ? conn.getUrl() : RemotingUtil.parseRemoteAddress(conn
+                        .getChannel()));
+            future.putResponse(commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
+            future.tryAsyncExecuteInvokeCallbackAbnormally();
+            return;
+        }
         conn.addInvokeFuture(future);
         final int requestId = request.getId();
         try {
@@ -118,7 +144,7 @@ public abstract class BaseRemoting {
                     }
                 }
 
-            }, timeoutMillis, TimeUnit.MILLISECONDS);
+            }, remainingTime, TimeUnit.MILLISECONDS);
             future.addTimeout(timeout);
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
@@ -132,7 +158,7 @@ public abstract class BaseRemoting {
                                 conn.getRemoteAddress(), cf.cause()));
                             f.tryAsyncExecuteInvokeCallbackAbnormally();
                         }
-                        logger.error("Invoke send failed. The address is {}",
+                        LOGGER.error("Invoke send failed. The address is {}",
                             RemotingUtil.parseRemoteAddress(conn.getChannel()), cf.cause());
                     }
                 }
@@ -145,7 +171,7 @@ public abstract class BaseRemoting {
                 f.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
                 f.tryAsyncExecuteInvokeCallbackAbnormally();
             }
-            logger.error("Exception caught when sending invocation. The address is {}",
+            LOGGER.error("Exception caught when sending invocation. The address is {}",
                 RemotingUtil.parseRemoteAddress(conn.getChannel()), e);
         }
     }
@@ -163,6 +189,18 @@ public abstract class BaseRemoting {
 
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
         conn.addInvokeFuture(future);
+        int remainingTime = remainingTime(request, timeoutMillis);
+        if (remainingTime <= ABANDONING_REQUEST_THRESHOLD) {
+            LOGGER
+                .warn(
+                    "already timeout before writing to the network, requestId: {}, remoting address: {}",
+                    request.getId(),
+                    conn.getUrl() != null ? conn.getUrl() : RemotingUtil.parseRemoteAddress(conn
+                        .getChannel()));
+            future.putResponse(commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
+            return future;
+        }
+
         final int requestId = request.getId();
         try {
             Timeout timeout = TimerHolder.getTimer().newTimeout(new TimerTask() {
@@ -175,7 +213,7 @@ public abstract class BaseRemoting {
                     }
                 }
 
-            }, timeoutMillis, TimeUnit.MILLISECONDS);
+            }, remainingTime, TimeUnit.MILLISECONDS);
             future.addTimeout(timeout);
 
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
@@ -189,7 +227,7 @@ public abstract class BaseRemoting {
                             f.putResponse(commandFactory.createSendFailedResponse(
                                 conn.getRemoteAddress(), cf.cause()));
                         }
-                        logger.error("Invoke send failed. The address is {}",
+                        LOGGER.error("Invoke send failed. The address is {}",
                             RemotingUtil.parseRemoteAddress(conn.getChannel()), cf.cause());
                     }
                 }
@@ -201,7 +239,7 @@ public abstract class BaseRemoting {
                 f.cancelTimeout();
                 f.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
             }
-            logger.error("Exception caught when sending invocation. The address is {}",
+            LOGGER.error("Exception caught when sending invocation. The address is {}",
                 RemotingUtil.parseRemoteAddress(conn.getChannel()), e);
         }
         return future;
@@ -215,25 +253,40 @@ public abstract class BaseRemoting {
      * @throws InterruptedException
      */
     protected void oneway(final Connection conn, final RemotingCommand request) {
+        if (conn == null) {
+            LOGGER.error("conn is null");
+            return;
+        }
+
+        Url url = conn.getUrl();
+        if (url != null) {
+            int remainingTime = remainingTime(request, url.getConnectTimeout());
+            if (remainingTime <= ABANDONING_REQUEST_THRESHOLD) {
+                LOGGER
+                    .warn(
+                        "already timeout before writing to the network, requestId: {}, remoting address: {}",
+                        request.getId(),
+                        conn.getUrl() != null ? conn.getUrl() : RemotingUtil
+                            .parseRemoteAddress(conn.getChannel()));
+                return;
+            }
+        }
+
         try {
             conn.getChannel().writeAndFlush(request).addListener(new ChannelFutureListener() {
 
                 @Override
                 public void operationComplete(ChannelFuture f) throws Exception {
                     if (!f.isSuccess()) {
-                        logger.error("Invoke send failed. The address is {}",
+                        LOGGER.error("Invoke send failed. The address is {}",
                             RemotingUtil.parseRemoteAddress(conn.getChannel()), f.cause());
                     }
                 }
 
             });
         } catch (Exception e) {
-            if (null == conn) {
-                logger.error("Conn is null");
-            } else {
-                logger.error("Exception caught when sending invocation. The address is {}",
-                    RemotingUtil.parseRemoteAddress(conn.getChannel()), e);
-            }
+            LOGGER.error("Exception caught when sending invocation. The address is {}",
+                RemotingUtil.parseRemoteAddress(conn.getChannel()), e);
         }
     }
 
@@ -261,5 +314,18 @@ public abstract class BaseRemoting {
 
     protected CommandFactory getCommandFactory() {
         return commandFactory;
+    }
+
+    private int remainingTime(RemotingCommand request, int timeout) {
+        InvokeContext invokeContext = request.getInvokeContext();
+        if (invokeContext == null) {
+            return timeout;
+        }
+        Long cost = invokeContext.get(InvokeContext.CLIENT_CONN_CREATETIME);
+        if (cost == null) {
+            return timeout;
+        }
+
+        return (int) (timeout - cost);
     }
 }

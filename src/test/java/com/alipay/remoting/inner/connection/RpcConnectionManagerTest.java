@@ -33,7 +33,6 @@ import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.ConnectionSelectStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.RandomSelectStrategy;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;

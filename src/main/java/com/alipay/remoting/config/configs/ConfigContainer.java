@@ -25,6 +25,7 @@ package com.alipay.remoting.config.configs;
  * @author tsui
  * @version $Id: ConfigContainer.java, v 0.1 2018-07-28 18:31 tsui Exp $$
  */
+@Deprecated
 public interface ConfigContainer {
     /**
      * check whether a config item of a certain config type exist.

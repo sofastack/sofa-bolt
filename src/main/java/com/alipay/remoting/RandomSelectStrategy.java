@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.alipay.remoting.config.BoltClientOption;
+import com.alipay.remoting.config.Configuration;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.config.Configs;
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.StringUtils;
 
@@ -39,14 +40,10 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
 
     private static final int    MAX_TIMES = 5;
     private final Random        random    = new Random();
-    private final GlobalSwitch  globalSwitch;
+    private final Configuration configuration;
 
-    public RandomSelectStrategy() {
-        this(null);
-    }
-
-    public RandomSelectStrategy(GlobalSwitch globalSwitch) {
-        this.globalSwitch = globalSwitch;
+    public RandomSelectStrategy(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     @Override
@@ -61,8 +58,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
             }
 
             Connection result;
-            if (null != this.globalSwitch
-                && this.globalSwitch.isOn(GlobalSwitch.CONN_MONITOR_SWITCH)) {
+            if (configuration != null && configuration.option(BoltClientOption.CONN_MONITOR_SWITCH)) {
                 List<Connection> serviceStatusOnConnections = new ArrayList<Connection>();
                 for (Connection conn : connections) {
                     String serviceStatus = (String) conn.getAttribute(Configs.CONN_SERVICE_STATUS);

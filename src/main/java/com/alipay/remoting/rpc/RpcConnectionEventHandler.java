@@ -18,7 +18,7 @@ package com.alipay.remoting.rpc;
 
 import com.alipay.remoting.Connection;
 import com.alipay.remoting.ConnectionEventHandler;
-import com.alipay.remoting.config.switches.GlobalSwitch;
+import com.alipay.remoting.config.Configuration;
 
 import io.netty.channel.ChannelHandlerContext;
 
@@ -34,8 +34,8 @@ public class RpcConnectionEventHandler extends ConnectionEventHandler {
         super();
     }
 
-    public RpcConnectionEventHandler(GlobalSwitch globalSwitch) {
-        super(globalSwitch);
+    public RpcConnectionEventHandler(Configuration configuration) {
+        super(configuration);
     }
 
     /**

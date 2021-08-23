@@ -21,7 +21,7 @@ package com.alipay.remoting.config;
  *
  * @author chengyi (mark.lx@antfin.com) 2018-11-06 14:46
  */
-public interface Configurable {
+public interface Configuration {
 
     /**
      * Get the option value.
@@ -32,13 +32,13 @@ public interface Configurable {
     <T> T option(BoltOption<T> option);
 
     /**
-     * Allow to specify a {@link BoltOption} which is used for the {@link Configurable} instances once they got
+     * Allow to specify a {@link BoltOption} which is used for the {@link Configuration} instances once they got
      * created. Use a value of {@code null} to remove a previous set {@link BoltOption}.
      *
      * @param option target option
      * @param value option value, null to remove the previous option
      * @return Configurable instance
      */
-    <T> Configurable option(BoltOption<T> option, T value);
+    <T> Configuration option(BoltOption<T> option, T value);
 
 }
