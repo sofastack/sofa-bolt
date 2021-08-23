@@ -137,7 +137,7 @@ public class RpcClient extends AbstractBoltClient {
         }
         if (this.connectionManager == null) {
             DefaultClientConnectionManager defaultConnectionManager = new DefaultClientConnectionManager(
-                connectionSelectStrategy, new RpcConnectionFactory(userProcessors, this),
+                connectionSelectStrategy, new RpcConnectionFactory(userProcessors, this, this),
                 connectionEventHandler, connectionEventListener, switches());
             defaultConnectionManager.setAddressParser(this.addressParser);
             defaultConnectionManager.startup();

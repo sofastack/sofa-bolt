@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLEngine;
 import com.alipay.remoting.*;
 import com.alipay.remoting.config.BoltGenericOption;
+import com.alipay.remoting.config.BoltServerOption;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.codec.Codec;
@@ -300,6 +302,15 @@ public class RpcServer extends AbstractRemotingServer {
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                ExtendedNettyChannelHandler extendedHandlers = option(BoltServerOption.EXTENDED_NETTY_CHANNEL_HANDLER);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> frontHandlers = extendedHandlers.frontChannelHandlers();
+                    if (frontHandlers != null) {
+                        for (ChannelHandler channelHandler : frontHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
+                }
                 if (RpcConfigManager.server_ssl_enable()) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(false);
@@ -320,6 +331,14 @@ public class RpcServer extends AbstractRemotingServer {
                 }
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
                 pipeline.addLast("handler", rpcHandler);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> backHandlers = extendedHandlers.backChannelHandlers();
+                    if (backHandlers != null) {
+                        for (ChannelHandler channelHandler : backHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
+                }
                 createConnection(channel);
             }
 

@@ -65,6 +65,7 @@ public class RpcConnectionManagerTest {
     private RemotingAddressParser                       addressParser            = new RpcAddressParser();
     private ConnectionFactory                           connectionFactory        = new RpcConnectionFactory(
                                                                                      userProcessors,
+                                                                                     new RpcClient(),
                                                                                      new RpcClient());
     private ConnectionEventHandler                      connectionEventHandler   = new RpcConnectionEventHandler();
     private ConnectionEventListener                     connectionEventListener  = new ConnectionEventListener();

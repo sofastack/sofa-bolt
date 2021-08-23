@@ -20,10 +20,14 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
 
+import com.alipay.remoting.ExtendedNettyChannelHandler;
+import com.alipay.remoting.config.BoltClientOption;
+import com.alipay.remoting.config.Configurable;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -78,6 +82,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
                                                             "bolt-netty-client-worker", true));
 
     private final ConfigurableInstance  confInstance;
+    private final Configurable          configuration;
     private final Codec                 codec;
     private final ChannelHandler        heartbeatHandler;
     private final ChannelHandler        handler;
@@ -85,7 +90,8 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     protected Bootstrap                 bootstrap;
 
     public AbstractConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                     ChannelHandler handler, ConfigurableInstance confInstance) {
+                                     ChannelHandler handler, ConfigurableInstance confInstance,
+                                     Configurable configuration) {
         if (codec == null) {
             throw new IllegalArgumentException("null codec");
         }
@@ -94,6 +100,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         }
 
         this.confInstance = confInstance;
+        this.configuration = configuration;
         this.codec = codec;
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
@@ -126,6 +133,16 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
+                ExtendedNettyChannelHandler extendedHandlers = configuration
+                    .option(BoltClientOption.EXTENDED_NETTY_CHANNEL_HANDLER);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> frontHandlers = extendedHandlers.frontChannelHandlers();
+                    if (frontHandlers != null) {
+                        for (ChannelHandler channelHandler : frontHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
+                }
                 if (RpcConfigManager.client_ssl_enable()) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(true);
@@ -148,6 +165,14 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
                 pipeline.addLast("handler", handler);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> backHandlers = extendedHandlers.backChannelHandlers();
+                    if (backHandlers != null) {
+                        for (ChannelHandler channelHandler : backHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
+                }
             }
         });
     }
