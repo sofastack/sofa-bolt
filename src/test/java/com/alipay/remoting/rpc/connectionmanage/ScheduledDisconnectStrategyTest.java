@@ -175,7 +175,7 @@ public class ScheduledDisconnectStrategyTest {
         connection.addInvokeFuture(new DefaultInvokeFuture(1, null, null, RpcCommandType.REQUEST,
             null));
         Thread.sleep(2100);
-        Assert.assertTrue(0 == clientDisConnectProcessor.getDisConnectTimes());
+        Assert.assertEquals(0, clientDisConnectProcessor.getDisConnectTimes());
         Assert.assertEquals(1, clientConnectProcessor.getConnectTimes());
         connection.removeInvokeFuture(1);
         /* Monitor task sleep 500ms*/

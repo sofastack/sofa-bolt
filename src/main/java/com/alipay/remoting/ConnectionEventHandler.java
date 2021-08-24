@@ -22,9 +22,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.alipay.remoting.config.BoltClientOption;
+import com.alipay.remoting.config.Configuration;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.util.RemotingUtil;
 import com.alipay.remoting.util.StringUtils;
@@ -54,14 +55,14 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
 
     private Reconnector             reconnectManager;
 
-    private GlobalSwitch            globalSwitch;
+    private Configuration           configuration;
 
     public ConnectionEventHandler() {
 
     }
 
-    public ConnectionEventHandler(GlobalSwitch globalSwitch) {
-        this.globalSwitch = globalSwitch;
+    public ConnectionEventHandler(Configuration configuration) {
+        this.configuration = configuration;
     }
 
     /**
@@ -207,7 +208,8 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
     }
 
     private void submitReconnectTaskIfNecessary(Url url) {
-        if (globalSwitch.isOn(GlobalSwitch.CONN_RECONNECT_SWITCH) && reconnectManager != null) {
+        if (configuration.option(BoltClientOption.CONN_RECONNECT_SWITCH)
+            && reconnectManager != null) {
             reconnectManager.reconnect(url);
         }
     }

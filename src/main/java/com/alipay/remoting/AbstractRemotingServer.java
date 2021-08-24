@@ -20,16 +20,14 @@ import java.net.InetSocketAddress;
 
 import com.alipay.remoting.config.BoltOption;
 import com.alipay.remoting.config.BoltOptions;
-import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.BoltServerOption;
+import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.config.configs.ConfigContainer;
-import com.alipay.remoting.config.configs.ConfigItem;
 import com.alipay.remoting.config.configs.DefaultConfigContainer;
 import com.alipay.remoting.config.switches.GlobalSwitch;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.config.configs.ConfigType;
 import com.alipay.remoting.log.BoltLoggerFactory;
 
 /**
@@ -47,7 +45,6 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
     private int                   port;
 
     private final BoltOptions     options;
-    private final ConfigType      configType;
     private final GlobalSwitch    globalSwitch;
     private final ConfigContainer configContainer;
 
@@ -64,7 +61,6 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
         this.port = port;
 
         this.options = new BoltOptions();
-        this.configType = ConfigType.SERVER_SIDE;
         this.globalSwitch = new GlobalSwitch();
         this.configContainer = new DefaultConfigContainer();
     }
@@ -149,44 +145,36 @@ public abstract class AbstractRemotingServer extends AbstractLifeCycle implement
     }
 
     @Override
-    public <T> Configurable option(BoltOption<T> option, T value) {
+    public <T> Configuration option(BoltOption<T> option, T value) {
         options.option(option, value);
         return this;
     }
 
     @Override
+    @Deprecated
     public ConfigContainer conf() {
         return this.configContainer;
     }
 
     @Override
+    @Deprecated
     public GlobalSwitch switches() {
         return this.globalSwitch;
     }
 
     @Override
     public void initWriteBufferWaterMark(int low, int high) {
-        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK, low);
-        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK, high);
+        option(BoltServerOption.NETTY_BUFFER_LOW_WATER_MARK, low);
+        option(BoltServerOption.NETTY_BUFFER_HIGH_WATER_MARK, high);
     }
 
     @Override
     public int netty_buffer_low_watermark() {
-        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
-        if (config != null) {
-            return (Integer) config;
-        } else {
-            return ConfigManager.netty_buffer_low_watermark();
-        }
+        return option(BoltServerOption.NETTY_BUFFER_LOW_WATER_MARK);
     }
 
     @Override
     public int netty_buffer_high_watermark() {
-        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
-        if (config != null) {
-            return (Integer) config;
-        } else {
-            return ConfigManager.netty_buffer_high_watermark();
-        }
+        return option(BoltServerOption.NETTY_BUFFER_HIGH_WATER_MARK);
     }
 }

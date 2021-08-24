@@ -36,7 +36,6 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.util.FutureTaskUtil;
@@ -50,7 +49,6 @@ import com.alipay.remoting.util.StringUtils;
  * @version $Id: DefaultConnectionManager.java, v 0.1 Mar 8, 2016 10:43:51 AM xiaomin.cxm Exp $
  */
 public class DefaultConnectionManager extends AbstractLifeCycle implements ConnectionManager,
-                                                               ConnectionHeartbeatManager,
                                                                Scannable, LifeCycle {
 
     private static final Logger                                                     logger = BoltLoggerFactory
@@ -60,11 +58,6 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
      * executor to create connections in async way
      */
     private ThreadPoolExecutor                                                      asyncCreateConnectionExecutor;
-
-    /**
-     * switch status
-     */
-    private GlobalSwitch                                                            globalSwitch;
 
     /**
      * connection pool initialize tasks
@@ -100,15 +93,6 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
      * connection event listener
      */
     protected ConnectionEventListener                                               connectionEventListener;
-
-    /**
-     * Default constructor.
-     */
-    public DefaultConnectionManager() {
-        this.connTasks = new ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>>();
-        this.healTasks = new ConcurrentHashMap<String, FutureTask<Integer>>();
-        this.connectionSelectStrategy = new RandomSelectStrategy(globalSwitch);
-    }
 
     /**
      * Construct with parameters.
@@ -162,25 +146,6 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
         this(connectionSelectStrategy, connectionFactory);
         this.connectionEventHandler = connectionEventHandler;
         this.connectionEventListener = connectionEventListener;
-    }
-
-    /**
-     * Construct with parameters.
-     *
-     * @param connectionSelectStrategy connection selection strategy.
-     * @param connectionFactory connection factory
-     * @param connectionEventHandler connection event handler
-     * @param connectionEventListener connection event listener
-     * @param globalSwitch global switch
-     */
-    public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
-                                    ConnectionFactory connectionFactory,
-                                    ConnectionEventHandler connectionEventHandler,
-                                    ConnectionEventListener connectionEventListener,
-                                    GlobalSwitch globalSwitch) {
-        this(connectionSelectStrategy, connectionFactory, connectionEventHandler,
-            connectionEventListener);
-        this.globalSwitch = globalSwitch;
     }
 
     @Override

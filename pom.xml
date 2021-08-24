@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.alipay.sofa</groupId>
     <artifactId>bolt</artifactId>
-    <version>1.6.3-SNAPSHOT</version>
+    <version>1.6.4</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -38,6 +38,12 @@
 
     <developers>
         <developer>
+            <name>chengyi</name>
+            <email>mark.lx@antfin.com</email>
+            <organization>Ant Financial</organization>
+            <organizationUrl>https://www.alipay.com/</organizationUrl>
+        </developer>
+        <developer>
             <name>tsui</name>
             <email>xiaomin.cxm@antfin.com</email>
             <organization>Ant Financial</organization>
@@ -46,12 +52,6 @@
         <developer>
             <name>jiangping</name>
             <email>jiangping@antfin.com</email>
-            <organization>Ant Financial</organization>
-            <organizationUrl>https://www.alipay.com/</organizationUrl>
-        </developer>
-        <developer>
-            <name>yueliang</name>
-            <email>yueliang.yml@antfin.com</email>
             <organization>Ant Financial</organization>
             <organizationUrl>https://www.alipay.com/</organizationUrl>
         </developer>
@@ -116,7 +116,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.3</version>
+            <version>2.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -141,24 +141,6 @@
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
             <version>3.2.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.8.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-core</artifactId>
-            <version>1.20</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.openjdk.jmh</groupId>
-            <artifactId>jmh-generator-annprocess</artifactId>
-            <version>1.20</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

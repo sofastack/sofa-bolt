@@ -18,7 +18,7 @@ package com.alipay.remoting;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-/** 
+/**
  * Invoke context
  *
  * @author tsui 
@@ -26,28 +26,47 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class InvokeContext {
     // ~~~ invoke context keys of client side
-    public final static String                CLIENT_LOCAL_IP        = "bolt.client.local.ip";
-    public final static String                CLIENT_LOCAL_PORT      = "bolt.client.local.port";
-    public final static String                CLIENT_REMOTE_IP       = "bolt.client.remote.ip";
-    public final static String                CLIENT_REMOTE_PORT     = "bolt.client.remote.port";
+    public final static String                CLIENT_LOCAL_IP                      = "bolt.client.local.ip";
+    public final static String                CLIENT_LOCAL_PORT                    = "bolt.client.local.port";
+    public final static String                CLIENT_REMOTE_IP                     = "bolt.client.remote.ip";
+    public final static String                CLIENT_REMOTE_PORT                   = "bolt.client.remote.port";
     /** time consumed during connection creating, this is a timespan */
-    public final static String                CLIENT_CONN_CREATETIME = "bolt.client.conn.createtime";
+    public final static String                CLIENT_CONN_CREATETIME               = "bolt.client.conn.createtime";
+    public final static String                CLIENT_CONN_CREATE_START_IN_NANO     = "bolt.client.conn.create.start.nano";
+    public final static String                CLIENT_CONN_CREATE_END_IN_NANO       = "bolt.client.conn.create.end.nano";
 
     // ~~~ invoke context keys of server side
-    public final static String                SERVER_LOCAL_IP        = "bolt.server.local.ip";
-    public final static String                SERVER_LOCAL_PORT      = "bolt.server.local.port";
-    public final static String                SERVER_REMOTE_IP       = "bolt.server.remote.ip";
-    public final static String                SERVER_REMOTE_PORT     = "bolt.server.remote.port";
+    public final static String                SERVER_LOCAL_IP                      = "bolt.server.local.ip";
+    public final static String                SERVER_LOCAL_PORT                    = "bolt.server.local.port";
+    public final static String                SERVER_REMOTE_IP                     = "bolt.server.remote.ip";
+    public final static String                SERVER_REMOTE_PORT                   = "bolt.server.remote.port";
 
     // ~~~ invoke context keys of bolt client and server side
-    public final static String                BOLT_INVOKE_REQUEST_ID = "bolt.invoke.request.id";
+    public final static String                BOLT_INVOKE_REQUEST_ID               = "bolt.invoke.request.id";
     /** time consumed start from the time when request arrive, to the time when request be processed, this is a timespan */
-    public final static String                BOLT_PROCESS_WAIT_TIME = "bolt.invoke.wait.time";
-    public final static String                BOLT_CUSTOM_SERIALIZER = "bolt.invoke.custom.serializer";
-    public final static String                BOLT_CRC_SWITCH        = "bolt.invoke.crc.switch";
+    public final static String                BOLT_PROCESS_WAIT_TIME               = "bolt.invoke.wait.time";
+    /** time request arrived in nano seconds , collected by System.nanoTime() */
+    public final static String                BOLT_PROCESS_ARRIVE_HEADER_IN_NANO   = "bolt.invoke.request.arrive.header.in.nano";
+    public final static String                BOLT_PROCESS_ARRIVE_BODY_IN_NANO     = "bolt.invoke.request.arrive.body.in.nano";
+
+    /** time before send request to user thread in nano seconds , collected by System.nanoTime() */
+    public final static String                BOLT_PROCESS_BEFORE_DISPATCH_IN_NANO = "bolt.invoke.before.dispatch.in.nano";
+
+    /** time before send request to user thread in nano seconds , collected by System.nanoTime() */
+    public final static String                BOLT_PROCESS_START_PROCESS_IN_NANO   = "bolt.invoke.start.process.in.nano";
+
+    public final static String                BOLT_CUSTOM_SERIALIZER               = "bolt.invoke.custom.serializer";
+    public final static String                BOLT_CRC_SWITCH                      = "bolt.invoke.crc.switch";
+
+    /** time before send request to net in nano seconds , collected by System.nanoTime() **/
+    public final static String                BOLT_PROCESS_CLIENT_BEFORE_SEND      = "bolt.invoke.client.before.send";
+    /** time after send request to net in nano seconds , collected by System.nanoTime() **/
+    public final static String                BOLT_PROCESS_CLIENT_AFTER_SEND       = "bolt.invoke.client.after.send";
+    /** time after receive response from server in nano seconds , collected by System.nanoTime() **/
+    public final static String                BOLT_PROCESS_CLIENT_RECEIVED         = "bolt.invoke.client.received";
 
     // ~~~ constants
-    public final static int                   INITIAL_SIZE           = 8;
+    public final static int                   INITIAL_SIZE                         = 8;
 
     /** context */
     private ConcurrentHashMap<String, Object> context;

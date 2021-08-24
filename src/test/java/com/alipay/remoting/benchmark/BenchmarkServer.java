@@ -16,7 +16,7 @@
  */
 package com.alipay.remoting.benchmark;
 
-import com.alipay.remoting.config.switches.GlobalSwitch;
+import com.alipay.remoting.config.BoltServerOption;
 import com.alipay.remoting.rpc.RpcServer;
 
 /**
@@ -28,7 +28,7 @@ public class BenchmarkServer {
         System.setProperty("bolt.netty.buffer.high.watermark", String.valueOf(64 * 1024 * 1024));
         System.setProperty("bolt.netty.buffer.low.watermark", String.valueOf(32 * 1024 * 1024));
         RpcServer rpcServer = new RpcServer(18090, true, true);
-        rpcServer.switches().turnOn(GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
+        rpcServer.option(BoltServerOption.NETTY_FLUSH_CONSOLIDATION, true);
         rpcServer.registerUserProcessor(new BenchmarkUserProcessor());
         rpcServer.startup();
     }

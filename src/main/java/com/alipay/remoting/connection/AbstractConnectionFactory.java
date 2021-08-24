@@ -20,10 +20,17 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
 
+import com.alipay.remoting.config.BoltClientOption;
+import com.alipay.remoting.config.BoltGenericOption;
+import com.alipay.remoting.config.BoltServerOption;
+import com.alipay.remoting.config.Configuration;
+import com.alipay.remoting.ExtendedNettyChannelHandler;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -34,9 +41,7 @@ import com.alipay.remoting.ProtocolCode;
 import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.constant.Constants;
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.RpcConfigManager;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
@@ -77,7 +82,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
                                                         new NamedThreadFactory(
                                                             "bolt-netty-client-worker", true));
 
-    private final ConfigurableInstance  confInstance;
+    private final Configuration         configuration;
     private final Codec                 codec;
     private final ChannelHandler        heartbeatHandler;
     private final ChannelHandler        handler;
@@ -85,7 +90,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     protected Bootstrap                 bootstrap;
 
     public AbstractConnectionFactory(Codec codec, ChannelHandler heartbeatHandler,
-                                     ChannelHandler handler, ConfigurableInstance confInstance) {
+                                     ChannelHandler handler, Configuration configuration) {
         if (codec == null) {
             throw new IllegalArgumentException("null codec");
         }
@@ -93,7 +98,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             throw new IllegalArgumentException("null handler");
         }
 
-        this.confInstance = confInstance;
+        this.configuration = configuration;
         this.codec = codec;
         this.heartbeatHandler = heartbeatHandler;
         this.handler = handler;
@@ -119,14 +124,29 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             this.bootstrap.option(ChannelOption.ALLOCATOR, UnpooledByteBufAllocator.DEFAULT);
         }
 
-        final boolean flushConsolidationSwitch = this.confInstance.switches().isOn(
-            GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
+        final boolean flushConsolidationSwitch = this.configuration
+            .option(BoltClientOption.NETTY_FLUSH_CONSOLIDATION);
         bootstrap.handler(new ChannelInitializer<SocketChannel>() {
 
             @Override
             protected void initChannel(SocketChannel channel) {
                 ChannelPipeline pipeline = channel.pipeline();
-                if (RpcConfigManager.client_ssl_enable()) {
+                ExtendedNettyChannelHandler extendedHandlers = configuration
+                    .option(BoltClientOption.EXTENDED_NETTY_CHANNEL_HANDLER);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> frontHandlers = extendedHandlers.frontChannelHandlers();
+                    if (frontHandlers != null) {
+                        for (ChannelHandler channelHandler : frontHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
+                }
+                Boolean sslEnable = configuration.option(BoltClientOption.CLI_SSL_ENABLE);
+                if (!sslEnable) {
+                    // fixme: remove in next version
+                    sslEnable = RpcConfigManager.client_ssl_enable();
+                }
+                if (sslEnable) {
                     SSLEngine engine = initSSLContext().newEngine(channel.alloc());
                     engine.setUseClientMode(true);
                     pipeline.addLast(Constants.SSL_HANDLER, new SslHandler(engine));
@@ -148,6 +168,14 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
                 pipeline.addLast("connectionEventHandler", connectionEventHandler);
                 pipeline.addLast("handler", handler);
+                if (extendedHandlers != null) {
+                    List<ChannelHandler> backHandlers = extendedHandlers.backChannelHandlers();
+                    if (backHandlers != null) {
+                        for (ChannelHandler channelHandler : backHandlers) {
+                            pipeline.addLast(channelHandler.getClass().getName(), channelHandler);
+                        }
+                    }
+                }
             }
         });
     }
@@ -199,8 +227,19 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
      * init netty write buffer water mark
      */
     private void initWriteBufferWaterMark() {
-        int lowWaterMark = this.confInstance.netty_buffer_low_watermark();
-        int highWaterMark = this.confInstance.netty_buffer_high_watermark();
+        // init with system properties
+        Integer lowWaterMarkConfig = ConfigManager.netty_buffer_low_watermark();
+        if (lowWaterMarkConfig != null) {
+            configuration.option(BoltServerOption.NETTY_BUFFER_LOW_WATER_MARK, lowWaterMarkConfig);
+        }
+        Integer highWaterMarkConfig = ConfigManager.netty_buffer_high_watermark();
+        if (highWaterMarkConfig != null) {
+            configuration
+                .option(BoltServerOption.NETTY_BUFFER_HIGH_WATER_MARK, highWaterMarkConfig);
+        }
+
+        int lowWaterMark = configuration.option(BoltGenericOption.NETTY_BUFFER_LOW_WATER_MARK);
+        int highWaterMark = configuration.option(BoltGenericOption.NETTY_BUFFER_HIGH_WATER_MARK);
         if (lowWaterMark > highWaterMark) {
             throw new IllegalArgumentException(
                 String
@@ -219,14 +258,37 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
     private SslContext initSSLContext() {
         InputStream in = null;
         try {
-            KeyStore ks = KeyStore.getInstance(RpcConfigManager.client_ssl_keystore_type());
-            in = new FileInputStream(RpcConfigManager.client_ssl_keystore());
-            char[] passChs = RpcConfigManager.client_ssl_keystore_pass().toCharArray();
+            String sslKeyStoreType = configuration.option(BoltClientOption.CLI_SSL_KEYSTORE_TYPE);
+            if (sslKeyStoreType == null) {
+                // fixme: remove in next version
+                sslKeyStoreType = RpcConfigManager.client_ssl_keystore_type();
+            }
+            KeyStore ks = KeyStore.getInstance(sslKeyStoreType);
+            String sslKeyStore = configuration.option(BoltClientOption.CLI_SSL_KEYSTORE);
+            if (sslKeyStore == null) {
+                sslKeyStore = RpcConfigManager.client_ssl_keystore();
+            }
+            in = new FileInputStream(sslKeyStore);
+            String keyStorePass = configuration.option(BoltClientOption.CLI_SSL_KEYSTORE_PASS);
+            if (keyStorePass == null) {
+                keyStorePass = RpcConfigManager.client_ssl_keystore_pass();
+            }
+            char[] passChs = keyStorePass.toCharArray();
             ks.load(in, passChs);
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(RpcConfigManager
-                .client_ssl_tmf_algorithm());
+            String serverSslAlgorithm = configuration.option(BoltServerOption.SRV_SSL_KMF_ALGO);
+            if (serverSslAlgorithm == null) {
+                serverSslAlgorithm = RpcConfigManager.server_ssl_kmf_algorithm();
+            }
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance(serverSslAlgorithm);
+            kmf.init(ks, passChs);
+            String sslAlgorithm = configuration.option(BoltClientOption.CLI_SSL_TMF_ALGO);
+            if (sslAlgorithm == null) {
+                sslAlgorithm = RpcConfigManager.client_ssl_tmf_algorithm();
+            }
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(sslAlgorithm);
             tmf.init(ks);
-            return SslContextBuilder.forClient().trustManager(tmf).build();
+
+            return SslContextBuilder.forClient().keyManager(kmf).trustManager(tmf).build();
         } catch (Exception e) {
             logger.error("Fail to init SSL context for connection factory.", e);
             throw new IllegalStateException("Fail to init SSL context", e);
@@ -238,11 +300,14 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
 
     protected Channel doCreateConnection(String targetIP, int targetPort, int connectTimeout)
                                                                                              throws Exception {
-        // prevent unreasonable value, at least 1000
-        connectTimeout = Math.max(connectTimeout, 1000);
         String address = targetIP + ":" + targetPort;
         if (logger.isDebugEnabled()) {
             logger.debug("connectTimeout of address [{}] is [{}].", address, connectTimeout);
+        }
+        if (connectTimeout <= 0) {
+            throw new IllegalArgumentException(String.format(
+                "illegal timeout for creating connection, address: %s, timeout: %d", address,
+                connectTimeout));
         }
         bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout);
         ChannelFuture future = bootstrap.connect(new InetSocketAddress(targetIP, targetPort));

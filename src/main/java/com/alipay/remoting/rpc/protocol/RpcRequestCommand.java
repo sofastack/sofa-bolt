@@ -36,14 +36,17 @@ import com.alipay.remoting.util.IDGenerator;
  */
 public class RpcRequestCommand extends RequestCommand {
     /** For serialization  */
-    private static final long serialVersionUID = -4602613826188210946L;
+    private static final long serialVersionUID       = -4602613826188210946L;
     private Object            requestObject;
     private String            requestClass;
 
     private CustomSerializer  customSerializer;
     private Object            requestHeader;
 
-    private transient long    arriveTime       = -1;
+    private transient long    arriveTime             = -1;
+    private transient long    arriveHeaderTimeInNano = -1;
+    private transient long    arriveBodyTimeInNano   = -1;
+    private transient long    beforeEnterQueueTime   = -1;
 
     /**
      * create request command without id
@@ -246,5 +249,29 @@ public class RpcRequestCommand extends RequestCommand {
      */
     public void setArriveTime(long arriveTime) {
         this.arriveTime = arriveTime;
+    }
+
+    public long getArriveHeaderTimeInNano() {
+        return arriveHeaderTimeInNano;
+    }
+
+    public void setArriveHeaderTimeInNano(long arriveHeaderTimeInNano) {
+        this.arriveHeaderTimeInNano = arriveHeaderTimeInNano;
+    }
+
+    public long getArriveBodyTimeInNano() {
+        return arriveBodyTimeInNano;
+    }
+
+    public void setArriveBodyTimeInNano(long arriveBodyTimeInNano) {
+        this.arriveBodyTimeInNano = arriveBodyTimeInNano;
+    }
+
+    public long getBeforeEnterQueueTime() {
+        return beforeEnterQueueTime;
+    }
+
+    public void setBeforeEnterQueueTime(long beforeEnterQueueTime) {
+        this.beforeEnterQueueTime = beforeEnterQueueTime;
     }
 }

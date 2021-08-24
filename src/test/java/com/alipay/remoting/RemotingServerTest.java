@@ -16,11 +16,8 @@
  */
 package com.alipay.remoting;
 
-import static org.mockito.Mockito.when;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import com.alipay.remoting.rpc.RpcServer;
 
@@ -43,14 +40,6 @@ public class RemotingServerTest {
             // expect IllegalStateException
         }
         rpcServer.stop();
-    }
-
-    @Test
-    public void testStartFailed() throws InterruptedException {
-        AbstractRemotingServer remotingServer = Mockito.mock(AbstractRemotingServer.class);
-        when(remotingServer.doStart()).thenThrow(new RuntimeException("start error"));
-
-        Assert.assertFalse(remotingServer.start());
     }
 
     @Test

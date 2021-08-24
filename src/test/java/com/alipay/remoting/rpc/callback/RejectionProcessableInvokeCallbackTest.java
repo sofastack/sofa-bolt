@@ -41,7 +41,6 @@ public class RejectionProcessableInvokeCallbackTest {
     private RpcClient                 client;
 
     private int                       port                      = PortScan.select();
-    private String                    ip                        = "127.0.0.1";
     private String                    addr                      = "127.0.0.1:" + port;
 
     private SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor();

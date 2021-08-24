@@ -42,10 +42,6 @@ public class RpcHandler extends ChannelInboundHandlerAdapter {
 
     private ConcurrentHashMap<String, UserProcessor<?>> userProcessors;
 
-    public RpcHandler() {
-        serverSide = false;
-    }
-
     public RpcHandler(ConcurrentHashMap<String, UserProcessor<?>> userProcessors) {
         serverSide = false;
         this.userProcessors = userProcessors;
@@ -62,5 +58,6 @@ public class RpcHandler extends ChannelInboundHandlerAdapter {
         Protocol protocol = ProtocolManager.getProtocol(protocolCode);
         protocol.getCommandHandler().handleCommand(
             new RemotingContext(ctx, new InvokeContext(), serverSide, userProcessors), msg);
+        ctx.fireChannelRead(msg);
     }
 }

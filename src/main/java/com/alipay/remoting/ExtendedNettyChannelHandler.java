@@ -14,34 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.config.configs;
+package com.alipay.remoting;
+
+import io.netty.channel.ChannelHandler;
+
+import java.util.List;
 
 /**
- * netty related configuration items
- *
- * @author tsui
- * @version $Id: NettyConfigure.java, v 0.1 2018-07-30 21:42 tsui Exp $$ 
+ * Leave it to external expansion and
+ * support the addition of extended handler in the channel pipeline.
  */
-public interface NettyConfigure {
-    /**
-     * Initialize netty write buffer water mark for remoting instance.
-     * <p>
-     * Notice: This api should be called before init remoting instance.
-     *
-     * @param low [0, high]
-     * @param high [high, Integer.MAX_VALUE)
-     */
-    void initWriteBufferWaterMark(int low, int high);
+public interface ExtendedNettyChannelHandler {
 
     /**
-     * get the low water mark for netty write buffer
-     * @return low watermark
+     * Netty ChannelHandlers to be added before Bolt's built-in Handler.
+     * @return Netty ChannelHandler list
      */
-    int netty_buffer_low_watermark();
+    List<ChannelHandler> frontChannelHandlers();
 
     /**
-     * get the high water mark for netty write buffer
-     * @return high watermark
+     * Netty ChannelHandlers to be added after Bolt's built-in Handler.
+     * @return Netty ChannelHandler list
      */
-    int netty_buffer_high_watermark();
+    List<ChannelHandler> backChannelHandlers();
 }

@@ -18,7 +18,7 @@ package com.alipay.remoting.rpc;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.config.ConfigurableInstance;
+import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.connection.DefaultConnectionFactory;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
@@ -30,8 +30,8 @@ import com.alipay.remoting.rpc.protocol.UserProcessor;
 public class RpcConnectionFactory extends DefaultConnectionFactory {
 
     public RpcConnectionFactory(ConcurrentHashMap<String, UserProcessor<?>> userProcessors,
-                                ConfigurableInstance configInstance) {
+                                Configuration configurations) {
         super(new RpcCodec(), new HeartbeatHandler(), new RpcHandler(userProcessors),
-            configInstance);
+            configurations);
     }
 }

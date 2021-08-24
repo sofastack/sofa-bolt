@@ -111,10 +111,10 @@ public class ProtocolSwitch implements Switch {
             }
         }
         if (bs.length() > 7) {
-            throw new IllegalArgumentException("The byte value " + value
-                                               + " generated according to bit set " + bs
-                                               + " is out of range, should be limited between ["
-                                               + Byte.MIN_VALUE + "] to [" + Byte.MAX_VALUE + "]");
+            throw new IllegalArgumentException(
+                "The byte value " + value + " generated according to bit set " + bs
+                        + " is out of range, should be limited between [0] to [" + Byte.MAX_VALUE
+                        + "]");
         }
         return (byte) value;
     }
@@ -125,10 +125,10 @@ public class ProtocolSwitch implements Switch {
      * @return bit set represent the byte
      */
     public static BitSet toBitSet(int value) {
-        if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) {
+        if (value < 0 || value > Byte.MAX_VALUE) {
             throw new IllegalArgumentException(
-                "The value " + value + " is out of byte range, should be limited between ["
-                        + Byte.MIN_VALUE + "] to [" + Byte.MAX_VALUE + "]");
+                "The value " + value + " is out of byte range, should be limited between [0] to ["
+                        + Byte.MAX_VALUE + "]");
         }
         BitSet bs = new BitSet();
         int index = 0;
