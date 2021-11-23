@@ -16,35 +16,17 @@
  */
 package com.alipay.remoting;
 
-import java.util.concurrent.Executor;
-
 /**
- * Invoke callback.
+ * RejectedExecutionPolicy determines how to deal with this situation that user executor rejected the {@link com.alipay.remoting.rpc.RpcInvokeCallbackListener.CallbackTask}.
  *
- * @author jiangping
- * @version $Id: InvokeCallback.java, v 0.1 2015-9-30 AM10:24:26 tao Exp $
+ * @author muyun
+ * @version $Id: RejectedExecutionPolicy.java, v 0.1 2019年12月05日 7:38 PM muyun Exp $
  */
-public interface InvokeCallback {
-
-    /**
-     * Response received.
-     *
-     * @param result
-     */
-    void onResponse(final Object result);
-
-    /**
-     * Exception caught.
-     *
-     * @param e
-     */
-    void onException(final Throwable e);
-
-    /**
-     * User defined executor.
-     *
-     * @return
-     */
-    Executor getExecutor();
-
+public enum RejectedExecutionPolicy {
+    /* discard the callback task */
+    DISCARD,
+    /* caller runs the callback in IO-thread */
+    CALLER_RUNS,
+    /* caller handle the task with exception strategy user provided */
+    CALLER_HANDLE_EXCEPTION
 }
