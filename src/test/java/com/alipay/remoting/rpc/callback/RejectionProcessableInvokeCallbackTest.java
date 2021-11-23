@@ -66,7 +66,7 @@ public class RejectionProcessableInvokeCallbackTest {
         client.addConnectionEventProcessor(ConnectionEventType.CONNECT, clientConnectProcessor);
         client.addConnectionEventProcessor(ConnectionEventType.CLOSE, clientDisConnectProcessor);
         client.registerUserProcessor(clientUserProcessor);
-        client.startup();
+        client.init();
 
         executor = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(2), new NamedThreadFactory(
@@ -165,6 +165,7 @@ public class RejectionProcessableInvokeCallbackTest {
 
             @Override
             public void onResponse(Object result) {
+                ThreadTestUtils.sleep(1000);
             }
 
             @Override
