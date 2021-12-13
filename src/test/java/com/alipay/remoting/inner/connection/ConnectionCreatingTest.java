@@ -33,6 +33,7 @@ import com.alipay.remoting.util.ThreadTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.net.Inet6Address;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionCreatingTest {
@@ -105,6 +106,45 @@ public class ConnectionCreatingTest {
         }
         long cost = System.currentTimeMillis() - start;
         Assert.assertTrue(cost >= 500 && cost < 800);
+
+        rpcClient.shutdown();
+        // 关闭Server
+        boltServer.stop();
+    }
+
+    @Test
+    public void testCreateConnectionWithIPv6() {
+        // 启动一个MOCK的Server
+        BoltServer boltServer = new BoltServer(8888);
+        boltServer.registerUserProcessor(new SyncUserProcessor<String>() {
+            @Override
+            public Object handleRequest(BizContext bizCtx, String request) throws Exception {
+                return "Hello";
+            }
+
+            @Override
+            public String interest() {
+                return "java.lang.String";
+            }
+        });
+        // 初始Server建连成功，验证创建连接正常
+        boltServer.start();
+        ThreadTestUtils.sleep(1000);
+
+        RpcClient rpcClient = new RpcClient();
+        MockConnectionManager connectionManager = new MockConnectionManager(rpcClient);
+        connectionManager.setSleepTime(500);
+        connectionManager.startup();
+        rpcClient.setConnectionManager(connectionManager);
+        rpcClient.startup();
+        try {
+            Object object = rpcClient.invokeSync("[::1]:8888", "TEST", 9999);
+            System.out.println(object);
+        } catch (Exception e) {
+            // ignore
+            // create connection timeout
+            e.printStackTrace();
+        }
 
         rpcClient.shutdown();
         // 关闭Server
