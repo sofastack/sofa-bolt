@@ -20,6 +20,7 @@ import java.lang.ref.SoftReference;
 import java.util.Properties;
 
 import com.alipay.remoting.RemotingAddressParser;
+import com.alipay.remoting.RpcAddress;
 import com.alipay.remoting.Url;
 import com.alipay.remoting.config.Configs;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
@@ -61,29 +62,14 @@ public class RpcAddressParser implements RemotingAddressParser {
         if (null != parsedUrl) {
             return parsedUrl;
         }
-        String ip = null;
+
+        final RpcAddress rpcAddress = RpcAddress.newRpcAddress(url);
+        String ip = rpcAddress.getIp();
         String port = null;
         Properties properties = null;
 
         int size = url.length();
-        int pos = 0;
-        for (int i = 0; i < size; ++i) {
-            if (COLON == url.charAt(i)) {
-                ip = url.substring(pos, i);
-                pos = i;
-                // should not end with COLON
-                if (i == size - 1) {
-                    throw new IllegalArgumentException("Illegal format address string [" + url
-                                                       + "], should not end with COLON[:]! ");
-                }
-                break;
-            }
-            // must have one COLON
-            if (i == size - 1) {
-                throw new IllegalArgumentException("Illegal format address string [" + url
-                                                   + "], must have one COLON[:]! ");
-            }
-        }
+        int pos = ip.length();
 
         for (int i = pos; i < size; ++i) {
             if (QUES == url.charAt(i)) {
