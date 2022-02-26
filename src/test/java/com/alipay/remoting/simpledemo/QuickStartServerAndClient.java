@@ -11,6 +11,7 @@ public class QuickStartServerAndClient {
         rpcServer.startup();
 
         RpcClient rpcClient = new RpcClient();
+        rpcClient.startup();
         for (int i = 0; i < 10; i++) {
             SimpleResponse response = (SimpleResponse) rpcClient.invokeSync("127.0.0.1:9876", new SimpleRequest(i), 1000);
             System.out.println("i=" + i + " res=" + response.getRes());
