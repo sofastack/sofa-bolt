@@ -14,22 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.benchmark;
+package com.alipay.remoting.simpledemo;
 
-import com.alipay.remoting.config.BoltServerOption;
-import com.alipay.remoting.rpc.RpcServer;
+import java.io.Serializable;
 
-/**
- * @author jiachun.fjc
- */
-public class BenchmarkServer {
+public class SimpleResponse implements Serializable {
+    private int res;
 
-    public static void main(String[] args) {
-        System.setProperty("bolt.netty.buffer.high.watermark", String.valueOf(64 * 1024 * 1024));
-        System.setProperty("bolt.netty.buffer.low.watermark", String.valueOf(32 * 1024 * 1024));
-        RpcServer rpcServer = new RpcServer(18090, true, true);
-        rpcServer.option(BoltServerOption.NETTY_FLUSH_CONSOLIDATION, true);
-        rpcServer.registerUserProcessor(new BenchmarkUserProcessor());
-        rpcServer.startup();
+    public SimpleResponse(int res) {
+        this.res = res;
+    }
+
+    public int getRes() {
+        return res;
     }
 }

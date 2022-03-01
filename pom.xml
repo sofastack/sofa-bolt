@@ -82,8 +82,11 @@
 
         <project.encoding>UTF-8</project.encoding>
         <slf4j.version>1.7.21</slf4j.version>
+        <log4j.version>2.17.1</log4j.version>
+        <disruptor.verion>3.4.4</disruptor.verion>
         <sofa.common.tools>1.0.12</sofa.common.tools>
         <sortpom.maven.plugin>2.4.0</sortpom.maven.plugin>
+        <junit.version>4.13.1</junit.version>
     </properties>
 
     <dependencies>
@@ -116,31 +119,31 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.17.0</version>
+            <version>${log4j.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.17.0</version>
+            <version>${log4j.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.3</version>
+            <version>${log4j.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
-            <version>3.2.0</version>
+            <version>${disruptor.verion}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -14,22 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.benchmark;
+package com.alipay.remoting.simpledemo;
 
-import com.alipay.remoting.config.BoltServerOption;
-import com.alipay.remoting.rpc.RpcServer;
+import com.alipay.remoting.AsyncContext;
+import com.alipay.remoting.BizContext;
+import com.alipay.remoting.rpc.protocol.AsyncUserProcessor;
 
-/**
- * @author jiachun.fjc
- */
-public class BenchmarkServer {
+public class SimpleUserProcessor extends AsyncUserProcessor<SimpleRequest> {
 
-    public static void main(String[] args) {
-        System.setProperty("bolt.netty.buffer.high.watermark", String.valueOf(64 * 1024 * 1024));
-        System.setProperty("bolt.netty.buffer.low.watermark", String.valueOf(32 * 1024 * 1024));
-        RpcServer rpcServer = new RpcServer(18090, true, true);
-        rpcServer.option(BoltServerOption.NETTY_FLUSH_CONSOLIDATION, true);
-        rpcServer.registerUserProcessor(new BenchmarkUserProcessor());
-        rpcServer.startup();
+    @Override
+    public void handleRequest(BizContext bizCtx, AsyncContext asyncCtx, SimpleRequest request) {
+        int res = request.getNum() * request.getNum();
+        asyncCtx.sendResponse(new SimpleResponse(res));
+    }
+
+    @Override
+    public String interest() {
+        return SimpleRequest.class.getName();
     }
 }
