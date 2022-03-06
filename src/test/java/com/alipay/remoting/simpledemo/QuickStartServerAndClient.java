@@ -22,7 +22,7 @@ import com.alipay.remoting.rpc.RpcServer;
 
 public class QuickStartServerAndClient {
     public static void main(String[] args) throws RemotingException, InterruptedException {
-        RpcServer rpcServer = new RpcServer( 9876);
+        RpcServer rpcServer = new RpcServer(9876);
         rpcServer.registerUserProcessor(new SimpleUserProcessor());
         rpcServer.startup();
 
