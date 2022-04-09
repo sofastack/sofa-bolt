@@ -710,6 +710,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                         syncCreateNumWhenNotWarmup);
                 } catch (Exception e) {
                     pool.removeAllAndTryClose();
+                    connTasks.remove(url.getUniqueKey());
                     throw e;
                 }
             }

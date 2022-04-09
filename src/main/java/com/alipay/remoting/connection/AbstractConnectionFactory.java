@@ -31,6 +31,7 @@ import com.alipay.remoting.config.BoltGenericOption;
 import com.alipay.remoting.config.BoltServerOption;
 import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.ExtendedNettyChannelHandler;
+import com.alipay.remoting.exception.RemotingException;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.Connection;
@@ -189,6 +190,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+            throw new RemotingException("create connection, but channel is inactive");
         }
         return conn;
     }
@@ -204,6 +206,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+            throw new RemotingException("create connection, but channel is inactive");
         }
         return conn;
     }
@@ -219,6 +222,7 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+            throw new RemotingException("create connection, but channel is inactive");
         }
         return conn;
     }
