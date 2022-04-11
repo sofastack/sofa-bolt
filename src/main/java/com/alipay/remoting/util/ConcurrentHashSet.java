@@ -19,6 +19,7 @@ package com.alipay.remoting.util;
 import java.util.AbstractSet;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Concurrent hash set.
@@ -27,7 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version $Id: ConcurrentHashSet.java, v 0.1 Mar 11, 2016 3:40:41 PM yunliang.shi Exp $
  */
 public class ConcurrentHashSet<E> extends AbstractSet<E> {
-    private ConcurrentHashMap<E, Boolean> map;
+    private ConcurrentMap<E, Boolean> map;
 
     /**
      * constructor
