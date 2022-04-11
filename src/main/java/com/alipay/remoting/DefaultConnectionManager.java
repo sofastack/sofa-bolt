@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
@@ -51,48 +52,48 @@ import com.alipay.remoting.util.StringUtils;
 public class DefaultConnectionManager extends AbstractLifeCycle implements ConnectionManager,
                                                                Scannable, LifeCycle {
 
-    private static final Logger                                                     logger = BoltLoggerFactory
-                                                                                               .getLogger("CommonDefault");
+    private static final Logger                                                 logger = BoltLoggerFactory
+                                                                                           .getLogger("CommonDefault");
 
     /**
      * executor to create connections in async way
      */
-    private ThreadPoolExecutor                                                      asyncCreateConnectionExecutor;
+    private ThreadPoolExecutor                                                  asyncCreateConnectionExecutor;
 
     /**
      * connection pool initialize tasks
      */
-    protected ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>> connTasks;
+    protected ConcurrentMap<String, RunStateRecordedFutureTask<ConnectionPool>> connTasks;
 
     /**
      * heal connection tasks
      */
-    protected ConcurrentHashMap<String, FutureTask<Integer>>                        healTasks;
+    protected ConcurrentMap<String, FutureTask<Integer>>                        healTasks;
 
     /**
      * connection pool select strategy
      */
-    protected ConnectionSelectStrategy                                              connectionSelectStrategy;
+    protected ConnectionSelectStrategy                                          connectionSelectStrategy;
 
     /**
      * address parser
      */
-    protected RemotingAddressParser                                                 addressParser;
+    protected RemotingAddressParser                                             addressParser;
 
     /**
      * connection factory
      */
-    protected ConnectionFactory                                                     connectionFactory;
+    protected ConnectionFactory                                                 connectionFactory;
 
     /**
      * connection event handler
      */
-    protected ConnectionEventHandler                                                connectionEventHandler;
+    protected ConnectionEventHandler                                            connectionEventHandler;
 
     /**
      * connection event listener
      */
-    protected ConnectionEventListener                                               connectionEventListener;
+    protected ConnectionEventListener                                           connectionEventListener;
 
     /**
      * Construct with parameters.
@@ -710,6 +711,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                         syncCreateNumWhenNotWarmup);
                 } catch (Exception e) {
                     pool.removeAllAndTryClose();
+                    connTasks.remove(url.getUniqueKey());
                     throw e;
                 }
             }
@@ -914,7 +916,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
      *
      * @return property value of connPools
      */
-    public ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>> getConnPools() {
+    public ConcurrentMap<String, RunStateRecordedFutureTask<ConnectionPool>> getConnPools() {
         return this.connTasks;
     }
 }
