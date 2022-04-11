@@ -190,7 +190,8 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
-            throw new RemotingException("create connection, but channel is inactive");
+            throw new RemotingException("create connection, but channel is inactive, url is "
+                                        + url.getOriginUrl());
         }
         return conn;
     }
@@ -206,7 +207,9 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
-            throw new RemotingException("create connection, but channel is inactive");
+            throw new RemotingException(
+                "create connection, but channel is inactive, target address is " + targetIP + ":"
+                        + targetPort);
         }
         return conn;
     }
@@ -222,7 +225,9 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
         } else {
             channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
-            throw new RemotingException("create connection, but channel is inactive");
+            throw new RemotingException(
+                "create connection, but channel is inactive, target address is " + targetIP + ":"
+                        + targetPort);
         }
         return conn;
     }
