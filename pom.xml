@@ -280,7 +280,7 @@
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
-                    <forkCount>1</forkCount>
+                    <forkCount>1.5C</forkCount>
                     <reuseForks>false</reuseForks>
                 </configuration>
             </plugin>
