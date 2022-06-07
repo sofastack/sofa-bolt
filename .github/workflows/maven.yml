@@ -41,9 +41,9 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
     - name: Build with Maven
-      run: ./mvnw clean install -Pci-install -B -U -e && bash ./.middleware-common/check_format.sh
+      run: ./mvnw clean install -Dmaven.test.skip=true -B -U -e && bash ./.middleware-common/check_format.sh
     - name: Test with Maven
-      run: ./mvnw package -Pci-test
+      run: ./mvnw package
     - name: Codecov
       uses: codecov/codecov-action@v1
 

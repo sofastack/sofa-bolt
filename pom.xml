@@ -66,9 +66,12 @@
     <properties>
         <cobertura.maven.plugin>2.6</cobertura.maven.plugin>
         <coveralls.maven.plugin>3.2.1</coveralls.maven.plugin>
+        <disruptor.verion>3.4.4</disruptor.verion>
         <hessian.version>3.3.6</hessian.version>
         <java.version>1.6</java.version>
+        <junit.version>4.13.1</junit.version>
         <license.maven.plugin>3.0</license.maven.plugin>
+        <log4j.version>2.17.1</log4j.version>
         <maven.assembly.plugin>3.0.0</maven.assembly.plugin>
         <maven.compiler.plugin>3.5.1</maven.compiler.plugin>
         <maven.gpg.pluign>1.5</maven.gpg.pluign>
@@ -82,11 +85,8 @@
 
         <project.encoding>UTF-8</project.encoding>
         <slf4j.version>1.7.21</slf4j.version>
-        <log4j.version>2.17.1</log4j.version>
-        <disruptor.verion>3.4.4</disruptor.verion>
         <sofa.common.tools>1.0.12</sofa.common.tools>
         <sortpom.maven.plugin>2.4.0</sortpom.maven.plugin>
-        <junit.version>4.13.1</junit.version>
     </properties>
 
     <dependencies>
