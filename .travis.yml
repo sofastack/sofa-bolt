@@ -6,7 +6,6 @@ dist: trusty
 jdk:
   - oraclejdk8
   - openjdk7
-  - openjdk11
 
 dist: trusty
 
