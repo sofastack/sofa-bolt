@@ -110,11 +110,11 @@ public class RejectionProcessableInvokeCallbackTest {
         };
         try {
             for (int i = 0; i < invokeCount; i++) {
-                client.invokeWithCallback(addr, req, callback, 100);
+                client.invokeWithCallback(addr, req, callback, 50);
             }
 
             try {
-                latch.await(200L * invokeCount, TimeUnit.MILLISECONDS);
+                latch.await(100L * invokeCount, TimeUnit.MILLISECONDS);
             } catch (InterruptedException ignore) {
             }
 
@@ -131,7 +131,7 @@ public class RejectionProcessableInvokeCallbackTest {
     public void testDiscardPolicy() {
         RequestBody req = new RequestBody(1, "hello world sync");
 
-        int invokeCount = 20;
+        int invokeCount = 50;
         final CountDownLatch latch = new CountDownLatch(invokeCount);
         callback = new RejectionProcessableInvokeCallback() {
             @Override
@@ -156,11 +156,11 @@ public class RejectionProcessableInvokeCallbackTest {
         };
         try {
             for (int i = 0; i < invokeCount; i++) {
-                client.invokeWithCallback(addr, req, callback, 100);
+                client.invokeWithCallback(addr, req, callback, 50);
             }
 
             try {
-                latch.await(150L * invokeCount, TimeUnit.MILLISECONDS);
+                latch.await(100L * invokeCount, TimeUnit.MILLISECONDS);
             } catch (InterruptedException ignore) {
             }
 
@@ -203,11 +203,11 @@ public class RejectionProcessableInvokeCallbackTest {
         };
         try {
             for (int i = 0; i < invokeCount; i++) {
-                client.invokeWithCallback(addr, req, callback, 100);
+                client.invokeWithCallback(addr, req, callback, 50);
             }
 
             try {
-                latch.await(150L * invokeCount, TimeUnit.MILLISECONDS);
+                latch.await(100L * invokeCount, TimeUnit.MILLISECONDS);
             } catch (InterruptedException ignore) {
             }
 
