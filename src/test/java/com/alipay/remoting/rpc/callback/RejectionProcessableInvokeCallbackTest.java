@@ -36,36 +36,34 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @version $Id: RejectionProcessableInvokeCallbackTest.java, v 0.1 2019年12月05日 9:29 PM muyun Exp $
  */
 public class RejectionProcessableInvokeCallbackTest {
-    private BoltServer                server;
-    private RpcClient                 client;
+    private BoltServer               server;
+    private RpcClient                client;
 
-    private int                       port                      = PortScan.select();
-    private String                    addr                      = "127.0.0.1:" + port;
+    private int                      port;
+    private String                   addr;
+    private CONNECTEventProcessor    clientConnectProcessor    = new CONNECTEventProcessor();
+    private CONNECTEventProcessor    serverConnectProcessor    = new CONNECTEventProcessor();
+    private DISCONNECTEventProcessor clientDisConnectProcessor = new DISCONNECTEventProcessor();
+    private DISCONNECTEventProcessor serverDisConnectProcessor = new DISCONNECTEventProcessor();
 
-    private SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor(0,
-                                                                    1, 3, 60, 500);
-    private SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor(0,
-                                                                    1, 3, 60, 500);
-    private CONNECTEventProcessor     clientConnectProcessor    = new CONNECTEventProcessor();
-    private CONNECTEventProcessor     serverConnectProcessor    = new CONNECTEventProcessor();
-    private DISCONNECTEventProcessor  clientDisConnectProcessor = new DISCONNECTEventProcessor();
-    private DISCONNECTEventProcessor  serverDisConnectProcessor = new DISCONNECTEventProcessor();
-
-    private ThreadPoolExecutor        executor;
-    private InvokeCallback            callback;
+    private ThreadPoolExecutor       executor;
+    private InvokeCallback           callback;
 
     @Before
     public void setUp() {
+        port = PortScan.select();
+        addr = "127.0.0.1:" + port;
+
         server = new BoltServer(port, true);
         server.start();
         server.addConnectionEventProcessor(ConnectionEventType.CONNECT, serverConnectProcessor);
         server.addConnectionEventProcessor(ConnectionEventType.CLOSE, serverDisConnectProcessor);
-        server.registerUserProcessor(serverUserProcessor);
+        server.registerUserProcessor(new SimpleServerUserProcessor(0, 1, 3, 60, 500));
 
         client = new RpcClient();
         client.addConnectionEventProcessor(ConnectionEventType.CONNECT, clientConnectProcessor);
         client.addConnectionEventProcessor(ConnectionEventType.CLOSE, clientDisConnectProcessor);
-        client.registerUserProcessor(clientUserProcessor);
+        client.registerUserProcessor(new SimpleClientUserProcessor(0, 1, 3, 60, 500));
         client.startup();
 
         executor = new ThreadPoolExecutor(1, 1, 60, TimeUnit.SECONDS,
