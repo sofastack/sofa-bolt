@@ -108,7 +108,7 @@ public class RejectionProcessableInvokeCallbackTest {
         };
         try {
             for (int i = 0; i < invokeCount; i++) {
-                client.invokeWithCallback(addr, req, callback, 50);
+                client.invokeWithCallback(addr, req, callback, 50 * invokeCount);
             }
 
             try {
@@ -154,7 +154,7 @@ public class RejectionProcessableInvokeCallbackTest {
         };
         try {
             for (int i = 0; i < invokeCount; i++) {
-                client.invokeWithCallback(addr, req, callback, 50);
+                client.invokeWithCallback(addr, req, callback, 50 * invokeCount);
             }
 
             try {
@@ -201,7 +201,7 @@ public class RejectionProcessableInvokeCallbackTest {
         };
         try {
             for (int i = 0; i < invokeCount; i++) {
-                client.invokeWithCallback(addr, req, callback, 50);
+                client.invokeWithCallback(addr, req, callback, 50 * invokeCount);
             }
 
             try {
