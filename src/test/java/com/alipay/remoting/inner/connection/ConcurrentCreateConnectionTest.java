@@ -18,7 +18,6 @@ package com.alipay.remoting.inner.connection;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.alipay.remoting.DefaultClientConnectionManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,6 +30,7 @@ import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.ConnectionSelectStrategy;
+import com.alipay.remoting.DefaultClientConnectionManager;
 import com.alipay.remoting.RandomSelectStrategy;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
@@ -42,6 +42,7 @@ import com.alipay.remoting.rpc.RpcConnectionEventHandler;
 import com.alipay.remoting.rpc.RpcConnectionFactory;
 import com.alipay.remoting.rpc.common.BoltServer;
 import com.alipay.remoting.rpc.common.CONNECTEventProcessor;
+import com.alipay.remoting.rpc.common.PortScan;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 /**
@@ -69,7 +70,8 @@ public class ConcurrentCreateConnectionTest {
     private BoltServer                                  server;
 
     private String                                      ip                       = "127.0.0.1";
-    private int                                         port                     = 1111;
+    private int                                         port                     = PortScan
+                                                                                     .select();
 
     CONNECTEventProcessor                               serverConnectProcessor   = new CONNECTEventProcessor();
 
