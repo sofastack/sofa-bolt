@@ -202,7 +202,7 @@ public class ConnectionEventHandler extends ChannelDuplexHandler {
         logger
             .warn(
                 "ExceptionCaught in connection: local[{}], remote[{}], close the connection! Cause[{}:{}]",
-                localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage());
+                localAddress, remoteAddress, cause.getClass().getSimpleName(), cause.getMessage(), cause);
         ctx.channel().close();
     }
 
