@@ -48,12 +48,8 @@ public class RuntimeClientHeartBeatTest {
 
     BoltServer                server;
     RpcClient                 client;
-
-    int                       port                      = PortScan.select();
-    String                    ip                        = "127.0.0.1";
-    String                    addr                      = "127.0.0.1:" + port;
-
-    int                       invokeTimes               = 5;
+    int                       port;
+    String                    addr;
 
     SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor();
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();
@@ -66,6 +62,9 @@ public class RuntimeClientHeartBeatTest {
 
     @Before
     public void init() {
+        port = PortScan.select();
+        addr = "127.0.0.1:" + port;
+
         System.setProperty(Configs.TCP_IDLE, "100");
         System.setProperty(Configs.TCP_IDLE_SWITCH, Boolean.toString(true));
         System.setProperty(Configs.TCP_IDLE_MAXTIMES, "1000");
