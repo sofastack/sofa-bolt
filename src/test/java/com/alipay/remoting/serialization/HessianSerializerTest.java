@@ -50,10 +50,12 @@ public class HessianSerializerTest {
         @Override
         public void run() {
             try {
-                String randomStr = UUID.randomUUID().toString();
-                byte[] bytes = serializer.serialize(randomStr);
-                String o = serializer.deserialize(bytes, null);
-                assertEquals(o, randomStr);
+                for (int i = 0; i < 100; i++) {
+                    String randomStr = UUID.randomUUID().toString();
+                    byte[] bytes = serializer.serialize(randomStr);
+                    String o = serializer.deserialize(bytes, null);
+                    assertEquals(o, randomStr);
+                }
             } catch (Exception e) {
                 fail();
             } finally {
