@@ -34,13 +34,15 @@ import com.caucho.hessian.io.SerializerFactory;
 public class HessianSerializer implements Serializer {
 
     private SerializerFactory serializerFactory = new SerializerFactory();
+    private static ThreadLocal<ByteArrayOutputStream> localOutputByteArray = ThreadLocal.withInitial(() -> new ByteArrayOutputStream());
 
     /** 
      * @see com.alipay.remoting.serialization.Serializer#serialize(java.lang.Object)
      */
     @Override
     public byte[] serialize(Object obj) throws CodecException {
-        ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
+        ByteArrayOutputStream byteArray = localOutputByteArray.get();
+        byteArray.reset();
         Hessian2Output output = new Hessian2Output(byteArray);
         output.setSerializerFactory(serializerFactory);
         try {
@@ -49,7 +51,6 @@ public class HessianSerializer implements Serializer {
         } catch (IOException e) {
             throw new CodecException("IOException occurred when Hessian serializer encode!", e);
         }
-
         return byteArray.toByteArray();
     }
 
