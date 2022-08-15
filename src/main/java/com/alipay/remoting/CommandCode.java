@@ -25,6 +25,7 @@ package com.alipay.remoting;
 public interface CommandCode {
     // value 0 is occupied by heartbeat, don't use value 0 for other commands
     short HEARTBEAT_VALUE = 0;
+    short GOAWAY_VALUE = 100;
 
     /**
      * 
