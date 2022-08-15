@@ -33,13 +33,13 @@ import com.caucho.hessian.io.SerializerFactory;
  */
 public class HessianSerializer implements Serializer {
 
-    private SerializerFactory serializerFactory = new SerializerFactory();
+    private SerializerFactory                         serializerFactory    = new SerializerFactory();
     private static ThreadLocal<ByteArrayOutputStream> localOutputByteArray = new ThreadLocal<ByteArrayOutputStream>() {
-        @Override
-        protected ByteArrayOutputStream initialValue() {
-            return new ByteArrayOutputStream();
-        }
-    };
+                                                                               @Override
+                                                                               protected ByteArrayOutputStream initialValue() {
+                                                                                   return new ByteArrayOutputStream();
+                                                                               }
+                                                                           };
 
     /** 
      * @see com.alipay.remoting.serialization.Serializer#serialize(java.lang.Object)
