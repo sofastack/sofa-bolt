@@ -196,42 +196,6 @@ public abstract class AbstractConnectionFactory implements ConnectionFactory {
         return conn;
     }
 
-    @Override
-    public Connection createConnection(String targetIP, int targetPort, int connectTimeout)
-                                                                                           throws Exception {
-        Channel channel = doCreateConnection(targetIP, targetPort, connectTimeout);
-        Connection conn = new Connection(channel,
-            ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
-            new Url(targetIP, targetPort));
-        if (channel.isActive()) {
-            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
-        } else {
-            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
-            throw new RemotingException(
-                "create connection, but channel is inactive, target address is " + targetIP + ":"
-                        + targetPort);
-        }
-        return conn;
-    }
-
-    @Override
-    public Connection createConnection(String targetIP, int targetPort, byte version,
-                                       int connectTimeout) throws Exception {
-        Channel channel = doCreateConnection(targetIP, targetPort, connectTimeout);
-        Connection conn = new Connection(channel,
-            ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
-                targetPort));
-        if (channel.isActive()) {
-            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
-        } else {
-            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
-            throw new RemotingException(
-                "create connection, but channel is inactive, target address is " + targetIP + ":"
-                        + targetPort);
-        }
-        return conn;
-    }
-
     /**
      * init netty write buffer water mark
      */

@@ -16,9 +16,16 @@
  */
 package com.alipay.remoting.connection;
 
+import com.alipay.remoting.Connection;
+import com.alipay.remoting.ConnectionEventType;
+import com.alipay.remoting.ProtocolCode;
+import com.alipay.remoting.Url;
 import com.alipay.remoting.codec.Codec;
 import com.alipay.remoting.config.Configuration;
 
+import com.alipay.remoting.rpc.protocol.RpcProtocol;
+import com.alipay.remoting.rpc.protocol.RpcProtocolV2;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 
 /**
@@ -32,4 +39,35 @@ public class DefaultConnectionFactory extends AbstractConnectionFactory {
                                     ChannelHandler handler, Configuration configuration) {
         super(codec, heartbeatHandler, handler, configuration);
     }
+
+    @Override
+    public Connection createConnection(String targetIP, int targetPort, int connectTimeout)
+                                                                                           throws Exception {
+        Channel channel = doCreateConnection(targetIP, targetPort, connectTimeout);
+        Connection conn = new Connection(channel,
+            ProtocolCode.fromBytes(RpcProtocol.PROTOCOL_CODE), RpcProtocolV2.PROTOCOL_VERSION_1,
+            new Url(targetIP, targetPort));
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
+        return conn;
+    }
+
+    @Override
+    public Connection createConnection(String targetIP, int targetPort, byte version,
+                                       int connectTimeout) throws Exception {
+        Channel channel = doCreateConnection(targetIP, targetPort, connectTimeout);
+        Connection conn = new Connection(channel,
+            ProtocolCode.fromBytes(RpcProtocolV2.PROTOCOL_CODE), version, new Url(targetIP,
+                targetPort));
+        if (channel.isActive()) {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT);
+        } else {
+            channel.pipeline().fireUserEventTriggered(ConnectionEventType.CONNECT_FAILED);
+        }
+        return conn;
+    }
+
 }
