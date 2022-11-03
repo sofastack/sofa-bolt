@@ -19,6 +19,7 @@ package com.alipay.remoting;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Listen and dispatch connection events.
@@ -27,7 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConnectionEventListener {
 
-    private ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>> processors = new ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>>(
+    private final ReentrantLock lock = new ReentrantLock();
+
+    private final ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>> processors = new ConcurrentHashMap<ConnectionEventType, List<ConnectionEventProcessor>>(
                                                                                                   3);
 
     /**
@@ -54,12 +57,16 @@ public class ConnectionEventListener {
      */
     public void addConnectionEventProcessor(ConnectionEventType type,
                                             ConnectionEventProcessor processor) {
-        List<ConnectionEventProcessor> processorList = this.processors.get(type);
-        if (processorList == null) {
-            this.processors.putIfAbsent(type, new ArrayList<ConnectionEventProcessor>(1));
-            processorList = this.processors.get(type);
+        lock.lock();
+        try {
+            List<ConnectionEventProcessor> processorList = this.processors.get(type);
+            if (null == processorList) {
+                processorList = new ArrayList<ConnectionEventProcessor>(1);
+                this.processors.put(type, processorList);
+            }
+            processorList.add(processor);
+        } finally {
+            lock.unlock();
         }
-        processorList.add(processor);
     }
-
 }
