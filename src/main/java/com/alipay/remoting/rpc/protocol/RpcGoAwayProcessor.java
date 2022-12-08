@@ -9,7 +9,7 @@ public class RpcGoAwayProcessor extends AbstractRemotingProcessor {
     @Override
     public void doProcess(RemotingContext ctx, RemotingCommand msg) throws Exception {
         if (msg instanceof GoAwayCommand) {// process the goAway
-            ctx.getConnection().setGoAway(true);
+            ctx.getConnection().setGoAway();
             if (ctx.getConnection().isInvokeFutureMapFinish()){
                 ctx.getConnection().close();
             }

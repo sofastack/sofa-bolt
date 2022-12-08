@@ -66,10 +66,6 @@ public class Connection {
     public static final AttributeKey<Boolean>                                     HEARTBEAT_SWITCH = AttributeKey
                                                                                                        .valueOf("heartbeatSwitch");
 
-    /** Attribute key for goaway switch for each connection */
-    public static final AttributeKey<Boolean>                                     GOAWAY_SWITCH     = AttributeKey
-                                                                                                        .valueOf("goawaySwitch");
-
     /** Attribute key for protocol */
     public static final AttributeKey<ProtocolCode>                                PROTOCOL         = AttributeKey
                                                                                                        .valueOf("protocol");
@@ -158,7 +154,6 @@ public class Connection {
         this.channel.attr(PROTOCOL).set(this.protocolCode);
         this.channel.attr(VERSION).set(this.version);
         this.channel.attr(HEARTBEAT_SWITCH).set(true);
-        this.channel.attr(GOAWAY_SWITCH).set(true); //todo
     }
 
     /**
@@ -197,8 +192,8 @@ public class Connection {
         return goAway.get();
     }
 
-    public void setGoAway(boolean status) {
-        this.goAway.set(status);
+    public void setGoAway() {
+        this.goAway.set(true);
     }
 
 
@@ -459,7 +454,7 @@ public class Connection {
         return invokeFutureMap;
     }
 
-    public void goAway() {
+    public void sendGoAwayCommand() {
         try {
             if (this.getChannel() != null) {
                 final GoAwayCommand goAwayCommand = new GoAwayCommand();

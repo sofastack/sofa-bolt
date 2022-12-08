@@ -128,7 +128,7 @@ public class RpcServer extends AbstractRemotingServer {
     /** rpc codec */
     private Codec                                       codec                   = new RpcCodec();
 
-    private CopyOnWriteArrayList<Connection>            passiveConnection = new CopyOnWriteArrayList<Connection>();
+    private CopyOnWriteArrayList<Connection>            passiveConnections      = new CopyOnWriteArrayList<Connection>();
 
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
@@ -263,8 +263,8 @@ public class RpcServer extends AbstractRemotingServer {
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         }
 
-        addConnectionEventProcessor(ConnectionEventType.CONNECT, new CONNECTEventProcessor(passiveConnection));
-        addConnectionEventProcessor(ConnectionEventType.CLOSE, new DISCONNECTEventProcessor(passiveConnection));
+        addConnectionEventProcessor(ConnectionEventType.CONNECT, new CONNECTEventProcessor(passiveConnections));
+        addConnectionEventProcessor(ConnectionEventType.CLOSE, new DISCONNECTEventProcessor(passiveConnections));
 
         initRpcRemoting();
 
@@ -1115,8 +1115,8 @@ public class RpcServer extends AbstractRemotingServer {
     @Override
     public void goAway() {
         //todo: add a daemon thread 定期在这goAway 以防有新的连接加入
-        for (Connection conn : passiveConnection) {
-            conn.goAway();
+        for (Connection conn : passiveConnections) {
+            conn.sendGoAwayCommand();
         }
     }
 
