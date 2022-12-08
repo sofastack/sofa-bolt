@@ -95,11 +95,11 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
         int size = connections.size();
         int tries = 0;
         Connection result = null;
-        while ((result == null || !result.isFine()) && tries++ < MAX_TIMES) {
+        while ((result == null || !result.isFine() || result.needClose()) && tries++ < MAX_TIMES) {
             result = connections.get(this.random.nextInt(size));
         }
 
-        if (result != null && !result.isFine()) {
+        if (result != null && !result.isFine() && !result.needClose()) {
             result = null;
         }
         return result;

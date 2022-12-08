@@ -22,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.security.KeyStore;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManagerFactory;
@@ -126,6 +127,8 @@ public class RpcServer extends AbstractRemotingServer {
 
     /** rpc codec */
     private Codec                                       codec                   = new RpcCodec();
+
+    private CopyOnWriteArrayList<Connection>            passiveConnection = new CopyOnWriteArrayList<Connection>();
 
     static {
         if (workerGroup instanceof NioEventLoopGroup) {
@@ -259,6 +262,10 @@ public class RpcServer extends AbstractRemotingServer {
             this.connectionEventHandler = new ConnectionEventHandler(this);
             this.connectionEventHandler.setConnectionEventListener(this.connectionEventListener);
         }
+
+        addConnectionEventProcessor(ConnectionEventType.CONNECT, new CONNECTEventProcessor(passiveConnection));
+        addConnectionEventProcessor(ConnectionEventType.CLOSE, new DISCONNECTEventProcessor(passiveConnection));
+
         initRpcRemoting();
 
         Integer tcpSoSndBuf = option(BoltGenericOption.TCP_SO_SNDBUF);
@@ -1099,5 +1106,39 @@ public class RpcServer extends AbstractRemotingServer {
      */
     public DefaultConnectionManager getConnectionManager() {
         return connectionManager;
+    }
+
+    /**
+     * Notify remote endpoints to stop sending requests to me before shutdown
+     *
+     */
+    @Override
+    public void goAway() {
+        //todo: add a daemon thread 定期在这goAway 以防有新的连接加入
+        for (Connection conn : passiveConnection) {
+            conn.goAway();
+        }
+    }
+
+    static class CONNECTEventProcessor implements ConnectionEventProcessor {
+        private final CopyOnWriteArrayList<Connection> passiveConnection;
+        CONNECTEventProcessor(CopyOnWriteArrayList<Connection> passiveConnection){
+            this.passiveConnection = passiveConnection;
+        }
+        @Override
+        public void onEvent(String remoteAddress, Connection connection) {
+            passiveConnection.add(connection);
+        }
+    }
+
+    static class DISCONNECTEventProcessor implements ConnectionEventProcessor {
+        private final CopyOnWriteArrayList<Connection> passiveConnection;
+        DISCONNECTEventProcessor(CopyOnWriteArrayList<Connection> passiveConnection){
+            this.passiveConnection = passiveConnection;
+        }
+        @Override
+        public void onEvent(String remoteAddress, Connection connection) {
+            passiveConnection.remove(connection);
+        }
     }
 }
