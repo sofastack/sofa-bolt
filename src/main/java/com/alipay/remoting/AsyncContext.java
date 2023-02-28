@@ -29,4 +29,10 @@ public interface AsyncContext {
      * @param responseObject response object
      */
     void sendResponse(Object responseObject);
+
+    /**
+     * send exception back
+     * @param ex response exception
+     */
+    void sendException(Throwable ex);
 }
