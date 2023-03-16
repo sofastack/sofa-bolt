@@ -40,18 +40,20 @@ import java.util.concurrent.Executors;
  * @author welkin.xu
  */
 public class BasicUsage_AsyncProcessor_ExceptionV2_Test {
-    static Logger logger = LoggerFactory.getLogger(BasicUsage_AsyncProcessor_ExceptionV2_Test.class);
+    static Logger            logger                    = LoggerFactory
+                                                           .getLogger(BasicUsage_AsyncProcessor_ExceptionV2_Test.class);
 
-    BoltServer server;
-    RpcClient  client;
+    BoltServer               server;
+    RpcClient                client;
 
-    int    port = PortScan.select();
-    String addr = "127.0.0.1:" + port;
+    int                      port                      = PortScan.select();
+    String                   addr                      = "127.0.0.1:" + port;
 
-    int invokeTimes = 5;
+    int                      invokeTimes               = 5;
 
-    AsyncServerUserProcessor serverUserProcessor       = new AsyncServerUserProcessor(true, true, false);
-    AsyncClientUserProcessor clientUserProcessor       = new AsyncClientUserProcessor( true, false);
+    AsyncServerUserProcessor serverUserProcessor       = new AsyncServerUserProcessor(true, true,
+                                                           false);
+    AsyncClientUserProcessor clientUserProcessor       = new AsyncClientUserProcessor(true, false);
     CONNECTEventProcessor    clientConnectProcessor    = new CONNECTEventProcessor();
     CONNECTEventProcessor    serverConnectProcessor    = new CONNECTEventProcessor();
     DISCONNECTEventProcessor clientDisConnectProcessor = new DISCONNECTEventProcessor();

@@ -73,8 +73,11 @@ public class RpcAsyncContext implements AsyncContext {
     @Override
     public void sendException(Throwable ex) {
         if (isResponseSentAlready.compareAndSet(false, true)) {
-            processor.sendResponseIfNecessary(this.ctx, cmd.getType(), processor.getCommandFactory()
-                    .createExceptionResponse(this.cmd.getId(), ResponseStatus.SERVER_EXCEPTION, ex));
+            processor.sendResponseIfNecessary(
+                this.ctx,
+                cmd.getType(),
+                processor.getCommandFactory().createExceptionResponse(this.cmd.getId(),
+                    ResponseStatus.SERVER_EXCEPTION, ex));
         } else {
             throw new IllegalStateException("Should not send rpc response repeatedly!");
         }

@@ -34,5 +34,7 @@ public interface AsyncContext {
      * send exception back
      * @param ex response exception
      */
-    void sendException(Throwable ex);
+    default void sendException(Throwable ex) {
+        throw new UnsupportedOperationException("default not support sendException!");
+    }
 }
