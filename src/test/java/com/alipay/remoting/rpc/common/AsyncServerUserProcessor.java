@@ -53,6 +53,9 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
     /** whether exception */
     private boolean             isException;
 
+    /** whether using write_exception */
+    private boolean             sendExceptionSwitch;
+
     /** whether null */
     private boolean             isNull;
 
@@ -74,6 +77,7 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
     public AsyncServerUserProcessor() {
         this.delaySwitch = false;
         this.isException = false;
+        this.sendExceptionSwitch = false;
         this.delayMs = 0;
         this.executor = new ThreadPoolExecutor(1, 3, 60, TimeUnit.SECONDS,
             new ArrayBlockingQueue<Runnable>(4), new NamedThreadFactory("Request-process-pool"));
@@ -84,6 +88,14 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
 
     public AsyncServerUserProcessor(boolean isException, boolean isNull) {
         this();
+        this.isException = isException;
+        this.sendExceptionSwitch = false;
+        this.isNull = isNull;
+    }
+
+    public AsyncServerUserProcessor(boolean sendException, boolean isException, boolean isNull) {
+        this();
+        this.sendExceptionSwitch = sendException;
         this.isException = isException;
         this.isNull = isNull;
     }
@@ -129,7 +141,11 @@ public class AsyncServerUserProcessor extends AsyncUserProcessor<RequestBody> {
             Assert.assertEquals(RequestBody.class, request.getClass());
             processTimes(request);
             if (isException) {
-                this.asyncCtx.sendResponse(new IllegalArgumentException("Exception test"));
+                if (sendExceptionSwitch) {
+                    this.asyncCtx.sendException(new IllegalArgumentException("Exception test"));
+                } else {
+                    this.asyncCtx.sendResponse(new IllegalArgumentException("Exception test"));
+                }
             } else if (isNull) {
                 this.asyncCtx.sendResponse(null);
             } else {
