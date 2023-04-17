@@ -1,11 +1,9 @@
 package com.alipay.remoting;
 
 import com.alipay.remoting.rpc.RpcClient;
-import com.alipay.remoting.serialization.HessianSerializerTest;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
