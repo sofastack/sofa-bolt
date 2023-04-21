@@ -62,4 +62,9 @@ public class ConnectionEventListener {
         processorList.add(processor);
     }
 
+    public int getConnectionEventProcessorListSizeByType(ConnectionEventType type) {
+        List<ConnectionEventProcessor> processorList = this.processors.get(type);
+        return processorList == null ? 0 : processorList.size();
+    }
+
 }

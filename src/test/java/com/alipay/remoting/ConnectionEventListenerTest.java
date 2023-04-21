@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -31,27 +32,33 @@ public class ConnectionEventListenerTest {
     public void addConnectionEventProcessorConcurrentTest() throws InterruptedException {
         int concurrentNum = 100;
         CountDownLatch countDownLatch = new CountDownLatch(concurrentNum);
+        CyclicBarrier barrier = new CyclicBarrier(concurrentNum);
         RpcClient rpcClient = new RpcClient();
         for (int i = 0; i < concurrentNum; ++i) {
-            MyThread thread = new MyThread(countDownLatch, rpcClient);
+            MyThread thread = new MyThread(countDownLatch, barrier, rpcClient);
             new Thread(thread).start();
         }
         Assert.assertTrue(countDownLatch.await(2, TimeUnit.SECONDS));
+        Assert.assertEquals(concurrentNum, rpcClient.getConnectionEventProcessorListSizeByType((ConnectionEventType.CONNECT)));
     }
 
     static class MyThread implements Runnable {
         CountDownLatch countDownLatch;
-        RpcClient      rpcClient;
+        CyclicBarrier barrier;
+        RpcClient rpcClient;
 
-        public MyThread(CountDownLatch countDownLatch, RpcClient rpcClient) {
+        public MyThread(CountDownLatch countDownLatch, CyclicBarrier barrier, RpcClient rpcClient) {
             this.countDownLatch = countDownLatch;
+            this.barrier = barrier;
             this.rpcClient = rpcClient;
         }
 
         @Override
         public void run() {
             try {
-                rpcClient.addConnectionEventProcessor(ConnectionEventType.CONNECT, (remoteAddress, connection) -> {});
+                barrier.await(2, TimeUnit.SECONDS);
+                rpcClient.addConnectionEventProcessor(ConnectionEventType.CONNECT, (remoteAddress, connection) -> {
+                });
             } catch (Exception e) {
                 fail();
             } finally {
