@@ -39,13 +39,14 @@ public class ConnectionEventListenerTest {
             new Thread(thread).start();
         }
         Assert.assertTrue(countDownLatch.await(2, TimeUnit.SECONDS));
-        Assert.assertEquals(concurrentNum, rpcClient.getConnectionEventProcessorListSizeByType((ConnectionEventType.CONNECT)));
+        Assert.assertEquals(concurrentNum,
+            rpcClient.getConnectionEventProcessorListSizeByType((ConnectionEventType.CONNECT)));
     }
 
     static class MyThread implements Runnable {
         CountDownLatch countDownLatch;
-        CyclicBarrier barrier;
-        RpcClient rpcClient;
+        CyclicBarrier  barrier;
+        RpcClient      rpcClient;
 
         public MyThread(CountDownLatch countDownLatch, CyclicBarrier barrier, RpcClient rpcClient) {
             this.countDownLatch = countDownLatch;
