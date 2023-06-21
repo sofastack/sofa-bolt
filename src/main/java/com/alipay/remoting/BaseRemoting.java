@@ -41,10 +41,10 @@ public abstract class BaseRemoting {
                                                                  .getLogger("CommonDefault");
     private final static long   ABANDONING_REQUEST_THRESHOLD = 0L;
 
-    protected CommandFactory    commandFactory;
+    private CommandFactory      defalutCommandFactory;
 
     public BaseRemoting(CommandFactory commandFactory) {
-        this.commandFactory = commandFactory;
+        this.defalutCommandFactory = commandFactory;
     }
 
     /**
@@ -69,7 +69,7 @@ public abstract class BaseRemoting {
                     request.getId(),
                     conn.getUrl() != null ? conn.getUrl() : RemotingUtil.parseRemoteAddress(conn
                         .getChannel()));
-            return this.commandFactory.createTimeoutResponse(conn.getRemoteAddress());
+            return this.getCommandFactory(conn).createTimeoutResponse(conn.getRemoteAddress());
         }
 
         final InvokeFuture future = createInvokeFuture(request, request.getInvokeContext());
@@ -86,7 +86,7 @@ public abstract class BaseRemoting {
                 public void operationComplete(ChannelFuture f) throws Exception {
                     if (!f.isSuccess()) {
                         conn.removeInvokeFuture(requestId);
-                        future.putResponse(commandFactory.createSendFailedResponse(
+                        future.putResponse(getCommandFactory(conn).createSendFailedResponse(
                             conn.getRemoteAddress(), f.cause()));
                         LOGGER.error("Invoke send failed, id={}", requestId, f.cause());
                     }
@@ -98,7 +98,8 @@ public abstract class BaseRemoting {
             }
         } catch (Exception e) {
             conn.removeInvokeFuture(requestId);
-            future.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
+            future.putResponse(getCommandFactory(conn).createSendFailedResponse(
+                conn.getRemoteAddress(), e));
             LOGGER.error("Exception caught when sending invocation, id={}", requestId, e);
         }
         RemotingCommand response = future.waitResponse(remainingTime);
@@ -109,7 +110,7 @@ public abstract class BaseRemoting {
 
         if (response == null) {
             conn.removeInvokeFuture(requestId);
-            response = this.commandFactory.createTimeoutResponse(conn.getRemoteAddress());
+            response = this.getCommandFactory(conn).createTimeoutResponse(conn.getRemoteAddress());
             LOGGER.warn("Wait response, request id={} timeout!", requestId);
         }
 
@@ -137,7 +138,8 @@ public abstract class BaseRemoting {
                     request.getId(),
                     conn.getUrl() != null ? conn.getUrl() : RemotingUtil.parseRemoteAddress(conn
                         .getChannel()));
-            future.putResponse(commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
+            future.putResponse(getCommandFactory(conn).createTimeoutResponse(
+                conn.getRemoteAddress()));
             future.tryAsyncExecuteInvokeCallbackAbnormally();
             return;
         }
@@ -149,8 +151,8 @@ public abstract class BaseRemoting {
                 public void run(Timeout timeout) throws Exception {
                     InvokeFuture future = conn.removeInvokeFuture(requestId);
                     if (future != null) {
-                        future.putResponse(commandFactory.createTimeoutResponse(conn
-                            .getRemoteAddress()));
+                        future.putResponse(getCommandFactory(conn).createTimeoutResponse(
+                            conn.getRemoteAddress()));
                         future.tryAsyncExecuteInvokeCallbackAbnormally();
                     }
                 }
@@ -165,7 +167,7 @@ public abstract class BaseRemoting {
                         InvokeFuture f = conn.removeInvokeFuture(requestId);
                         if (f != null) {
                             f.cancelTimeout();
-                            f.putResponse(commandFactory.createSendFailedResponse(
+                            f.putResponse(getCommandFactory(conn).createSendFailedResponse(
                                 conn.getRemoteAddress(), cf.cause()));
                             f.tryAsyncExecuteInvokeCallbackAbnormally();
                         }
@@ -179,7 +181,8 @@ public abstract class BaseRemoting {
             InvokeFuture f = conn.removeInvokeFuture(requestId);
             if (f != null) {
                 f.cancelTimeout();
-                f.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
+                f.putResponse(getCommandFactory(conn).createSendFailedResponse(
+                    conn.getRemoteAddress(), e));
                 f.tryAsyncExecuteInvokeCallbackAbnormally();
             }
             LOGGER.error("Exception caught when sending invocation. The address is {}",
@@ -208,7 +211,8 @@ public abstract class BaseRemoting {
                     request.getId(),
                     conn.getUrl() != null ? conn.getUrl() : RemotingUtil.parseRemoteAddress(conn
                         .getChannel()));
-            future.putResponse(commandFactory.createTimeoutResponse(conn.getRemoteAddress()));
+            future.putResponse(getCommandFactory(conn).createTimeoutResponse(
+                conn.getRemoteAddress()));
             return future;
         }
 
@@ -219,8 +223,8 @@ public abstract class BaseRemoting {
                 public void run(Timeout timeout) throws Exception {
                     InvokeFuture future = conn.removeInvokeFuture(requestId);
                     if (future != null) {
-                        future.putResponse(commandFactory.createTimeoutResponse(conn
-                            .getRemoteAddress()));
+                        future.putResponse(getCommandFactory(conn).createTimeoutResponse(
+                            conn.getRemoteAddress()));
                     }
                 }
 
@@ -235,7 +239,7 @@ public abstract class BaseRemoting {
                         InvokeFuture f = conn.removeInvokeFuture(requestId);
                         if (f != null) {
                             f.cancelTimeout();
-                            f.putResponse(commandFactory.createSendFailedResponse(
+                            f.putResponse(getCommandFactory(conn).createSendFailedResponse(
                                 conn.getRemoteAddress(), cf.cause()));
                         }
                         LOGGER.error("Invoke send failed. The address is {}",
@@ -248,7 +252,8 @@ public abstract class BaseRemoting {
             InvokeFuture f = conn.removeInvokeFuture(requestId);
             if (f != null) {
                 f.cancelTimeout();
-                f.putResponse(commandFactory.createSendFailedResponse(conn.getRemoteAddress(), e));
+                f.putResponse(getCommandFactory(conn).createSendFailedResponse(
+                    conn.getRemoteAddress(), e));
             }
             LOGGER.error("Exception caught when sending invocation. The address is {}",
                 RemotingUtil.parseRemoteAddress(conn.getChannel()), e);
@@ -323,8 +328,27 @@ public abstract class BaseRemoting {
                                                        final InvokeContext invokeContext,
                                                        final InvokeCallback invokeCallback);
 
+    @Deprecated
     protected CommandFactory getCommandFactory() {
-        return commandFactory;
+        LOGGER
+            .warn("The method getCommandFactory() is deprecated. Please use getCommandFactory(ProtocolCode/Connection) instead.");
+        return defalutCommandFactory;
+    }
+
+    protected CommandFactory getCommandFactory(Connection conn) {
+        ProtocolCode protocolCode = conn.getChannel().attr(Connection.PROTOCOL).get();
+        return getCommandFactory(protocolCode);
+    }
+
+    protected CommandFactory getCommandFactory(ProtocolCode protocolCode) {
+        if (protocolCode == null) {
+            return getCommandFactory();
+        }
+        Protocol protocol = ProtocolManager.getProtocol(protocolCode);
+        if (protocol == null) {
+            return getCommandFactory();
+        }
+        return protocol.getCommandFactory();
     }
 
     private int remainingTime(RemotingCommand request, int timeout) {
