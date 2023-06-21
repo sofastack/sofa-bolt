@@ -47,6 +47,8 @@ public class BaseRemotingTest {
         // get 3a
         commandFactory = baseRemoting.getCommandFactory(ProtocolCode.fromBytes((byte) 0x3a));
         assertSame(my3aCommandFactory, commandFactory);
+
+        ProtocolManager.unRegisterProtocol((byte) 0x3a);
     }
 
     @Test
@@ -67,6 +69,8 @@ public class BaseRemotingTest {
         // get 3a
         commandFactory = baseRemoting.getCommandFactory(connection);
         assertSame(my3aCommandFactory, commandFactory);
+
+        ProtocolManager.unRegisterProtocol((byte) 0x3a);
     }
 
     static class EmptyRemoting extends BaseRemoting {
