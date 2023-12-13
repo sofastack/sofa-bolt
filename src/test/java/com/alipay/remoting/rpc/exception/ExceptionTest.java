@@ -341,4 +341,29 @@ public class ExceptionTest {
         latch.await();
         Assert.assertEquals(InvokeServerException.class, ret.get(0).getClass());
     }
+
+    @Test
+    public void testGetBizClassLoaderException1() {
+        server.registerUserProcessor(new SimpleServerUserProcessor() {
+            @Override
+            public ClassLoader getBizClassLoader() {
+                throw new RuntimeException("getBizClassLoader fail.");
+            }
+        });
+
+        RequestBody req = new RequestBody(4, "hello world");
+        try {
+            client.invokeSync(addr, req, 3000);
+        } catch (InvokeServerException e) {
+            Assert.assertTrue(true);
+        } catch (RemotingException e) {
+            String errMsg = "RemotingException in testGetBizClassLoaderException1";
+            logger.error(errMsg);
+            Assert.fail(errMsg);
+        } catch (InterruptedException e) {
+            String errMsg = "InterruptedException caught in testGetBizClassLoaderException1";
+            logger.error(errMsg, e);
+            Assert.fail(errMsg);
+        }
+    }
 }
