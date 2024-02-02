@@ -16,6 +16,8 @@
  */
 package com.alipay.remoting.serialization;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Manage all serializers.
  *
@@ -32,11 +34,19 @@ public class SerializerManager {
     public static final byte    Hessian2    = 1;
     //public static final byte    Json        = 2;
 
-    static {
-        addSerializer(Hessian2, new HessianSerializer());
-    }
-
+    private static final ReentrantLock REENTRANT_LOCK = new ReentrantLock();
+    
     public static Serializer getSerializer(int idx) {
+        if (serializers[idx] == null && idx == Hessian2) {
+            REENTRANT_LOCK.lock();
+            try {
+                if (serializers[idx] == null) {
+                    addSerializer(Hessian2, new HessianSerializer());
+                }
+            } finally {
+                REENTRANT_LOCK.unlock();
+            }
+        }
         return serializers[idx];
     }
 
