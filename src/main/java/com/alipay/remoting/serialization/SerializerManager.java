@@ -30,12 +30,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class SerializerManager {
 
-    private static Serializer[] serializers = new Serializer[5];
-    public static final byte    Hessian2    = 1;
+    private static Serializer[]        serializers    = new Serializer[5];
+    public static final byte           Hessian2       = 1;
     //public static final byte    Json        = 2;
 
     private static final ReentrantLock REENTRANT_LOCK = new ReentrantLock();
-    
+
     public static Serializer getSerializer(int idx) {
         if (serializers[idx] == null && idx == Hessian2) {
             REENTRANT_LOCK.lock();
