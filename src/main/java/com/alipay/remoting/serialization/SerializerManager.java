@@ -37,17 +37,20 @@ public class SerializerManager {
     private static final ReentrantLock REENTRANT_LOCK = new ReentrantLock();
 
     public static Serializer getSerializer(int idx) {
-        if (serializers[idx] == null && idx == Hessian2) {
+        Serializer currentSerializer = serializers[idx];
+        if (currentSerializer == null && idx == Hessian2) {
             REENTRANT_LOCK.lock();
             try {
-                if (serializers[idx] == null) {
-                    addSerializer(Hessian2, new HessianSerializer());
+                currentSerializer = serializers[idx];
+                if (currentSerializer == null) {
+                    currentSerializer = new HessianSerializer();
+                    addSerializer(Hessian2, currentSerializer);
                 }
             } finally {
                 REENTRANT_LOCK.unlock();
             }
         }
-        return serializers[idx];
+        return currentSerializer;
     }
 
     public static void addSerializer(int idx, Serializer serializer) {
