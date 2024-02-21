@@ -157,7 +157,7 @@ public class Connection {
      * @return true if connection is fine
      */
     public boolean isFine() {
-        return this.channel != null && this.channel.isActive();
+        return this.channel != null && this.channel.isActive() && !closed.get();
     }
 
     /**
