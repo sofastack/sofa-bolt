@@ -22,7 +22,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.alipay.sofa</groupId>
     <artifactId>bolt</artifactId>
-    <version>1.6.5</version>
+    <version>1.6.6</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -68,7 +68,7 @@
         <coveralls.maven.plugin>3.2.1</coveralls.maven.plugin>
         <disruptor.verion>3.4.4</disruptor.verion>
         <hessian.version>3.3.6</hessian.version>
-        <java.version>1.6</java.version>
+        <java.version>1.8</java.version>
         <junit.version>4.13.1</junit.version>
         <license.maven.plugin>3.0</license.maven.plugin>
         <log4j.version>2.17.1</log4j.version>
@@ -112,7 +112,6 @@
             <groupId>com.alipay.sofa</groupId>
             <artifactId>hessian</artifactId>
             <version>${hessian.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- test scope -->
