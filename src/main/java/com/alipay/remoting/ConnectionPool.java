@@ -192,7 +192,7 @@ public class ConnectionPool implements Scannable {
     public void scan() {
         if (null != connections && !connections.isEmpty()) {
             for (Connection conn : connections) {
-                if (!conn.isFine()) {
+                if (!conn.isFine() || conn.needClose()) {
                     logger.warn(
                         "Remove bad connection when scanning conns of ConnectionPool - {}:{}",
                         conn.getRemoteIP(), conn.getRemotePort());

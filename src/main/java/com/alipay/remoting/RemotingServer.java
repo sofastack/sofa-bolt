@@ -86,4 +86,10 @@ public interface RemotingServer extends Configuration, LifeCycle {
      */
     void registerUserProcessor(UserProcessor<?> processor);
 
+    /**
+     * Notify remote endpoints to stop sending requests before shutdown
+     *
+     */
+    void goAway();
+
 }

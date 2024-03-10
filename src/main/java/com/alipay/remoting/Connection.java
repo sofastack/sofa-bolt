@@ -25,6 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.alipay.remoting.rpc.GoAwayCommand;
+import com.alipay.remoting.rpc.HeartbeatCommand;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.log.BoltLoggerFactory;
@@ -84,6 +86,8 @@ public class Connection {
     private AtomicBoolean                                                         closed           = new AtomicBoolean(
                                                                                                        false);
 
+    private AtomicBoolean                                                         goAway           = new AtomicBoolean(false);
+
     private final ConcurrentHashMap<String/* attr key*/, Object /*attr value*/> attributes       = new ConcurrentHashMap<String, Object>();
 
     /** the reference count used for this connection. If equals 2, it means this connection has been referenced 2 times */
@@ -91,6 +95,7 @@ public class Connection {
 
     /** no reference of the current connection */
     private static final int                                                      NO_REFERENCE     = 0;
+
 
     /**
      * Constructor
@@ -182,6 +187,15 @@ public class Connection {
     public boolean noRef() {
         return this.referenceCount.get() == NO_REFERENCE;
     }
+
+    public boolean isGoAway() {
+        return goAway.get();
+    }
+
+    public void setGoAway() {
+        this.goAway.set(true);
+    }
+
 
     /**
      * Get the address of the remote peer.
@@ -438,5 +452,35 @@ public class Connection {
      */
     public ConcurrentHashMap<Integer, InvokeFuture> getInvokeFutureMap() {
         return invokeFutureMap;
+    }
+
+    public void sendGoAwayCommand() {
+        try {
+            if (this.getChannel() != null) {
+                final GoAwayCommand goAwayCommand = new GoAwayCommand();
+                final Channel channel = this.getChannel();
+                this.getChannel().writeAndFlush(goAwayCommand).addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) throws Exception {
+                        if (future.isSuccess()) {
+                            if (logger.isDebugEnabled()) {
+                                logger.debug("Send goAway done! Id={}, to remoteAddr={}",
+                                        goAwayCommand.getId(), RemotingUtil.parseRemoteAddress(channel));
+                            }
+                        } else {
+                            logger.error("Send goAway failed! Id={}, to remoteAddr={}", goAwayCommand.getId(),
+                                    RemotingUtil.parseRemoteAddress(channel));
+                        }
+                    }
+                });
+            }
+        } catch (Exception e) {
+            logger.warn("Exception caught when send goAway command to connection {}",
+                    RemotingUtil.parseRemoteAddress(channel), e);
+        }
+    }
+
+    public boolean needClose(){
+        return isGoAway() && isInvokeFutureMapFinish();
     }
 }

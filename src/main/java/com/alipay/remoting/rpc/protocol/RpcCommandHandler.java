@@ -74,6 +74,9 @@ public class RpcCommandHandler implements CommandHandler {
         this.processorManager.registerProcessor(CommonCommandCode.HEARTBEAT,
             new RpcHeartBeatProcessor());
 
+        this.processorManager.registerProcessor(CommonCommandCode.GOAWAY,
+                new RpcGoAwayProcessor());
+
         this.processorManager
             .registerDefaultProcessor(new AbstractRemotingProcessor<RemotingCommand>() {
                 @Override

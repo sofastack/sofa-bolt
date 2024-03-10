@@ -117,7 +117,7 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
 
                 for (Connection offConn : serviceOffConnections) {
                     if (offConn.isInvokeFutureMapFinish()) {
-                        if (offConn.isFine()) {
+                        if (offConn.isFine() || offConn.needClose()) {
                             offConn.close();
                         }
                     } else {
