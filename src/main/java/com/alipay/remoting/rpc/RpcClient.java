@@ -375,6 +375,10 @@ public class RpcClient extends AbstractBoltClient {
         this.connectionEventListener.addConnectionEventProcessor(type, processor);
     }
 
+    public int getConnectionEventProcessorListSizeByType(ConnectionEventType type) {
+        return this.connectionEventListener.getConnectionEventProcessorListSizeByType(type);
+    }
+
     @Override
     public void registerUserProcessor(UserProcessor<?> processor) {
         UserProcessorRegisterHelper.registerUserProcessor(processor, this.userProcessors);
