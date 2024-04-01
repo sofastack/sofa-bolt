@@ -354,6 +354,9 @@ public class ExceptionTest {
         RequestBody req = new RequestBody(4, "hello world");
         try {
             client.invokeSync(addr, req, 3000);
+            String errMsg = "Should throw InvokeServerException!";
+            logger.error(errMsg);
+            Assert.fail(errMsg);
         } catch (InvokeServerException e) {
             Assert.assertTrue(true);
         } catch (RemotingException e) {
