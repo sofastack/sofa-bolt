@@ -105,11 +105,29 @@ public class RemotingContext {
     /**
      * Wrap the writeAndFlush method.
      * 
-     * @param msg
-     * @return
+     * @param msg as msg
+     * @return channel future
      */
     public ChannelFuture writeAndFlush(RemotingCommand msg) {
         return this.channelContext.writeAndFlush(msg);
+    }
+
+    /**
+     * Wrap the write method.
+     *
+     * @param msg as msg
+     * @return channel future
+     */
+    public ChannelFuture write(RemotingCommand msg) {
+        return this.channelContext.write(msg);
+    }
+
+    /**
+     * Wrap the write method.
+     *
+     */
+    public void flush() {
+        this.channelContext.flush();
     }
 
     /**
