@@ -395,11 +395,11 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 //protect the thread running this task
                 String remotingAddress = RemotingUtil.parseRemoteAddress(ctx.getChannelContext()
                     .channel());
-                logger
-                    .error(
-                        "Exception caught when process rpc request command in RpcRequestProcessor, Id="
-                                + msg.getId() + "! Invoke source address is [" + remotingAddress
-                                + "].", e);
+                String errMsg = "Exception caught when process rpc request command in RpcRequestProcessor, Id="
+                                + msg.getId();
+                logger.error(errMsg + "! Invoke source address is [" + remotingAddress + "].", e);
+                sendResponseIfNecessary(ctx, msg.getType(), getCommandFactory()
+                    .createExceptionResponse(msg.getId(), e, errMsg));
             }
         }
 
