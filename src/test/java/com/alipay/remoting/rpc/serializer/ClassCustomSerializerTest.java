@@ -20,7 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.alipay.remoting.DefaultCustomSerializer;
+import com.alipay.remoting.rpc.ResponseCommand;
+import com.alipay.remoting.rpc.exception.InvokeServerException;
+import com.alipay.remoting.rpc.exception.RpcServerException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,7 +53,7 @@ import com.alipay.remoting.serialization.SerializerManager;
 
 /**
  * Custom Serializer Test: Normal, Exception included
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: ClassCustomSerializerTest.java, v 0.1 Apr 11, 2016 10:42:59 PM xiaomin.cxm Exp $
  */
@@ -296,6 +301,45 @@ public class ClassCustomSerializerTest {
             Assert.assertTrue(s1.isDeserialized());
             Assert.assertTrue(s2.isSerialized());
             Assert.assertFalse(s2.isDeserialized());
+        } catch (Throwable t) {
+            Assert.fail("Should not reach here!");
+        }
+    }
+
+    /**
+     * test Throwable when serial response
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testResponseSerialThrowable() throws Exception {
+        NormalRequestBodyCustomSerializer s1 = new NormalRequestBodyCustomSerializer();
+        AtomicBoolean serialFlag = new AtomicBoolean();
+        DefaultCustomSerializer s2 = new DefaultCustomSerializer() {
+
+            @Override
+            public <T extends ResponseCommand> boolean serializeContent(T response) throws SerializationException {
+                serialFlag.set(true);
+                throw new StackOverflowError("testResponseSerialThrowable");
+            }
+
+        };
+        CustomSerializerManager.registerCustomSerializer(RequestBody.class.getName(), s1);
+        CustomSerializerManager.registerCustomSerializer(String.class.getName(), s2);
+
+        RequestBody body = new RequestBody(1, "hello world!");
+        String ret = null;
+        try {
+            ret = (String) client.invokeSync(addr, body, 1000_00000);
+            Assert.fail("Should not reach here!");
+        } catch (InvokeServerException e) {
+            logger.error("", e);
+            Assert.assertEquals(null, ret);
+            Assert.assertNotNull(e.getCause());
+            Assert.assertTrue(e.getCause() instanceof RpcServerException);
+            Assert.assertTrue(s1.isSerialized());
+            Assert.assertTrue(s1.isDeserialized());
+            Assert.assertTrue(serialFlag.get());
         } catch (Throwable t) {
             Assert.fail("Should not reach here!");
         }

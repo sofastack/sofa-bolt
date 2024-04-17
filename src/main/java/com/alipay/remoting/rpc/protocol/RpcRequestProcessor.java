@@ -179,6 +179,12 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 logger.error(errMsg, t);
                 serializedResponse = this.getCommandFactory()
                     .createExceptionResponse(id, t, errMsg);
+                try {
+                    serializedResponse.serialize();// serialize again for exception response
+                } catch (Throwable t1) {
+                    // should not happen
+                    logger.error("serialize exception response failed!", t1);
+                }
             }
 
             ctx.writeAndFlush(serializedResponse).addListener(new ChannelFutureListener() {
