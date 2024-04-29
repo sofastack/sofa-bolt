@@ -105,7 +105,7 @@ public class RpcCommandHandler implements CommandHandler {
                             logger.debug("Batch message! size={}", ((List<?>) msg).size());
                         }
                         for (final Object m : (List<?>) msg) {
-                            RpcCommandHandler.this.process(ctx, m);
+                            RpcCommandHandler.this.process(ctx.clone(), m);
                         }
                     }
                 };
