@@ -319,7 +319,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     protected RemotingCommand toRemotingCommand(Object request, Connection conn,
                                                 InvokeContext invokeContext, int timeoutMillis)
                                                                                                throws SerializationException {
-        RpcRequestCommand command = this.getCommandFactory().createRequestCommand(request);
+        RpcRequestCommand command = this.getCommandFactory(conn).createRequestCommand(request);
 
         if (null != invokeContext) {
             // set client custom serializer for request command if not null
@@ -370,7 +370,7 @@ public abstract class RpcRemoting extends BaseRemoting {
     @Override
     protected InvokeFuture createInvokeFuture(RemotingCommand request, InvokeContext invokeContext) {
         return new DefaultInvokeFuture(request.getId(), null, null, request.getProtocolCode()
-            .getFirstByte(), this.getCommandFactory(), invokeContext);
+            .getFirstByte(), this.getCommandFactory(request.getProtocolCode()), invokeContext);
     }
 
     /**
@@ -382,6 +382,6 @@ public abstract class RpcRemoting extends BaseRemoting {
                                               InvokeCallback invokeCallback) {
         return new DefaultInvokeFuture(request.getId(), new RpcInvokeCallbackListener(
             RemotingUtil.parseRemoteAddress(conn.getChannel())), invokeCallback, request
-            .getProtocolCode().getFirstByte(), this.getCommandFactory(), invokeContext);
+            .getProtocolCode().getFirstByte(), this.getCommandFactory(conn), invokeContext);
     }
 }

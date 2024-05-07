@@ -179,6 +179,12 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 logger.error(errMsg, t);
                 serializedResponse = this.getCommandFactory()
                     .createExceptionResponse(id, t, errMsg);
+                try {
+                    serializedResponse.serialize();// serialize again for exception response
+                } catch (Throwable t1) {
+                    // should not happen
+                    logger.error("serialize exception response failed!", t1);
+                }
             }
 
             ctx.writeAndFlush(serializedResponse).addListener(new ChannelFutureListener() {
@@ -395,11 +401,11 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 //protect the thread running this task
                 String remotingAddress = RemotingUtil.parseRemoteAddress(ctx.getChannelContext()
                     .channel());
-                logger
-                    .error(
-                        "Exception caught when process rpc request command in RpcRequestProcessor, Id="
-                                + msg.getId() + "! Invoke source address is [" + remotingAddress
-                                + "].", e);
+                String errMsg = "Exception caught when process rpc request command in RpcRequestProcessor, Id="
+                                + msg.getId();
+                logger.error(errMsg + "! Invoke source address is [" + remotingAddress + "].", e);
+                sendResponseIfNecessary(ctx, msg.getType(), getCommandFactory()
+                    .createExceptionResponse(msg.getId(), e, errMsg));
             }
         }
 

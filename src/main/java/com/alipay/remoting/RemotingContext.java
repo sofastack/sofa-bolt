@@ -32,7 +32,7 @@ import io.netty.channel.ChannelHandlerContext;
  * @author jiangping
  * @version $Id: RemotingContext.java, v 0.1 2015-9-6 PM5:50:07 tao Exp $
  */
-public class RemotingContext {
+public class RemotingContext implements Cloneable {
 
     private ChannelHandlerContext                       channelContext;
 
@@ -105,11 +105,29 @@ public class RemotingContext {
     /**
      * Wrap the writeAndFlush method.
      * 
-     * @param msg
-     * @return
+     * @param msg as msg
+     * @return channel future
      */
     public ChannelFuture writeAndFlush(RemotingCommand msg) {
         return this.channelContext.writeAndFlush(msg);
+    }
+
+    /**
+     * Wrap the write method.
+     *
+     * @param msg as msg
+     * @return channel future
+     */
+    public ChannelFuture write(RemotingCommand msg) {
+        return this.channelContext.write(msg);
+    }
+
+    /**
+     * Wrap the write method.
+     *
+     */
+    public void flush() {
+        this.channelContext.flush();
     }
 
     /**
@@ -232,5 +250,14 @@ public class RemotingContext {
     public RemotingContext setTimeoutDiscard(boolean failFastEnabled) {
         this.timeoutDiscard = failFastEnabled;
         return this;
+    }
+
+    /**
+     * Not deep copy, only clone a new context with some necessary parameters
+     *
+     * @return new RemotingContext with some necessary parameters
+     */
+    public RemotingContext clone() {
+        return new RemotingContext(channelContext, new InvokeContext(), serverSide, userProcessors);
     }
 }
