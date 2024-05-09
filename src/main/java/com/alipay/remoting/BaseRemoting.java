@@ -41,10 +41,10 @@ public abstract class BaseRemoting {
                                                                  .getLogger("CommonDefault");
     private final static long   ABANDONING_REQUEST_THRESHOLD = 0L;
 
-    private CommandFactory      defalutCommandFactory;
+    protected CommandFactory    commandFactory;
 
     public BaseRemoting(CommandFactory commandFactory) {
-        this.defalutCommandFactory = commandFactory;
+        this.commandFactory = commandFactory;
     }
 
     /**
@@ -332,7 +332,7 @@ public abstract class BaseRemoting {
     protected CommandFactory getCommandFactory() {
         LOGGER
             .warn("The method getCommandFactory() is deprecated. Please use getCommandFactory(ProtocolCode/Connection) instead.");
-        return defalutCommandFactory;
+        return commandFactory;
     }
 
     protected CommandFactory getCommandFactory(Connection conn) {
