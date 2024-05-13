@@ -20,6 +20,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
+import com.alipay.sofa.common.insight.RecordContext;
+import com.alipay.sofa.common.insight.RecordScene;
+import com.alipay.sofa.common.insight.RecorderManager;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.AbstractRemotingProcessor;
@@ -131,19 +134,27 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void doProcess(final RemotingContext ctx, RpcRequestCommand cmd) throws Exception {
-        long currentTimestamp = System.currentTimeMillis();
+        try {
+            long currentTimestamp = System.currentTimeMillis();
 
-        preProcessRemotingContext(ctx, cmd, currentTimestamp);
-        if (ctx.isTimeoutDiscard() && ctx.isRequestTimeout()) {
-            timeoutLog(cmd, currentTimestamp, ctx);// do some log
-            return;// then, discard this request
+            RecorderManager.getRecorder().start(RecordScene.BOLT_REQUEST_HANDLE,
+                new RecordContext(cmd.getId()));
+
+            preProcessRemotingContext(ctx, cmd, currentTimestamp);
+            if (ctx.isTimeoutDiscard() && ctx.isRequestTimeout()) {
+                timeoutLog(cmd, currentTimestamp, ctx);// do some log
+                return;// then, discard this request
+            }
+            debugLog(ctx, cmd, currentTimestamp);
+            // decode request all
+            if (!deserializeRequestCommand(ctx, cmd, RpcDeserializeLevel.DESERIALIZE_ALL)) {
+                return;
+            }
+            dispatchToUserProcessor(ctx, cmd);
+        } finally {
+            RecorderManager.getRecorder().stop(RecordScene.BOLT_REQUEST_HANDLE,
+                ctx.getInvokeContext().getRecordContext());
         }
-        debugLog(ctx, cmd, currentTimestamp);
-        // decode request all
-        if (!deserializeRequestCommand(ctx, cmd, RpcDeserializeLevel.DESERIALIZE_ALL)) {
-            return;
-        }
-        dispatchToUserProcessor(ctx, cmd);
     }
 
     /**
