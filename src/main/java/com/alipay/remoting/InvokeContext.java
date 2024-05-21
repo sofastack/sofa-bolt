@@ -16,6 +16,8 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.sofa.common.insight.RecordContext;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -68,6 +70,11 @@ public class InvokeContext {
     // ~~~ constants
     public final static int                   INITIAL_SIZE                         = 8;
 
+    /**
+     * record context
+     */
+    private RecordContext                     recordContext;
+
     /** context */
     private ConcurrentHashMap<String, Object> context;
 
@@ -75,6 +82,7 @@ public class InvokeContext {
      * default construct
      */
     public InvokeContext() {
+        this.recordContext = new RecordContext();
         this.context = new ConcurrentHashMap<String, Object>(INITIAL_SIZE);
     }
 
@@ -126,6 +134,16 @@ public class InvokeContext {
      * clear all mappings.
      */
     public void clear() {
+        this.recordContext = new RecordContext();
         this.context.clear();
+    }
+
+    /**
+     * Gets get record context.
+     *
+     * @return the get record context
+     */
+    public RecordContext getRecordContext() {
+        return recordContext;
     }
 }
