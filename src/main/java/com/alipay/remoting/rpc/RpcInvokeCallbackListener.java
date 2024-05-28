@@ -21,14 +21,8 @@ import java.util.concurrent.RejectedExecutionException;
 import com.alipay.remoting.*;
 import org.slf4j.Logger;
 
-import com.alipay.remoting.exception.CodecException;
-import com.alipay.remoting.exception.ConnectionClosedException;
 import com.alipay.remoting.log.BoltLoggerFactory;
 import com.alipay.remoting.rpc.exception.InvokeException;
-import com.alipay.remoting.rpc.exception.InvokeServerBusyException;
-import com.alipay.remoting.rpc.exception.InvokeServerException;
-import com.alipay.remoting.rpc.exception.InvokeTimeoutException;
-import com.alipay.remoting.rpc.protocol.RpcResponseCommand;
 
 /**
  * Listener which listens the Rpc invoke result, and then invokes the call back.
@@ -126,15 +120,15 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                                               + ResponseStatus.UNKNOWN, future.getCause());
                 }
 
-                Object responseObj = RpcResponseResolver.resolveResponseObject(response,
-                    this.remoteAddress);
-
                 ClassLoader oldClassLoader = null;
                 try {
                     if (future.getAppClassLoader() != null) {
                         oldClassLoader = Thread.currentThread().getContextClassLoader();
                         Thread.currentThread().setContextClassLoader(future.getAppClassLoader());
                     }
+
+                    Object responseObj = RpcResponseResolver.resolveResponseObject(response,
+                        this.remoteAddress);
                     response.setInvokeContext(future.getInvokeContext());
                     try {
                         callback.onResponse(responseObj);
@@ -159,6 +153,7 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                         .error(
                             "Exception occurred in user defined InvokeCallback#onException() logic, The address is {}",
                             this.remoteAddress, te);
+                    // Consider rethrowing the exception or handling it according to your application's needs
                 }
             }
 
