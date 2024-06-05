@@ -127,9 +127,9 @@ public class RpcInvokeCallbackListener implements InvokeCallbackListener {
                         Thread.currentThread().setContextClassLoader(future.getAppClassLoader());
                     }
 
+                    response.setInvokeContext(future.getInvokeContext());
                     Object responseObj = RpcResponseResolver.resolveResponseObject(response,
                         this.remoteAddress);
-                    response.setInvokeContext(future.getInvokeContext());
                     try {
                         callback.onResponse(responseObj);
                     } catch (Throwable e) {
