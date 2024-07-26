@@ -106,7 +106,7 @@ public class ProtocolCodeBasedDecoder extends AbstractBatchDecoder {
 
             if (protocol == null) {
                 throw new CodecException("Unknown protocol code: [" + protocolCode
-                        + "] while decode in ProtocolDecoder.");
+                                         + "] while decode in ProtocolDecoder.");
             }
 
             protocol.getDecoder().decode(ctx, in, out);
