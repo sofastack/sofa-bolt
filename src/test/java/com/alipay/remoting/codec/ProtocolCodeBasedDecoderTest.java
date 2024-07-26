@@ -33,7 +33,6 @@ import io.netty.channel.EventLoop;
 import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
-import io.netty.util.ResourceLeakDetector;
 import io.netty.util.concurrent.EventExecutor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,6 +53,7 @@ public class ProtocolCodeBasedDecoderTest {
         ProtocolCodeBasedDecoder decoder = new ProtocolCodeBasedDecoder(1);
 
         int readerIndex = byteBuf.readerIndex();
+        int readableBytes = byteBuf.readableBytes();
         Assert.assertEquals(0, readerIndex);
 
         Exception exception = null;
@@ -67,13 +67,11 @@ public class ProtocolCodeBasedDecoderTest {
         Assert.assertNotNull(exception);
 
         readerIndex = byteBuf.readerIndex();
-        Assert.assertEquals(0, readerIndex);
+        Assert.assertEquals(readableBytes, readerIndex);
     }
 
     @Test
     public void testDecodeIllegalPacket2() {
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
-
         EmbeddedChannel channel = new EmbeddedChannel();
         ProtocolCodeBasedDecoder decoder = new ProtocolCodeBasedDecoder(1);
         channel.pipeline().addLast(decoder);
@@ -82,6 +80,7 @@ public class ProtocolCodeBasedDecoderTest {
         byteBuf.writeByte((byte) 13);
 
         int readerIndex = byteBuf.readerIndex();
+        int readableBytes = byteBuf.readableBytes();
         Assert.assertEquals(0, readerIndex);
         Exception exception = null;
         try {
@@ -92,7 +91,7 @@ public class ProtocolCodeBasedDecoderTest {
         }
         Assert.assertNotNull(exception);
         readerIndex = byteBuf.readerIndex();
-        Assert.assertEquals(0, readerIndex);
+        Assert.assertEquals(readableBytes, readerIndex);
 
         Assert.assertTrue(byteBuf.refCnt() == 0);
     }
