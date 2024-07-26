@@ -30,8 +30,10 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelProgressivePromise;
 import io.netty.channel.ChannelPromise;
 import io.netty.channel.EventLoop;
+import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.util.Attribute;
 import io.netty.util.AttributeKey;
+import io.netty.util.ResourceLeakDetector;
 import io.netty.util.concurrent.EventExecutor;
 import org.junit.Assert;
 import org.junit.Test;
@@ -66,6 +68,33 @@ public class ProtocolCodeBasedDecoderTest {
 
         readerIndex = byteBuf.readerIndex();
         Assert.assertEquals(0, readerIndex);
+    }
+
+    @Test
+    public void testDecodeIllegalPacket2() {
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
+
+        EmbeddedChannel channel = new EmbeddedChannel();
+        ProtocolCodeBasedDecoder decoder = new ProtocolCodeBasedDecoder(1);
+        channel.pipeline().addLast(decoder);
+
+        ByteBuf byteBuf = ByteBufAllocator.DEFAULT.buffer(8);
+        byteBuf.writeByte((byte) 13);
+
+        int readerIndex = byteBuf.readerIndex();
+        Assert.assertEquals(0, readerIndex);
+        Exception exception = null;
+        try {
+            channel.writeInbound(byteBuf);
+        } catch (Exception e) {
+            // ignore
+            exception = e;
+        }
+        Assert.assertNotNull(exception);
+        readerIndex = byteBuf.readerIndex();
+        Assert.assertEquals(0, readerIndex);
+
+        Assert.assertTrue(byteBuf.refCnt() == 0);
     }
 
     class MockedChannel implements Channel {
