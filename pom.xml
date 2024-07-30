@@ -87,6 +87,7 @@
         <slf4j.version>1.7.21</slf4j.version>
         <sofa.common.tools>1.4.0</sofa.common.tools>
         <sortpom.maven.plugin>2.4.0</sortpom.maven.plugin>
+        <fury.version>0.6.0</fury.version>
     </properties>
 
     <dependencies>
@@ -95,6 +96,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.fury</groupId>
+            <artifactId>fury-core</artifactId>
+            <version>${fury.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
