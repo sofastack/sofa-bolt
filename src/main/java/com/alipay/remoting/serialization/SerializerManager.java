@@ -36,7 +36,7 @@ public class SerializerManager {
 
     //public static final byte    Json        = 2;
 
-    public static final byte           Fury       = 3;
+    public static final byte           Fury           = 3;
 
     private static final ReentrantLock REENTRANT_LOCK = new ReentrantLock();
 

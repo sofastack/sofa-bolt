@@ -26,14 +26,13 @@ import org.apache.fury.exception.InsecureException;
 import org.junit.Assert;
 import org.junit.Test;
 
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
  * @author jianbin@apache.org
  */
-public class FurySerializerTest{
+public class FurySerializerTest {
 
     public static FurySerializer serializer;
 
