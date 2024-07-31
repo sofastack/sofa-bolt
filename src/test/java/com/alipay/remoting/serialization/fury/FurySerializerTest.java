@@ -20,11 +20,10 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import com.alipay.remoting.serialization.HessianSerializerTest;
-import org.apache.fury.Fury;
-import org.apache.fury.config.Language;
 
 import com.alipay.remoting.exception.CodecException;
-import com.alipay.remoting.serialization.Serializer;
+import org.apache.fury.exception.InsecureException;
+import org.junit.Assert;
 import org.junit.Test;
 
 
@@ -36,7 +35,12 @@ import static org.junit.Assert.fail;
  */
 public class FurySerializerTest{
 
-    public static FurySerializer serializer = new FurySerializer();
+    public static FurySerializer serializer;
+
+    static {
+        FurySerializer.registry(HessianSerializerTest.class);
+        serializer = new FurySerializer();
+    }
 
     @Test
     public void concurrentSerializeTest() throws InterruptedException {
@@ -48,6 +52,26 @@ public class FurySerializerTest{
         }
         countDownLatch.await(2, TimeUnit.SECONDS);
 
+    }
+
+    @Test
+    public void testSerializeError() {
+        FurySerializerTest furySerializerTest = new FurySerializerTest();
+        try {
+            serializer.serialize(furySerializerTest);
+        } catch (CodecException e) {
+            Assert.assertEquals(e.getCause().getClass(), InsecureException.class);
+        }
+    }
+
+    @Test
+    public void testSerialize() {
+        HessianSerializerTest furySerializerTest = new HessianSerializerTest();
+        try {
+            Assert.assertNotNull(serializer.serialize(furySerializerTest));
+        } catch (CodecException e) {
+            fail();
+        }
     }
 
     static class MyThread implements Runnable {

@@ -21,11 +21,8 @@ import java.util.List;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.Serializer;
 import org.apache.fury.Fury;
-import org.apache.fury.collection.Tuple2;
-import org.apache.fury.config.Language;
-import org.apache.fury.memory.MemoryBuffer;
-import org.apache.fury.memory.MemoryUtils;
-import org.apache.fury.util.LoaderBinding;
+import org.apache.fury.ThreadLocalFury;
+import org.apache.fury.ThreadSafeFury;
 
 /**
  * @author jianbin@apache.org
@@ -34,30 +31,24 @@ public class FurySerializer implements Serializer {
 
     private static final List<Class<?>> REGISTRY_LIST = new ArrayList<>();
 
-    private static final ThreadLocal<Tuple2<LoaderBinding, MemoryBuffer>> furyFactory = ThreadLocal.withInitial(() -> {
-        LoaderBinding binding = new LoaderBinding(classLoader ->{
-            Fury fury = Fury.builder().withRefTracking(true)
-            .requireClassRegistration(true).withClassLoader(classLoader).build();
-            REGISTRY_LIST.forEach(fury::register);
-            return fury;
-        });
-        MemoryBuffer buffer = MemoryUtils.buffer(32);
-        return Tuple2.of(binding, buffer);
+    private final ThreadSafeFury fury = new ThreadLocalFury(classLoader -> {
+        Fury fury = Fury.builder().withRefTracking(true)
+                .requireClassRegistration(true).withClassLoader(classLoader).build();
+        REGISTRY_LIST.forEach(fury::register);
+        return fury;
     });
 
     @Override
     public byte[] serialize(Object obj) throws CodecException {
-        Tuple2<LoaderBinding, MemoryBuffer> tuple2 = furyFactory.get();
-        tuple2.f0.setClassLoader(Thread.currentThread().getContextClassLoader());
-        Fury fury = tuple2.f0.get();
-        return fury.serialize(obj);
+        try {
+            return fury.serialize(obj);
+        } catch (Exception e) {
+            throw new CodecException("Fury serialization failed", e);
+        }
     }
 
     @Override
     public <T> T deserialize(byte[] data, String classOfT) throws CodecException {
-        Tuple2<LoaderBinding, MemoryBuffer> tuple2 = furyFactory.get();
-        tuple2.f0.setClassLoader(Thread.currentThread().getContextClassLoader());
-        Fury fury = tuple2.f0.get();
         return (T)fury.deserialize(data);
     }
 
