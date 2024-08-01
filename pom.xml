@@ -72,7 +72,7 @@
         <java.version>1.8</java.version>
         <junit.version>4.13.1</junit.version>
         <license.maven.plugin>3.0</license.maven.plugin>
-        <log4j.version>2.23.1</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
         <maven.assembly.plugin>3.0.0</maven.assembly.plugin>
         <maven.compiler.plugin>3.5.1</maven.compiler.plugin>
         <maven.gpg.pluign>1.5</maven.gpg.pluign>
