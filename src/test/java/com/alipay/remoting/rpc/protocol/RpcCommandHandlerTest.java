@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +42,7 @@ public class RpcCommandHandlerTest {
 
     private static RemotingContext remotingContext = null;
 
-    private static final List<RemotingContext> remotingContextList = new ArrayList<>();
+    private static final List<RemotingContext> remotingContextList = Collections.synchronizedList(new ArrayList<>());
 
     private static final CountDownLatch countDownLatch = new CountDownLatch(2);
 
@@ -65,8 +66,8 @@ public class RpcCommandHandlerTest {
         msg.add(rpcRequestCommand2);
         RpcCommandHandler rpcCommandHandler = new RpcCommandHandler(new RpcCommandFactory());
         rpcCommandHandler.handleCommand(remotingContext, msg);
-        countDownLatch.await(10, TimeUnit.SECONDS);
-        Assert.assertTrue(remotingContextList.size() == 2);
+        countDownLatch.await();
+        Assert.assertEquals(2, remotingContextList.size());
         Assert.assertTrue(remotingContextList.get(0).getTimeout() != remotingContextList.get(1).getTimeout());
     }
 
@@ -89,7 +90,7 @@ public class RpcCommandHandlerTest {
 
         @Override
         public BizContext preHandleRequest(RemotingContext remotingCtx, Object request) {
-            Assert.assertTrue(remotingCtx != remotingContext);
+            Assert.assertNotSame(remotingCtx, remotingContext);
             remotingContextList.add(remotingCtx);
             countDownLatch.countDown();
             return null;
