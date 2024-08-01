@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -41,7 +42,7 @@ public class RpcCommandHandlerTest {
 
     private static RemotingContext remotingContext = null;
 
-    private static final List<RemotingContext> remotingContextList = new ArrayList<>();
+    private static final List<RemotingContext> remotingContextList = Collections.synchronizedList(new ArrayList<>());
 
     private static final CountDownLatch countDownLatch = new CountDownLatch(2);
 
