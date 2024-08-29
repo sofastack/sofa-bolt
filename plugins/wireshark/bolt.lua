@@ -436,6 +436,11 @@ function get_status_name(statuscode)
 end
 
 -- register our dissector upon tcp port 12200 (default)
-bolt_protocol.prefs.port = Pref.uint("Bolt TCP port", 12200)
-local tcp_port = DissectorTable.get("tcp.port")
-tcp_port:add(bolt_protocol.prefs.port, bolt_protocol)
+local ports = {12200}
+-- 如果你想此 bolt 协议的解析脚本去解析更多的端口那么可以在此处添加更多的端口
+-- If you want the bolt protocol parsing script to parse more ports then you can add more ports here
+-- like: local ports = {12200, 12199, 12198}
+
+for _, port in ipairs(ports) do
+    DissectorTable.get("tcp.port"):add(port, bolt_protocol)
+end

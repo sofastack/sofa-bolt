@@ -47,3 +47,17 @@ For advanced usage, you can search for any property under the bolt protocol, suc
 ```
 bolt.trace_id == 0bxxxx335162832343267634611586 
 ```
+
+如果你想此 bolt 协议的解析脚本去解析更多的端口那么可以在此处添加更多的端口
+
+If you want the bolt protocol parsing script to parse more ports then you can add more ports here
+
+example:
+
+```lua
+local ports = {12200, 12199, 12198}
+
+for _, port in ipairs(ports) do
+    DissectorTable.get("tcp.port"):add(port, bolt_protocol)
+end
+```
