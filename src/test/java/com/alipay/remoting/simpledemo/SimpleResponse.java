@@ -14,31 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.alipay.remoting.config;
+package com.alipay.remoting.simpledemo;
 
-/**
- * Config interface.
- *
- * @author chengyi (mark.lx@antfin.com) 2018-11-06 14:46
- */
-public interface Configurable {
+import java.io.Serializable;
 
-    /**
-     * Get the option value.
-     *
-     * @param option target option
-     * @return BoltOption
-     */
-    <T> T option(BoltOption<T> option);
+public class SimpleResponse implements Serializable {
+    private int res;
 
-    /**
-     * Allow to specify a {@link BoltOption} which is used for the {@link Configurable} instances once they got
-     * created. Use a value of {@code null} to remove a previous set {@link BoltOption}.
-     *
-     * @param option target option
-     * @param value option value, null to remove the previous option
-     * @return Configurable instance
-     */
-    <T> Configurable option(BoltOption<T> option, T value);
+    public SimpleResponse(int res) {
+        this.res = res;
+    }
 
+    public int getRes() {
+        return res;
+    }
 }

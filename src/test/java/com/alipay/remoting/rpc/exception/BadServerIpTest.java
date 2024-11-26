@@ -25,10 +25,10 @@ import org.slf4j.LoggerFactory;
 import com.alipay.remoting.BizContext;
 import com.alipay.remoting.rpc.RpcServer;
 import com.alipay.remoting.rpc.common.RequestBody;
+import com.alipay.remoting.rpc.common.PortScan;
 import com.alipay.remoting.rpc.protocol.SyncUserProcessor;
 
 /**
- * 
  * @author jiangping
  * @version $Id: BadServerIpTest.java, v 0.1 2015-12-3 PM5:01:30 tao Exp $
  */
@@ -67,7 +67,7 @@ public class BadServerIpTest {
         }
 
         public void startServer() {
-            server = new RpcServer(ip, 1111);
+            server = new RpcServer(ip, PortScan.select());
             server.registerUserProcessor(new SyncUserProcessor<RequestBody>() {
                 @Override
                 public Object handleRequest(BizContext bizCtx, RequestBody request)

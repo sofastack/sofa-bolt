@@ -259,8 +259,11 @@ public abstract class RpcCommand implements RemotingCommand {
 
     public void setHeader(byte[] header) {
         if (header != null) {
-            this.header = header;
+            if (header.length > Short.MAX_VALUE) {
+                throw new RuntimeException("header length exceed maximum, len=" + header.length);
+            }
             this.headerLength = (short) header.length;
+            this.header = header;
         }
     }
 
@@ -293,8 +296,11 @@ public abstract class RpcCommand implements RemotingCommand {
 
     public void setClazz(byte[] clazz) {
         if (clazz != null) {
-            this.clazz = clazz;
+            if (clazz.length > Short.MAX_VALUE) {
+                throw new RuntimeException("class length exceed maximum, len=" + clazz.length);
+            }
             this.clazzLength = (short) clazz.length;
+            this.clazz = clazz;
         }
     }
 

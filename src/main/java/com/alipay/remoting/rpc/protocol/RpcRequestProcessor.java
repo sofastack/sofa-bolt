@@ -20,6 +20,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 
+import com.alipay.sofa.common.insight.RecordContext;
+import com.alipay.sofa.common.insight.RecordScene;
+import com.alipay.sofa.common.insight.RecorderManager;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.AbstractRemotingProcessor;
@@ -120,6 +123,7 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
             executor = (this.getExecutor() == null ? defaultExecutor : this.getExecutor());
         }
 
+        cmd.setBeforeEnterQueueTime(System.nanoTime());
         // use the final executor dispatch process task
         executor.execute(new ProcessTask(ctx, cmd));
     }
@@ -130,19 +134,27 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void doProcess(final RemotingContext ctx, RpcRequestCommand cmd) throws Exception {
-        long currentTimestamp = System.currentTimeMillis();
+        try {
+            long currentTimestamp = System.currentTimeMillis();
 
-        preProcessRemotingContext(ctx, cmd, currentTimestamp);
-        if (ctx.isTimeoutDiscard() && ctx.isRequestTimeout()) {
-            timeoutLog(cmd, currentTimestamp, ctx);// do some log
-            return;// then, discard this request
+            RecorderManager.getRecorder().start(RecordScene.BOLT_REQUEST_HANDLE,
+                new RecordContext(cmd.getId()));
+
+            preProcessRemotingContext(ctx, cmd, currentTimestamp);
+            if (ctx.isTimeoutDiscard() && ctx.isRequestTimeout()) {
+                timeoutLog(cmd, currentTimestamp, ctx);// do some log
+                return;// then, discard this request
+            }
+            debugLog(ctx, cmd, currentTimestamp);
+            // decode request all
+            if (!deserializeRequestCommand(ctx, cmd, RpcDeserializeLevel.DESERIALIZE_ALL)) {
+                return;
+            }
+            dispatchToUserProcessor(ctx, cmd);
+        } finally {
+            RecorderManager.getRecorder().stop(RecordScene.BOLT_REQUEST_HANDLE,
+                ctx.getInvokeContext().getRecordContext());
         }
-        debugLog(ctx, cmd, currentTimestamp);
-        // decode request all
-        if (!deserializeRequestCommand(ctx, cmd, RpcDeserializeLevel.DESERIALIZE_ALL)) {
-            return;
-        }
-        dispatchToUserProcessor(ctx, cmd);
     }
 
     /**
@@ -178,6 +190,12 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 logger.error(errMsg, t);
                 serializedResponse = this.getCommandFactory()
                     .createExceptionResponse(id, t, errMsg);
+                try {
+                    serializedResponse.serialize();// serialize again for exception response
+                } catch (Throwable t1) {
+                    // should not happen
+                    logger.error("serialize exception response failed!", t1);
+                }
             }
 
             ctx.writeAndFlush(serializedResponse).addListener(new ChannelFutureListener() {
@@ -317,6 +335,14 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
         ctx.setRpcCommandType(cmd.getType());
         ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_WAIT_TIME,
             currentTimestamp - cmd.getArriveTime());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_ARRIVE_HEADER_IN_NANO,
+            cmd.getArriveHeaderTimeInNano());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_ARRIVE_BODY_IN_NANO,
+            cmd.getArriveBodyTimeInNano());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_BEFORE_DISPATCH_IN_NANO,
+            cmd.getBeforeEnterQueueTime());
+        ctx.getInvokeContext().putIfAbsent(InvokeContext.BOLT_PROCESS_START_PROCESS_IN_NANO,
+            System.nanoTime());
     }
 
     /**
@@ -386,11 +412,11 @@ public class RpcRequestProcessor extends AbstractRemotingProcessor<RpcRequestCom
                 //protect the thread running this task
                 String remotingAddress = RemotingUtil.parseRemoteAddress(ctx.getChannelContext()
                     .channel());
-                logger
-                    .error(
-                        "Exception caught when process rpc request command in RpcRequestProcessor, Id="
-                                + msg.getId() + "! Invoke source address is [" + remotingAddress
-                                + "].", e);
+                String errMsg = "Exception caught when process rpc request command in RpcRequestProcessor, Id="
+                                + msg.getId();
+                logger.error(errMsg + "! Invoke source address is [" + remotingAddress + "].", e);
+                sendResponseIfNecessary(ctx, msg.getType(), getCommandFactory()
+                    .createExceptionResponse(msg.getId(), e, errMsg));
             }
         }
 

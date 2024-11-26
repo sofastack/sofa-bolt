@@ -16,6 +16,8 @@
  */
 package com.alipay.remoting.config;
 
+import javax.net.ssl.TrustManagerFactory;
+
 /**
  * Supported options in client side.
  *
@@ -42,6 +44,31 @@ public class BoltClientOption<T> extends BoltGenericOption<T> {
     public static final BoltOption<Integer> CONN_CREATE_TP_KEEPALIVE_TIME = valueOf(
                                                                               "bolt.conn.create.tp.keepalive",
                                                                               60);
+
+    public static final BoltOption<Boolean> CONN_RECONNECT_SWITCH         = valueOf(
+                                                                              "bolt.conn.reconnect",
+                                                                              false);
+    public static final BoltOption<Boolean> CONN_MONITOR_SWITCH           = valueOf(
+                                                                              "bolt.conn.monitor",
+                                                                              false);
+
+    public static final BoltOption<Boolean> CLI_SSL_ENABLE                = valueOf(
+                                                                              "bolt.client.ssl.enable",
+                                                                              false);
+    public static final BoltOption<String>  CLI_SSL_KEYSTORE_TYPE         = valueOf(
+                                                                              "bolt.client.ssl.keystore.type",
+                                                                              null);
+    public static final BoltOption<String>  CLI_SSL_KEYSTORE              = valueOf(
+                                                                              "bolt.client.ssl.keystore",
+                                                                              null);
+
+    public static final BoltOption<String>  CLI_SSL_KEYSTORE_PASS         = valueOf(
+                                                                              "bolt.client.ssl.keystore.password",
+                                                                              null);
+    public static final BoltOption<String>  CLI_SSL_TMF_ALGO              = valueOf(
+                                                                              "bolt.client.ssl.tmf.algorithm",
+                                                                              TrustManagerFactory
+                                                                                  .getDefaultAlgorithm());
 
     private BoltClientOption(String name, T defaultValue) {
         super(name, defaultValue);

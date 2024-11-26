@@ -33,6 +33,7 @@ import com.alipay.remoting.util.StringUtils;
  *
  * <h4>Normal format example</h4>
  * <pre>127.0.0.1:12200?KEY1=VALUE1&KEY2=VALUE2</pre>
+ * <pre>0:0:0:0:0:0:0:1:12200?KEY1=VALUE1&KEY2=VALUE2</pre>
  *
  * <h4>Illegal format example</h4>
  * <pre>
@@ -61,29 +62,40 @@ public class RpcAddressParser implements RemotingAddressParser {
         if (null != parsedUrl) {
             return parsedUrl;
         }
+
         String ip = null;
         String port = null;
         Properties properties = null;
 
         int size = url.length();
         int pos = 0;
-        for (int i = 0; i < size; ++i) {
-            if (COLON == url.charAt(i)) {
-                ip = url.substring(pos, i);
-                pos = i;
-                // should not end with COLON
-                if (i == size - 1) {
-                    throw new IllegalArgumentException("Illegal format address string [" + url
-                                                       + "], should not end with COLON[:]! ");
-                }
+        int pathEndIdx = url.indexOf(QUES);
+        if (pathEndIdx < 0) {
+            pathEndIdx = size - 1;
+        } else {
+            pathEndIdx = pathEndIdx - 1;
+        }
+
+        int lastColon = -1;
+        for (int i = pathEndIdx; i >= 0; i--) {
+            if (url.charAt(i) == COLON) {
+                lastColon = i;
                 break;
             }
-            // must have one COLON
-            if (i == size - 1) {
-                throw new IllegalArgumentException("Illegal format address string [" + url
-                                                   + "], must have one COLON[:]! ");
-            }
         }
+
+        if (lastColon < 0) {
+            throw new IllegalArgumentException("Illegal format address string [" + url
+                                               + "], must have one COLON[:]! ");
+        }
+
+        // should not end with COLON
+        if (lastColon == size - 1) {
+            throw new IllegalArgumentException("Illegal format address string [" + url
+                                               + "], should not end with COLON[:]! ");
+        }
+        ip = url.substring(pos, lastColon);
+        pos = lastColon;
 
         for (int i = pos; i < size; ++i) {
             if (QUES == url.charAt(i)) {

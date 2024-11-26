@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RejectedExecutionException;
@@ -36,7 +37,6 @@ import com.alipay.remoting.log.BoltLoggerFactory;
 import org.slf4j.Logger;
 
 import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.switches.GlobalSwitch;
 import com.alipay.remoting.connection.ConnectionFactory;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.util.FutureTaskUtil;
@@ -50,65 +50,50 @@ import com.alipay.remoting.util.StringUtils;
  * @version $Id: DefaultConnectionManager.java, v 0.1 Mar 8, 2016 10:43:51 AM xiaomin.cxm Exp $
  */
 public class DefaultConnectionManager extends AbstractLifeCycle implements ConnectionManager,
-                                                               ConnectionHeartbeatManager,
                                                                Scannable, LifeCycle {
 
-    private static final Logger                                                     logger = BoltLoggerFactory
-                                                                                               .getLogger("CommonDefault");
+    private static final Logger                                                 logger = BoltLoggerFactory
+                                                                                           .getLogger("CommonDefault");
 
     /**
      * executor to create connections in async way
      */
-    private ThreadPoolExecutor                                                      asyncCreateConnectionExecutor;
-
-    /**
-     * switch status
-     */
-    private GlobalSwitch                                                            globalSwitch;
+    private ThreadPoolExecutor                                                  asyncCreateConnectionExecutor;
 
     /**
      * connection pool initialize tasks
      */
-    protected ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>> connTasks;
+    protected ConcurrentMap<String, RunStateRecordedFutureTask<ConnectionPool>> connTasks;
 
     /**
      * heal connection tasks
      */
-    protected ConcurrentHashMap<String, FutureTask<Integer>>                        healTasks;
+    protected ConcurrentMap<String, FutureTask<Integer>>                        healTasks;
 
     /**
      * connection pool select strategy
      */
-    protected ConnectionSelectStrategy                                              connectionSelectStrategy;
+    protected ConnectionSelectStrategy                                          connectionSelectStrategy;
 
     /**
      * address parser
      */
-    protected RemotingAddressParser                                                 addressParser;
+    protected RemotingAddressParser                                             addressParser;
 
     /**
      * connection factory
      */
-    protected ConnectionFactory                                                     connectionFactory;
+    protected ConnectionFactory                                                 connectionFactory;
 
     /**
      * connection event handler
      */
-    protected ConnectionEventHandler                                                connectionEventHandler;
+    protected ConnectionEventHandler                                            connectionEventHandler;
 
     /**
      * connection event listener
      */
-    protected ConnectionEventListener                                               connectionEventListener;
-
-    /**
-     * Default constructor.
-     */
-    public DefaultConnectionManager() {
-        this.connTasks = new ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>>();
-        this.healTasks = new ConcurrentHashMap<String, FutureTask<Integer>>();
-        this.connectionSelectStrategy = new RandomSelectStrategy(globalSwitch);
-    }
+    protected ConnectionEventListener                                           connectionEventListener;
 
     /**
      * Construct with parameters.
@@ -162,25 +147,6 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
         this(connectionSelectStrategy, connectionFactory);
         this.connectionEventHandler = connectionEventHandler;
         this.connectionEventListener = connectionEventListener;
-    }
-
-    /**
-     * Construct with parameters.
-     *
-     * @param connectionSelectStrategy connection selection strategy.
-     * @param connectionFactory connection factory
-     * @param connectionEventHandler connection event handler
-     * @param connectionEventListener connection event listener
-     * @param globalSwitch global switch
-     */
-    public DefaultConnectionManager(ConnectionSelectStrategy connectionSelectStrategy,
-                                    ConnectionFactory connectionFactory,
-                                    ConnectionEventHandler connectionEventHandler,
-                                    ConnectionEventListener connectionEventListener,
-                                    GlobalSwitch globalSwitch) {
-        this(connectionSelectStrategy, connectionFactory, connectionEventHandler,
-            connectionEventListener);
-        this.globalSwitch = globalSwitch;
     }
 
     @Override
@@ -745,6 +711,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
                         syncCreateNumWhenNotWarmup);
                 } catch (Exception e) {
                     pool.removeAllAndTryClose();
+                    connTasks.remove(url.getUniqueKey());
                     throw e;
                 }
             }
@@ -949,7 +916,7 @@ public class DefaultConnectionManager extends AbstractLifeCycle implements Conne
      *
      * @return property value of connPools
      */
-    public ConcurrentHashMap<String, RunStateRecordedFutureTask<ConnectionPool>> getConnPools() {
+    public ConcurrentMap<String, RunStateRecordedFutureTask<ConnectionPool>> getConnPools() {
         return this.connTasks;
     }
 }

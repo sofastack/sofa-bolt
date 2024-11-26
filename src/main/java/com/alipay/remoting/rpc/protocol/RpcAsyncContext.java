@@ -20,10 +20,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.alipay.remoting.AsyncContext;
 import com.alipay.remoting.RemotingContext;
+import com.alipay.remoting.ResponseStatus;
 
 /**
  * Async biz context of Rpc.
- * 
+ *
  * @author xiaomin.cxm
  * @version $Id: RpcAsyncContext.java, v 0.1 May 16, 2016 8:23:07 PM xiaomin.cxm Exp $
  */
@@ -61,6 +62,22 @@ public class RpcAsyncContext implements AsyncContext {
         if (isResponseSentAlready.compareAndSet(false, true)) {
             processor.sendResponseIfNecessary(this.ctx, cmd.getType(), processor
                 .getCommandFactory().createResponse(responseObject, this.cmd));
+        } else {
+            throw new IllegalStateException("Should not send rpc response repeatedly!");
+        }
+    }
+
+    /**
+     * @see com.alipay.remoting.AsyncContext#sendException(java.lang.Throwable)
+     */
+    @Override
+    public void sendException(Throwable ex) {
+        if (isResponseSentAlready.compareAndSet(false, true)) {
+            processor.sendResponseIfNecessary(
+                this.ctx,
+                cmd.getType(),
+                processor.getCommandFactory().createExceptionResponse(this.cmd.getId(),
+                    ResponseStatus.SERVER_EXCEPTION, ex));
         } else {
             throw new IllegalStateException("Should not send rpc response repeatedly!");
         }

@@ -31,47 +31,58 @@ public class RpcConfigManager {
             RpcConfigs.DISPATCH_MSG_LIST_IN_DEFAULT_EXECUTOR_DEFAULT);
     }
 
+    @Deprecated
     public static boolean server_ssl_enable() {
         return ConfigManager.getBool(RpcConfigs.SRV_SSL_ENABLE, "false");
     }
 
+    @Deprecated
     public static boolean server_ssl_need_client_auth() {
         return ConfigManager.getBool(RpcConfigs.SRV_SSL_NEED_CLIENT_AUTH, "false");
     }
 
+    @Deprecated
     public static String server_ssl_keystore() {
         return ConfigManager.getString(RpcConfigs.SRV_SSL_KEYSTORE, null);
     }
 
+    @Deprecated
     public static String server_ssl_keystore_pass() {
         return ConfigManager.getString(RpcConfigs.SRV_SSL_KEYSTORE_PASS, null);
     }
 
+    @Deprecated
     public static String server_ssl_keystore_type() {
         return ConfigManager.getString(RpcConfigs.SRV_SSL_KEYTSTORE_YPE, null);
     }
 
+    @Deprecated
     public static String server_ssl_kmf_algorithm() {
         return ConfigManager.getString(RpcConfigs.SRV_SSL_KMF_ALGO,
             KeyManagerFactory.getDefaultAlgorithm());
     }
 
+    @Deprecated
     public static boolean client_ssl_enable() {
         return ConfigManager.getBool(RpcConfigs.CLI_SSL_ENABLE, "false");
     }
 
+    @Deprecated
     public static String client_ssl_keystore() {
         return ConfigManager.getString(RpcConfigs.CLI_SSL_KEYSTORE, null);
     }
 
+    @Deprecated
     public static String client_ssl_keystore_pass() {
         return ConfigManager.getString(RpcConfigs.CLI_SSL_KEYSTORE_PASS, null);
     }
 
+    @Deprecated
     public static String client_ssl_keystore_type() {
         return ConfigManager.getString(RpcConfigs.CLI_SSL_KEYTSTORE_YPE, null);
     }
 
+    @Deprecated
     public static String client_ssl_tmf_algorithm() {
         return ConfigManager.getString(RpcConfigs.CLI_SSL_TMF_ALGO,
             TrustManagerFactory.getDefaultAlgorithm());

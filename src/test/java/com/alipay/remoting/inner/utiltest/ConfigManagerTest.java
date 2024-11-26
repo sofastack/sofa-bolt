@@ -72,9 +72,5 @@ public class ConfigManagerTest {
         Assert.assertNotNull(ConfigManager.conn_threshold());
         Assert.assertNotNull(ConfigManager.retry_detect_period());
         Assert.assertNotNull(ConfigManager.serializer());
-        int low_default = Integer.parseInt(Configs.NETTY_BUFFER_LOW_WATERMARK_DEFAULT);
-        int high_default = Integer.parseInt(Configs.NETTY_BUFFER_HIGH_WATERMARK_DEFAULT);
-        Assert.assertEquals(low_default, ConfigManager.netty_buffer_low_watermark());
-        Assert.assertEquals(high_default, ConfigManager.netty_buffer_high_watermark());
     }
 }

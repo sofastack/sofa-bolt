@@ -37,13 +37,13 @@ public class DefaultConnectionMonitor extends AbstractLifeCycle {
 
     private static final Logger             logger = BoltLoggerFactory.getLogger("CommonDefault");
 
-    private final DefaultConnectionManager  connectionManager;
+    private final ConnectionManager         connectionManager;
     private final ConnectionMonitorStrategy strategy;
 
     private ScheduledThreadPoolExecutor     executor;
 
     public DefaultConnectionMonitor(ConnectionMonitorStrategy strategy,
-                                    DefaultConnectionManager connectionManager) {
+                                    ConnectionManager connectionManager) {
         if (strategy == null) {
             throw new IllegalArgumentException("null strategy");
         }
@@ -72,8 +72,10 @@ public class DefaultConnectionMonitor extends AbstractLifeCycle {
             @Override
             public void run() {
                 try {
-                    Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools = connectionManager
-                        .getConnPools();
+                    Map<String, RunStateRecordedFutureTask<ConnectionPool>> connPools = null;
+                    if (connectionManager instanceof DefaultConnectionManager) {
+                        connPools = ((DefaultConnectionManager) connectionManager).getConnPools();
+                    }
                     strategy.monitor(connPools);
                 } catch (Exception e) {
                     logger.warn("MonitorTask error", e);

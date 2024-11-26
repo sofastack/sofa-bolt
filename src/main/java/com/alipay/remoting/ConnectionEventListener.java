@@ -16,9 +16,9 @@
  */
 package com.alipay.remoting;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Listen and dispatch connection events.
@@ -56,7 +56,7 @@ public class ConnectionEventListener {
                                             ConnectionEventProcessor processor) {
         List<ConnectionEventProcessor> processorList = this.processors.get(type);
         if (processorList == null) {
-            this.processors.putIfAbsent(type, new ArrayList<ConnectionEventProcessor>(1));
+            this.processors.putIfAbsent(type, new CopyOnWriteArrayList<ConnectionEventProcessor>());
             processorList = this.processors.get(type);
         }
         processorList.add(processor);

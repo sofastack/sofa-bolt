@@ -79,8 +79,15 @@ public class ProtocolCodeBasedDecoder extends AbstractBatchDecoder {
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
         in.markReaderIndex();
-        ProtocolCode protocolCode = decodeProtocolCode(in);
-        if (null != protocolCode) {
+        ProtocolCode protocolCode;
+        Protocol protocol;
+        try {
+            protocolCode = decodeProtocolCode(in);
+            if (protocolCode == null) {
+                // read to end
+                return;
+            }
+
             byte protocolVersion = decodeProtocolVersion(in);
             if (ctx.channel().attr(Connection.PROTOCOL).get() == null) {
                 ctx.channel().attr(Connection.PROTOCOL).set(protocolCode);
@@ -88,14 +95,19 @@ public class ProtocolCodeBasedDecoder extends AbstractBatchDecoder {
                     ctx.channel().attr(Connection.VERSION).set(protocolVersion);
                 }
             }
-            Protocol protocol = ProtocolManager.getProtocol(protocolCode);
-            if (null != protocol) {
-                in.resetReaderIndex();
-                protocol.getDecoder().decode(ctx, in, out);
-            } else {
-                throw new CodecException("Unknown protocol code: [" + protocolCode
-                                         + "] while decode in ProtocolDecoder.");
-            }
+
+            protocol = ProtocolManager.getProtocol(protocolCode);
+        } finally {
+            // reset the readerIndex before throwing an exception or decoding content
+            // to ensure that the packet is complete
+            in.resetReaderIndex();
         }
+
+        if (protocol == null) {
+            throw new CodecException("Unknown protocol code: [" + protocolCode
+                                     + "] while decode in ProtocolDecoder.");
+        }
+
+        protocol.getDecoder().decode(ctx, in, out);
     }
 }

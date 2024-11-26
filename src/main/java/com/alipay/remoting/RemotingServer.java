@@ -18,13 +18,13 @@ package com.alipay.remoting;
 
 import java.util.concurrent.ExecutorService;
 
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.rpc.protocol.UserProcessor;
 
 /**
  * @author chengyi (mark.lx@antfin.com) 2018-06-16 06:55
  */
-public interface RemotingServer extends Configurable, LifeCycle {
+public interface RemotingServer extends Configuration, LifeCycle {
 
     /**
      * init the server

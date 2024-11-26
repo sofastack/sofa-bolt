@@ -16,14 +16,13 @@
  */
 package com.alipay.remoting;
 
+import com.alipay.remoting.config.BoltClientOption;
 import com.alipay.remoting.config.BoltOption;
 import com.alipay.remoting.config.BoltOptions;
 import com.alipay.remoting.config.ConfigManager;
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.config.ConfigurableInstance;
 import com.alipay.remoting.config.configs.ConfigContainer;
-import com.alipay.remoting.config.configs.ConfigItem;
-import com.alipay.remoting.config.configs.ConfigType;
 import com.alipay.remoting.config.configs.DefaultConfigContainer;
 import com.alipay.remoting.config.switches.GlobalSwitch;
 
@@ -34,14 +33,23 @@ public abstract class AbstractBoltClient extends AbstractLifeCycle implements Bo
                                                                   ConfigurableInstance {
 
     private final BoltOptions     options;
-    private final ConfigType      configType;
     private final GlobalSwitch    globalSwitch;
     private final ConfigContainer configContainer;
 
     public AbstractBoltClient() {
         this.options = new BoltOptions();
-        this.configType = ConfigType.CLIENT_SIDE;
         this.globalSwitch = new GlobalSwitch();
+        if (ConfigManager.conn_reconnect_switch()) {
+            option(BoltClientOption.CONN_RECONNECT_SWITCH, true);
+        } else {
+            option(BoltClientOption.CONN_RECONNECT_SWITCH, false);
+        }
+
+        if (ConfigManager.conn_monitor_switch()) {
+            option(BoltClientOption.CONN_MONITOR_SWITCH, true);
+        } else {
+            option(BoltClientOption.CONN_MONITOR_SWITCH, false);
+        }
         this.configContainer = new DefaultConfigContainer();
     }
 
@@ -51,44 +59,36 @@ public abstract class AbstractBoltClient extends AbstractLifeCycle implements Bo
     }
 
     @Override
-    public <T> Configurable option(BoltOption<T> option, T value) {
+    public <T> Configuration option(BoltOption<T> option, T value) {
         options.option(option, value);
         return this;
     }
 
     @Override
+    @Deprecated
     public ConfigContainer conf() {
         return this.configContainer;
     }
 
     @Override
+    @Deprecated
     public GlobalSwitch switches() {
         return this.globalSwitch;
     }
 
     @Override
     public void initWriteBufferWaterMark(int low, int high) {
-        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK, low);
-        this.configContainer.set(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK, high);
+        option(BoltClientOption.NETTY_BUFFER_LOW_WATER_MARK, low);
+        option(BoltClientOption.NETTY_BUFFER_HIGH_WATER_MARK, high);
     }
 
     @Override
     public int netty_buffer_low_watermark() {
-        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_LOW_WATER_MARK);
-        if (config != null) {
-            return (Integer) config;
-        } else {
-            return ConfigManager.netty_buffer_low_watermark();
-        }
+        return option(BoltClientOption.NETTY_BUFFER_LOW_WATER_MARK);
     }
 
     @Override
     public int netty_buffer_high_watermark() {
-        Object config = configContainer.get(configType, ConfigItem.NETTY_BUFFER_HIGH_WATER_MARK);
-        if (config != null) {
-            return (Integer) config;
-        } else {
-            return ConfigManager.netty_buffer_high_watermark();
-        }
+        return option(BoltClientOption.NETTY_BUFFER_HIGH_WATER_MARK);
     }
 }

@@ -17,7 +17,6 @@
 package com.alipay.remoting.config;
 
 import com.alipay.remoting.config.configs.ConfigContainer;
-import com.alipay.remoting.config.configs.NettyConfigure;
 import com.alipay.remoting.config.switches.GlobalSwitch;
 
 /**
@@ -26,18 +25,51 @@ import com.alipay.remoting.config.switches.GlobalSwitch;
  * @author tsui
  * @version $Id: ConfigurableInstance.java, v 0.1 2018-07-30 21:09 tsui Exp $$
  */
-public interface ConfigurableInstance extends NettyConfigure {
+public interface ConfigurableInstance {
 
     /**
      * get the config container for current instance
      *
      * @return the config container
      */
+    @Deprecated
     ConfigContainer conf();
 
     /**
      * get the global switch for current instance
      * @return the global switch
      */
+    @Deprecated
     GlobalSwitch switches();
+
+    /**
+     * Initialize netty write buffer water mark for remoting instance.
+     * <p>
+     * Notice: This api should be called before init remoting instance.
+     *
+     * deprecated, use option() instead:
+     * instance#option(BoltOption.NETTY_BUFFER_LOW_WATER_MARK, low);
+     * instance#option(BoltOption.NETTY_BUFFER_HIGH_WATER_MARK, high);
+     *
+     * @param low [0, high]
+     * @param high [high, Integer.MAX_VALUE)
+     */
+    @Deprecated
+    void initWriteBufferWaterMark(int low, int high);
+
+    /**
+     * get the low water mark for netty write buffer
+     * deprecated, use instance#option(BoltClientOption.NETTY_BUFFER_LOW_WATER_MARK) instead
+     * @return low watermark
+     */
+    @Deprecated
+    int netty_buffer_low_watermark();
+
+    /**
+     * get the high water mark for netty write buffer
+     * deprecated, use instance#option(BoltClientOption.NETTY_BUFFER_HIGH_WATER_MARK) instead
+     * @return high watermark
+     */
+    @Deprecated
+    int netty_buffer_high_watermark();
 }

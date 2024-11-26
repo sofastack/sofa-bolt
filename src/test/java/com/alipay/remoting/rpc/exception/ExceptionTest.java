@@ -341,4 +341,26 @@ public class ExceptionTest {
         latch.await();
         Assert.assertEquals(InvokeServerException.class, ret.get(0).getClass());
     }
+
+    @Test
+    public void testGetBizClassLoaderException1() {
+        server.registerUserProcessor(new SimpleServerUserProcessor() {
+            @Override
+            public ClassLoader getBizClassLoader() {
+                throw new RuntimeException("getBizClassLoader fail.");
+            }
+        });
+
+        RequestBody req = new RequestBody(4, "hello world");
+        Object result = null;
+        try {
+            result = client.invokeSync(addr, req, 3000);
+            String errMsg = "Should throw InvokeServerException!";
+            logger.error(errMsg);
+            Assert.fail(errMsg);
+        } catch (Exception e) {
+            Assert.assertNull(result);
+            Assert.assertEquals(InvokeServerException.class, e.getClass());
+        }
+    }
 }

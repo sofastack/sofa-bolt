@@ -48,10 +48,7 @@ public class ClientConnectionTest {
     RpcClient                 client;
 
     int                       port                      = PortScan.select();
-    String                    ip                        = "127.0.0.1";
     String                    addr                      = "127.0.0.1:" + port;
-
-    int                       invokeTimes               = 5;
 
     SimpleServerUserProcessor serverUserProcessor       = new SimpleServerUserProcessor();
     SimpleClientUserProcessor clientUserProcessor       = new SimpleClientUserProcessor();
@@ -113,7 +110,7 @@ public class ClientConnectionTest {
         client.closeConnection(addr);
         Assert.assertFalse(client.checkConnection(addr));
 
-        Assert.assertTrue(client.checkConnection(addr, true, true));
+        Assert.assertTrue(client.checkConnection(addr, true, false));
         Thread.sleep(100);
         try {
             Connection connection = client.getConnection(addr, 1);
@@ -127,9 +124,8 @@ public class ClientConnectionTest {
 
     @Test
     public void testGetAll() throws InterruptedException {
-        Connection conn = null;
         try {
-            conn = client.getConnection(addr, 3000);
+            client.getConnection(addr, 3000);
         } catch (RemotingException e) {
             Assert.fail("should not reach here");
         }

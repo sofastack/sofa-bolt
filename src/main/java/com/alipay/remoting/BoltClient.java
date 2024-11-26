@@ -16,7 +16,7 @@
  */
 package com.alipay.remoting;
 
-import com.alipay.remoting.config.Configurable;
+import com.alipay.remoting.config.Configuration;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcConfigs;
@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @author chengyi (mark.lx@antfin.com) 2018-11-07 11:56
  */
-public interface BoltClient extends Configurable, LifeCycle {
+public interface BoltClient extends Configuration, LifeCycle {
 
     /**
      * One way invocation using a string address, address format example - 127.0.0.1:12200?key1=value1&key2=value2 <br>
@@ -653,7 +653,14 @@ public interface BoltClient extends Configurable, LifeCycle {
      *
      * @return property value of connectionManager
      */
-    DefaultConnectionManager getConnectionManager();
+    ConnectionManager getConnectionManager();
+
+    /**
+     * Setter method for property <tt>connectionManager</tt>.
+     *
+     * @param connectionManager ConnectionManager
+     */
+    void setConnectionManager(ConnectionManager connectionManager);
 
     /**
      * Getter method for property <tt>addressParser</tt>.

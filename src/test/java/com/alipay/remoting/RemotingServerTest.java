@@ -16,12 +16,10 @@
  */
 package com.alipay.remoting;
 
-import static org.mockito.Mockito.when;
-
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 
+import com.alipay.remoting.rpc.common.PortScan;
 import com.alipay.remoting.rpc.RpcServer;
 
 /**
@@ -33,7 +31,7 @@ import com.alipay.remoting.rpc.RpcServer;
 public class RemotingServerTest {
     @Test
     public void testStartRepeatedly() {
-        RpcServer rpcServer = new RpcServer(1111);
+        RpcServer rpcServer = new RpcServer(PortScan.select());
         rpcServer.start();
 
         try {
@@ -46,16 +44,8 @@ public class RemotingServerTest {
     }
 
     @Test
-    public void testStartFailed() throws InterruptedException {
-        AbstractRemotingServer remotingServer = Mockito.mock(AbstractRemotingServer.class);
-        when(remotingServer.doStart()).thenThrow(new RuntimeException("start error"));
-
-        Assert.assertFalse(remotingServer.start());
-    }
-
-    @Test
     public void testStopRepeatedly() {
-        RpcServer rpcServer = new RpcServer(1111);
+        RpcServer rpcServer = new RpcServer(PortScan.select());
         try {
             rpcServer.start();
         } catch (Exception e) {

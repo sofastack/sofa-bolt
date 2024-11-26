@@ -16,6 +16,7 @@
  */
 package com.alipay.remoting.inner.connection;
 
+import com.alipay.remoting.exception.RemotingException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -122,5 +123,12 @@ public class ConnectionTest {
         Assert.assertEquals(3, serverDisConnectProcessor.getDisConnectTimes());
         Thread.sleep(100);
         Assert.assertEquals(3, serverConnectProcessor.getConnectTimes());
+    }
+
+    @Test
+    public void testIsFine() throws RemotingException {
+        Connection conn = client.createStandaloneConnection(ip, port, 1000);
+        conn.close();
+        Assert.assertFalse(conn.isFine());
     }
 }

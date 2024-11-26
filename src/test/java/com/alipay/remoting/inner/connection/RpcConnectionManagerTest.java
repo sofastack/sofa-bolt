@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.alipay.remoting.DefaultClientConnectionManager;
+import com.alipay.remoting.rpc.common.PortScan;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +34,6 @@ import com.alipay.remoting.ConnectionEventHandler;
 import com.alipay.remoting.ConnectionEventListener;
 import com.alipay.remoting.ConnectionEventType;
 import com.alipay.remoting.ConnectionSelectStrategy;
-import com.alipay.remoting.DefaultConnectionManager;
 import com.alipay.remoting.RandomSelectStrategy;
 import com.alipay.remoting.RemotingAddressParser;
 import com.alipay.remoting.Url;
@@ -72,15 +72,20 @@ public class RpcConnectionManagerTest {
     private BoltServer                                  server;
 
     private String                                      ip                       = "127.0.0.1";
-    private int                                         port                     = 1111;
-    private String                                      addr                     = ip + ":" + port;
-    private String                                      poolKey                  = ip + ":" + port;
-    private Url                                         url                      = new Url(ip, port);
+    private int                                         port;
+    private String                                      addr;
+    private String                                      poolKey;
+    private Url                                         url;
 
     CONNECTEventProcessor                               serverConnectProcessor   = new CONNECTEventProcessor();
 
     @Before
     public void init() {
+        port = PortScan.select();
+        addr = ip + ":" + port;
+        poolKey = ip + ":" + port;
+        url = new Url(ip, port);
+
         cm = new DefaultClientConnectionManager(connectionSelectStrategy, connectionFactory,
             connectionEventHandler, connectionEventListener);
         cm.setAddressParser(addressParser);

@@ -22,7 +22,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.alipay.remoting.config.switches.GlobalSwitch;
+import com.alipay.remoting.config.BoltClientOption;
 import com.alipay.remoting.exception.RemotingException;
 import com.alipay.remoting.rpc.RpcClient;
 import com.alipay.remoting.rpc.RpcResponseFuture;
@@ -67,7 +67,7 @@ public class BenchmarkClient {
         System.setProperty("bolt.netty.buffer.high.watermark", String.valueOf(64 * 1024 * 1024));
         System.setProperty("bolt.netty.buffer.low.watermark", String.valueOf(32 * 1024 * 1024));
         RpcClient rpcClient = new RpcClient();
-        rpcClient.switches().turnOn(GlobalSwitch.CODEC_FLUSH_CONSOLIDATION);
+        rpcClient.option(BoltClientOption.NETTY_FLUSH_CONSOLIDATION, true);
         rpcClient.startup();
 
         int processors = Runtime.getRuntime().availableProcessors();

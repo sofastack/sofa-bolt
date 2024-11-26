@@ -29,4 +29,12 @@ public interface AsyncContext {
      * @param responseObject response object
      */
     void sendResponse(Object responseObject);
+
+    /**
+     * send exception back
+     * @param ex response exception
+     */
+    default void sendException(Throwable ex) {
+        throw new UnsupportedOperationException("default not support sendException!");
+    }
 }
