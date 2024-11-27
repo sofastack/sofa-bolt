@@ -130,7 +130,7 @@ public class RpcResponseCommand extends ResponseCommand {
                     && this.getCustomSerializer().deserializeContent(this, invokeContext)) {
                     return;
                 }
-                if (this.getContent() != null) {
+                if (this.getContent() != null && this.getContentLength() > 0) {
                     this.setResponseObject(SerializerManager.getSerializer(this.getSerializer())
                         .deserialize(this.getContent(), this.responseClass));
                 }
