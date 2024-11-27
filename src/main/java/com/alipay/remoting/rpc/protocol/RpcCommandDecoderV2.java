@@ -201,7 +201,9 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                                     header = new byte[headerLen];
                                     in.readBytes(header);
                                 }
-                                if (contentLen > 0) {
+                                if (contentLen == 0) {
+                                    content = new byte[0];
+                                } else if (contentLen > 0) {
                                     content = new byte[contentLen];
                                     in.readBytes(content);
                                 }
