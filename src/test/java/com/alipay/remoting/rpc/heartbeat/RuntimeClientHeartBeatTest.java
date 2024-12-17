@@ -108,7 +108,7 @@ public class RuntimeClientHeartBeatTest {
         heartBeatProcessor.reset();
         Thread.sleep(1500);
         logger.warn("after disable: " + heartBeatProcessor.getHeartBeatTimes());
-        Assert.assertTrue(heartBeatProcessor.getHeartBeatTimes() == 0);
+        Assert.assertEquals(0, heartBeatProcessor.getHeartBeatTimes());
 
         client.enableConnHeartbeat(addr);
         heartBeatProcessor.reset();
