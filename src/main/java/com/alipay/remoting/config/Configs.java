@@ -69,6 +69,9 @@ public class Configs {
     public static final String NETTY_EPOLL_SWITCH                    = "bolt.netty.epoll.switch";
     public static final String NETTY_EPOLL_SWITCH_DEFAULT            = "true";
 
+    public static final String NETTY_IO_URING_SWITCH                 = "bolt.netty.io_uring.switch";
+    public static final String NETTY_IO_URING_SWITCH_DEFAULT         = "false";
+
     /** Netty epoll level trigger enabled */
     public static final String NETTY_EPOLL_LT                        = "bolt.netty.epoll.lt";
     public static final String NETTY_EPOLL_LT_DEFAULT                = "true";
