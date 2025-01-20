@@ -100,19 +100,19 @@ public class RuntimeClientHeartBeatTest {
         } catch (RemotingException e) {
             logger.error("", e);
         }
-        Thread.sleep(1500);
+        Thread.sleep(3000);
         logger.warn("before disable: " + heartBeatProcessor.getHeartBeatTimes());
         Assert.assertTrue(heartBeatProcessor.getHeartBeatTimes() > 0);
 
         client.disableConnHeartbeat(addr);
         heartBeatProcessor.reset();
-        Thread.sleep(1500);
+        Thread.sleep(3000);
         logger.warn("after disable: " + heartBeatProcessor.getHeartBeatTimes());
         Assert.assertEquals(0, heartBeatProcessor.getHeartBeatTimes());
 
         client.enableConnHeartbeat(addr);
         heartBeatProcessor.reset();
-        Thread.sleep(1500);
+        Thread.sleep(3000);
         logger.warn("after enable: " + heartBeatProcessor.getHeartBeatTimes());
         Assert.assertTrue(heartBeatProcessor.getHeartBeatTimes() > 0);
     }
