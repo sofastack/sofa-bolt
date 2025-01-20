@@ -65,8 +65,9 @@ public class RpcCommandHandlerTest {
         msg.add(rpcRequestCommand2);
         RpcCommandHandler rpcCommandHandler = new RpcCommandHandler(new RpcCommandFactory());
         rpcCommandHandler.handleCommand(remotingContext, msg);
-        countDownLatch.await(10, TimeUnit.SECONDS);
-        Assert.assertTrue(remotingContextList.size() == 2);
+        boolean result = countDownLatch.await(10, TimeUnit.SECONDS);
+        Assert.assertTrue(result);
+	    Assert.assertEquals(2, remotingContextList.size());
         Assert.assertTrue(remotingContextList.get(0).getTimeout() != remotingContextList.get(1).getTimeout());
     }
 
@@ -89,7 +90,8 @@ public class RpcCommandHandlerTest {
 
         @Override
         public BizContext preHandleRequest(RemotingContext remotingCtx, Object request) {
-            Assert.assertTrue(remotingCtx != remotingContext);
+            System.out.println(request.getClass()+"|"+remotingCtx+"|"+remotingContext);
+	        Assert.assertNotSame(remotingCtx, remotingContext);
             remotingContextList.add(remotingCtx);
             countDownLatch.countDown();
             return null;
