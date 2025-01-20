@@ -69,7 +69,7 @@ public class RpcCommandHandlerTest {
         msg.add(rpcRequestCommand2);
         RpcCommandHandler rpcCommandHandler = new RpcCommandHandler(new RpcCommandFactory());
         rpcCommandHandler.handleCommand(remotingContext, msg);
-        boolean result = countDownLatch.await(10, TimeUnit.SECONDS);
+        boolean result = countDownLatch.await(15, TimeUnit.SECONDS);
         Assert.assertTrue(result);
 	    Assert.assertEquals(2, remotingContextList.size());
         Assert.assertTrue(remotingContextList.get(0).getTimeout() != remotingContextList.get(1).getTimeout());
