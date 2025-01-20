@@ -81,6 +81,7 @@
         <maven.source.plugin>3.0.0</maven.source.plugin>
         <maven.staging.plugin>1.6.7</maven.staging.plugin>
         <maven.surefire.plugin>2.18.1</maven.surefire.plugin>
+        <netty-io-uring.version>0.0.25.Final</netty-io-uring.version>
         <netty.version>4.1.42.Final</netty.version>
 
         <project.encoding>UTF-8</project.encoding>
@@ -106,7 +107,12 @@
             <artifactId>sofa-common-tools</artifactId>
             <version>${sofa.common.tools}</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.netty.incubator</groupId>
+            <artifactId>netty-incubator-transport-native-io_uring</artifactId>
+            <version>${netty-io-uring.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- provided scope -->
         <dependency>
             <groupId>com.alipay.sofa</groupId>
