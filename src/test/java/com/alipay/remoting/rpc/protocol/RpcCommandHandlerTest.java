@@ -94,7 +94,7 @@ public class RpcCommandHandlerTest {
 
         @Override
         public BizContext preHandleRequest(RemotingContext remotingCtx, Object request) {
-            LOGGER.info(request.getClass()+"|"+remotingCtx+"|"+remotingContext);
+            LOGGER.info(remotingCtx+"|"+remotingContext);
 	        Assert.assertNotSame(remotingCtx, remotingContext);
             remotingContextList.add(remotingCtx);
             countDownLatch.countDown();
