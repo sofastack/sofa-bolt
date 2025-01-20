@@ -41,9 +41,15 @@ jobs:
       with:
         java-version: ${{ matrix.java-version }}
     - name: Build with Maven
-      run: ./mvnw clean install -Dmaven.test.skip=true -B -U -e && bash ./.middleware-common/check_format.sh
+      run:   if [[ ${{ matrix.java-version }} -gt 17 ]]; then
+        MAVEN_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.regex=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED"
+        fi
+        ./mvnw clean install -Dmaven.test.skip=true -B -U -e && bash ./.middleware-common/check_format.sh
     - name: Test with Maven
-      run: ./mvnw package
+      run:  if [[ ${{ matrix.java-version }} -gt 17 ]]; then
+        MAVEN_OPTS="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.math=ALL-UNNAMED --add-opens java.base/java.text=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.regex=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED"
+        fi
+       ./mvnw package
     - name: Codecov
       uses: codecov/codecov-action@v1
 
