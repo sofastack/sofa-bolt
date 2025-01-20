@@ -199,7 +199,6 @@
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
                 <artifactId>maven-java-formatter-plugin</artifactId>
@@ -277,6 +276,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin}</version>
                 <configuration>
+                    <argLine>${maven.surefire.argLine}</argLine>
+                    <excludes>${maven.surefire.excludes}</excludes>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
