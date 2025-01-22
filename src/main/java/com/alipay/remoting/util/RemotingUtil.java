@@ -193,16 +193,23 @@ public class RemotingUtil {
         if (StringUtils.isBlank(addr)) {
             return StringUtils.EMPTY;
         }
-        if (addr.charAt(0) == '/') {
-            return addr.substring(1);
-        } else {
-            int len = addr.length();
-            for (int i = 1; i < len; ++i) {
-                if (addr.charAt(i) == '/') {
-                    return addr.substring(i + 1);
+        // Find the first and second '/' positions
+        int firstSlash = addr.indexOf('/');
+        int secondSlash = addr.indexOf('/', firstSlash + 1);
+        if (firstSlash != -1) {
+            if (secondSlash != -1) {
+                // Extract the IP address and port
+                String ip = addr.substring(firstSlash + 1, secondSlash);
+                String port = addr.substring(secondSlash + 1);
+                if (port.contains(":")) {
+                    port = port.split(":")[1];
                 }
+                return ip + ":" + port;
+            } else {
+                // Only one slash, return the part after the slash
+                return addr.substring(firstSlash + 1);
             }
-            return addr;
         }
+        return addr;
     }
 }

@@ -80,9 +80,10 @@
         <maven.javadoc.plugin>2.9.1</maven.javadoc.plugin>
         <maven.source.plugin>3.0.0</maven.source.plugin>
         <maven.staging.plugin>1.6.7</maven.staging.plugin>
+        <maven.surefire.argLine></maven.surefire.argLine>
+        <maven.surefire.excludes></maven.surefire.excludes>
         <maven.surefire.plugin>2.18.1</maven.surefire.plugin>
         <netty.version>4.1.42.Final</netty.version>
-
         <project.encoding>UTF-8</project.encoding>
         <slf4j.version>1.7.21</slf4j.version>
         <sofa.common.tools>1.4.0</sofa.common.tools>
@@ -198,7 +199,6 @@
                     <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
                 <artifactId>maven-java-formatter-plugin</artifactId>
@@ -276,6 +276,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.plugin}</version>
                 <configuration>
+                    <argLine>${maven.surefire.argLine}</argLine>
+                    <excludes>${maven.surefire.excludes}</excludes>
                     <includes>
                         <include>**/*Test.java</include>
                     </includes>
@@ -446,6 +448,23 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>args-for-test-by-jdk17-and-above</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <properties>
+                <maven.surefire.argLine>--add-opens java.base/java.lang=ALL-UNNAMED
+                    --add-opens java.base/java.net=ALL-UNNAMED
+                    --add-opens java.base/java.math=ALL-UNNAMED
+                    --add-opens java.base/java.text=ALL-UNNAMED
+                    --add-opens java.base/java.util=ALL-UNNAMED
+                    --add-opens java.base/java.util.regex=ALL-UNNAMED
+                    --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+                    --add-opens java.sql/java.sql=ALL-UNNAMED
+                    --add-opens java.sql.rowset/javax.sql.rowset.serial=ALL-UNNAMED</maven.surefire.argLine>
+            </properties>
         </profile>
     </profiles>
 </project>
