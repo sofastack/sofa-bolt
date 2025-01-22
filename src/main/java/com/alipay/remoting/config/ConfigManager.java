@@ -74,6 +74,10 @@ public class ConfigManager {
         return getBool(Configs.NETTY_EPOLL_LT, Configs.NETTY_EPOLL_LT_DEFAULT);
     }
 
+    public static boolean netty_io_uring() {
+        return getBool(Configs.NETTY_IO_URING_SWITCH, Configs.NETTY_IO_URING_SWITCH_DEFAULT);
+    }
+
     // ~~~ properties for idle
     public static boolean tcp_idle_switch() {
         return getBool(Configs.TCP_IDLE_SWITCH, Configs.TCP_IDLE_SWITCH_DEFAULT);

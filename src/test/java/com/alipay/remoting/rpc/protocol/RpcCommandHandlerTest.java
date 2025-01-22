@@ -25,6 +25,8 @@ import com.alipay.remoting.rpc.RpcCommandFactory;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,8 @@ public class RpcCommandHandlerTest {
     private static final List<RemotingContext> remotingContextList = new ArrayList<>();
 
     private static final CountDownLatch countDownLatch = new CountDownLatch(2);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RpcCommandHandlerTest.class);
 
     @BeforeClass
     public static void beforeClass() {
@@ -65,8 +69,9 @@ public class RpcCommandHandlerTest {
         msg.add(rpcRequestCommand2);
         RpcCommandHandler rpcCommandHandler = new RpcCommandHandler(new RpcCommandFactory());
         rpcCommandHandler.handleCommand(remotingContext, msg);
-        countDownLatch.await(10, TimeUnit.SECONDS);
-        Assert.assertTrue(remotingContextList.size() == 2);
+        boolean result = countDownLatch.await(15, TimeUnit.SECONDS);
+        Assert.assertTrue(result);
+	    Assert.assertEquals(2, remotingContextList.size());
         Assert.assertTrue(remotingContextList.get(0).getTimeout() != remotingContextList.get(1).getTimeout());
     }
 
@@ -89,7 +94,7 @@ public class RpcCommandHandlerTest {
 
         @Override
         public BizContext preHandleRequest(RemotingContext remotingCtx, Object request) {
-            Assert.assertTrue(remotingCtx != remotingContext);
+	        Assert.assertNotSame(remotingCtx, remotingContext);
             remotingContextList.add(remotingCtx);
             countDownLatch.countDown();
             return null;
