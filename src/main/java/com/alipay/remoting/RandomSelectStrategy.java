@@ -18,7 +18,7 @@ package com.alipay.remoting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import com.alipay.remoting.config.BoltClientOption;
 import com.alipay.remoting.config.Configuration;
@@ -39,7 +39,6 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
     private static final Logger logger    = BoltLoggerFactory.getLogger("CommonDefault");
 
     private static final int    MAX_TIMES = 5;
-    private final Random        random    = new Random();
     private final Configuration configuration;
 
     public RandomSelectStrategy(Configuration configuration) {
@@ -96,7 +95,7 @@ public class RandomSelectStrategy implements ConnectionSelectStrategy {
         int tries = 0;
         Connection result = null;
         while ((result == null || !result.isFine()) && tries++ < MAX_TIMES) {
-            result = connections.get(this.random.nextInt(size));
+            result = connections.get(ThreadLocalRandom.current().nextInt(size));
         }
 
         if (result != null && !result.isFine()) {

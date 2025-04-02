@@ -18,8 +18,8 @@ package com.alipay.remoting.benchmark;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.alipay.remoting.config.BoltClientOption;
@@ -60,7 +60,7 @@ public class BenchmarkClient {
     private static final byte[] BYTES = new byte[128];
 
     static {
-        new Random().nextBytes(BYTES);
+        ThreadLocalRandom.current().nextBytes(BYTES);
     }
 
     public static void main(String[] args) throws RemotingException, InterruptedException {
