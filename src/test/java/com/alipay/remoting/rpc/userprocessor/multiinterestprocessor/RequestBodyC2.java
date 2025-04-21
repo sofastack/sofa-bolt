@@ -16,7 +16,7 @@
  */
 package com.alipay.remoting.rpc.userprocessor.multiinterestprocessor;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @antuor muyun.cyt (muyun.cyt@antfin.com)  2018/7/5   11:20 AM
@@ -44,8 +44,6 @@ public class RequestBodyC2 implements MultiInterestBaseRequestBody {
     /** body */
     private byte[]             body;
 
-    private Random             r                         = new Random();
-
     public RequestBodyC2() {
         //json serializer need default constructor
         //super();
@@ -62,7 +60,7 @@ public class RequestBodyC2 implements MultiInterestBaseRequestBody {
         this.id = id;
         this.msg = "";
         this.body = new byte[size];
-        r.nextBytes(this.body);
+        ThreadLocalRandom.current().nextBytes(this.body);
     }
 
     /**

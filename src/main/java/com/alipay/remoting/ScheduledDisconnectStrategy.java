@@ -19,8 +19,8 @@ package com.alipay.remoting;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 
@@ -45,11 +45,9 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
     private static final Logger logger = BoltLoggerFactory.getLogger("CommonDefault");
 
     private final int           connectionThreshold;
-    private final Random        random;
 
     public ScheduledDisconnectStrategy() {
         this.connectionThreshold = ConfigManager.conn_threshold();
-        this.random = new Random();
     }
 
     /**
@@ -103,8 +101,8 @@ public class ScheduledDisconnectStrategy implements ConnectionMonitorStrategy {
                 }
 
                 if (serviceOnConnections.size() > connectionThreshold) {
-                    Connection freshSelectConnect = serviceOnConnections.get(random
-                        .nextInt(serviceOnConnections.size()));
+                    Connection freshSelectConnect = serviceOnConnections.get(ThreadLocalRandom
+                        .current().nextInt(serviceOnConnections.size()));
                     freshSelectConnect.setAttribute(Configs.CONN_SERVICE_STATUS,
                         Configs.CONN_SERVICE_STATUS_OFF);
                     serviceOffConnections.add(freshSelectConnect);

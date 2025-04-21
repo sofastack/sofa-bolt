@@ -17,7 +17,7 @@
 package com.alipay.remoting.rpc.common;
 
 import java.io.Serializable;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * biz request as a demo
@@ -49,8 +49,6 @@ public class RequestBody implements Serializable {
     /** body */
     private byte[]             body;
 
-    private Random             r                         = new Random();
-
     public RequestBody() {
         //json serializer need default constructor
     }
@@ -64,7 +62,7 @@ public class RequestBody implements Serializable {
         this.id = id;
         this.msg = "";
         this.body = new byte[size];
-        r.nextBytes(this.body);
+        ThreadLocalRandom.current().nextBytes(this.body);
     }
 
     /**
