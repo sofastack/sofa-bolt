@@ -100,7 +100,7 @@ public class StringUtils {
     }
 
     public static boolean isNumeric(String str) {
-        if (str == null) {
+        if (isBlank(str)) {
             return false;
         } else {
             int sz = str.length();
