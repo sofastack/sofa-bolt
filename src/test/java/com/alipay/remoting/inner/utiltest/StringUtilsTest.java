@@ -74,7 +74,7 @@ public class StringUtilsTest {
         Assert.assertTrue(StringUtils.isNumeric("11"));
         Assert.assertFalse(StringUtils.isNumeric("1a1"));
         Assert.assertFalse(StringUtils.isNumeric("aa"));
-        Assert.assertTrue(StringUtils.isNumeric(""));
+        Assert.assertFalse(StringUtils.isNumeric(""));
         Assert.assertFalse(StringUtils.isNumeric("  "));
         Assert.assertFalse(StringUtils.isNumeric(" a "));
         Assert.assertFalse(StringUtils.isNumeric("  123  "));
