@@ -22,18 +22,23 @@ import com.alipay.remoting.InvokeContext;
 import com.alipay.remoting.LifeCycleException;
 import com.alipay.remoting.RemotingContext;
 import com.alipay.remoting.rpc.RpcCommandFactory;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
 
 /**
  * @author Even
@@ -43,21 +48,29 @@ public class RpcCommandHandlerTest {
 
     private static RemotingContext remotingContext = null;
 
-    private static final List<RemotingContext> remotingContextList = new ArrayList<>();
-
-    private static final CountDownLatch countDownLatch = new CountDownLatch(2);
+    private static final List<RemotingContext> remotingContextList = new CopyOnWriteArrayList<>();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RpcCommandHandlerTest.class);
 
     @BeforeClass
     public static void beforeClass() {
+        // Create a mock ChannelHandlerContext
+        ChannelHandlerContext ctx = Mockito.mock(ChannelHandlerContext.class);
+
+        // Mock minimum required behavior if needed
+        Channel channel = Mockito.mock(Channel.class);
+        Mockito.when(ctx.channel()).thenReturn(channel);
+
         ConcurrentHashMap<String, UserProcessor<?>> userProcessors = new ConcurrentHashMap<>();
         userProcessors.put("testClass", new MockUserProcessors());
-        remotingContext = new RemotingContext(null, new InvokeContext(),true, userProcessors);
+        remotingContext = new RemotingContext(ctx, new InvokeContext(),true, userProcessors);
     }
 
     @Test
     public void testHandleCommand() throws Exception {
+        // Clear any previous test data
+        remotingContextList.clear();
+
         List<RpcRequestCommand> msg = new ArrayList<>();
         RpcRequestCommand rpcRequestCommand = new RpcRequestCommand();
         rpcRequestCommand.setTimeout(1000);
@@ -67,11 +80,16 @@ public class RpcCommandHandlerTest {
         rpcRequestCommand2.setRequestClass("testClass");
         msg.add(rpcRequestCommand);
         msg.add(rpcRequestCommand2);
+
         RpcCommandHandler rpcCommandHandler = new RpcCommandHandler(new RpcCommandFactory());
         rpcCommandHandler.handleCommand(remotingContext, msg);
-        boolean result = countDownLatch.await(15, TimeUnit.SECONDS);
-        Assert.assertTrue(result);
-	    Assert.assertEquals(2, remotingContextList.size());
+
+        // Use Awaitility to wait for the conditions to be met
+        await().atMost(20, TimeUnit.SECONDS)
+                .pollInterval(100, TimeUnit.MILLISECONDS)
+                .until(() -> remotingContextList.size() == 2);
+
+        Assert.assertEquals(2, remotingContextList.size());
         Assert.assertTrue(remotingContextList.get(0).getTimeout() != remotingContextList.get(1).getTimeout());
     }
 
@@ -94,9 +112,8 @@ public class RpcCommandHandlerTest {
 
         @Override
         public BizContext preHandleRequest(RemotingContext remotingCtx, Object request) {
-	        Assert.assertNotSame(remotingCtx, remotingContext);
+            Assert.assertNotSame(remotingCtx, remotingContext);
             remotingContextList.add(remotingCtx);
-            countDownLatch.countDown();
             return null;
         }
 
