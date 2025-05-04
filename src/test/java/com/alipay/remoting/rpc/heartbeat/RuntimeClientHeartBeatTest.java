@@ -36,6 +36,10 @@ import com.alipay.remoting.rpc.common.SimpleClientUserProcessor;
 import com.alipay.remoting.rpc.common.SimpleServerUserProcessor;
 import com.alipay.remoting.rpc.protocol.RpcProtocol;
 
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
+
 /**
  * Runtime operation connection heart beat test
  * 
@@ -93,27 +97,51 @@ public class RuntimeClientHeartBeatTest {
 
     @Test
     public void testRuntimeCloseAndEnableHeartbeat() throws InterruptedException {
+        // Register heart beat processor
         server.getRpcServer().registerProcessor(RpcProtocol.PROTOCOL_CODE,
             CommonCommandCode.HEARTBEAT, heartBeatProcessor);
+
+        // Establish connection
         try {
             client.getConnection(addr, 1000);
         } catch (RemotingException e) {
-            logger.error("", e);
+            logger.error("Failed to establish connection", e);
         }
-        Thread.sleep(1500);
-        logger.warn("before disable: " + heartBeatProcessor.getHeartBeatTimes());
-        Assert.assertTrue(heartBeatProcessor.getHeartBeatTimes() > 0);
 
+        // Phase 1: Verify heartbeats are being sent
+        await().atMost(3, TimeUnit.SECONDS)
+               .pollInterval(100, TimeUnit.MILLISECONDS)
+               .until(() -> heartBeatProcessor.getHeartBeatTimes() > 0);
+
+        logger.warn("before disable: {}", heartBeatProcessor.getHeartBeatTimes());
+
+        // Phase 2: Disable heartbeats
         client.disableConnHeartbeat(addr);
-        heartBeatProcessor.reset();
-        Thread.sleep(1500);
-        logger.warn("after disable: " + heartBeatProcessor.getHeartBeatTimes());
-        Assert.assertEquals(0, heartBeatProcessor.getHeartBeatTimes());
 
+        // Wait a bit to make sure any in-flight heartbeats are processed
+        Thread.sleep(200);
+
+        // Reset counter
+        heartBeatProcessor.reset();
+
+        // Verify no new heartbeats arrive after disabling
+        await().pollDelay(500, TimeUnit.MILLISECONDS)
+               .during(1, TimeUnit.SECONDS)
+               .atMost(2, TimeUnit.SECONDS)
+               .pollInterval(100, TimeUnit.MILLISECONDS)
+               .until(() -> heartBeatProcessor.getHeartBeatTimes() == 0);
+
+        logger.warn("after disable: {}", heartBeatProcessor.getHeartBeatTimes());
+
+        // Phase 3: Re-enable heartbeats
         client.enableConnHeartbeat(addr);
         heartBeatProcessor.reset();
-        Thread.sleep(1500);
-        logger.warn("after enable: " + heartBeatProcessor.getHeartBeatTimes());
-        Assert.assertTrue(heartBeatProcessor.getHeartBeatTimes() > 0);
+
+        // Verify heartbeats resume
+        await().atMost(3, TimeUnit.SECONDS)
+               .pollInterval(100, TimeUnit.MILLISECONDS)
+               .until(() -> heartBeatProcessor.getHeartBeatTimes() > 0);
+
+        logger.warn("after enable: {}", heartBeatProcessor.getHeartBeatTimes());
     }
 }
