@@ -105,15 +105,15 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             byte[] header = null;
                             byte[] content = null;
 
-                            Channel channel = ctx.channel();
-                            ThreadLocalArriveTimeHolder.arrive(channel, requestId);
-
                             boolean crcSwitchOn = ProtocolSwitch.isOn(
                                 ProtocolSwitch.CRC_SWITCH_INDEX, protocolSwitchValue);
                             int frameLength = RpcCommandDecoderLengthValidator
                                 .validateAndGetTotalLength(classLen, headerLen, contentLen,
                                     version == RpcProtocolV2.PROTOCOL_VERSION_2 && crcSwitchOn ? 4
                                         : 0);
+
+                            Channel channel = ctx.channel();
+                            ThreadLocalArriveTimeHolder.arrive(channel, requestId);
 
                             // continue read
                             if ((version == RpcProtocolV2.PROTOCOL_VERSION_1 || version == RpcProtocolV2.PROTOCOL_VERSION_2)

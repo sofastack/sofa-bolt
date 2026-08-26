@@ -16,6 +16,7 @@
  */
 package com.alipay.remoting.rpc.protocol;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -121,9 +122,19 @@ public class RpcCommandDecoderTest {
         }
     }
 
+    @Test(expected = CodecException.class)
+    public void rejectsOverflowedTotalLengthInV1Response() throws Exception {
+        ByteBuf frame = v1ResponseFrame((short) 0, (short) 1, Integer.MAX_VALUE);
+        try {
+            new RpcCommandDecoder().decode(context(), frame, new ArrayList<Object>());
+        } finally {
+            frame.release();
+        }
+    }
+
     @Test
     public void decodesValidV2RequestWithContent() throws Exception {
-        byte[] body = "hello".getBytes();
+        byte[] body = "hello".getBytes(StandardCharsets.UTF_8);
         ByteBuf frame = v2RequestFrame((short) 0, (short) 0, body.length);
         frame.writeBytes(body);
         List<Object> out = new ArrayList<Object>();
@@ -137,12 +148,40 @@ public class RpcCommandDecoderTest {
 
     @Test
     public void decodesValidV1RequestWithContent() throws Exception {
-        byte[] body = "world".getBytes();
+        byte[] body = "world".getBytes(StandardCharsets.UTF_8);
         ByteBuf frame = v1RequestFrame((short) 0, (short) 0, body.length);
         frame.writeBytes(body);
         List<Object> out = new ArrayList<Object>();
         try {
             new RpcCommandDecoder().decode(context(), frame, out);
+        } finally {
+            frame.release();
+        }
+        Assert.assertEquals(1, out.size());
+    }
+
+    @Test
+    public void decodesValidV1ResponseWithContent() throws Exception {
+        byte[] body = "resp-v1".getBytes(StandardCharsets.UTF_8);
+        ByteBuf frame = v1ResponseFrame((short) 0, (short) 0, body.length);
+        frame.writeBytes(body);
+        List<Object> out = new ArrayList<Object>();
+        try {
+            new RpcCommandDecoder().decode(context(), frame, out);
+        } finally {
+            frame.release();
+        }
+        Assert.assertEquals(1, out.size());
+    }
+
+    @Test
+    public void decodesValidV2ResponseWithContent() throws Exception {
+        byte[] body = "resp-v2".getBytes(StandardCharsets.UTF_8);
+        ByteBuf frame = v2ResponseFrame((short) 0, (short) 0, body.length);
+        frame.writeBytes(body);
+        List<Object> out = new ArrayList<Object>();
+        try {
+            new RpcCommandDecoderV2().decode(context(), frame, out);
         } finally {
             frame.release();
         }
