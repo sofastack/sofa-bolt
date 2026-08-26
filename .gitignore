@@ -21,3 +21,4 @@ coverage-report
 test-output
 *.txt
 .DS_Store
+AGENTS.md

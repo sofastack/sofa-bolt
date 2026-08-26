@@ -108,19 +108,16 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             Channel channel = ctx.channel();
                             ThreadLocalArriveTimeHolder.arrive(channel, requestId);
 
-                            // decide the at-least bytes length for each version
-                            int lengthAtLeastForV1 = classLen + headerLen + contentLen;
                             boolean crcSwitchOn = ProtocolSwitch.isOn(
                                 ProtocolSwitch.CRC_SWITCH_INDEX, protocolSwitchValue);
-                            int lengthAtLeastForV2 = classLen + headerLen + contentLen;
-                            if (crcSwitchOn) {
-                                lengthAtLeastForV2 += 4;// crc int
-                            }
+                            int frameLength = RpcCommandDecoderLengthValidator
+                                .validateAndGetTotalLength(classLen, headerLen, contentLen,
+                                    version == RpcProtocolV2.PROTOCOL_VERSION_2 && crcSwitchOn ? 4
+                                        : 0);
 
                             // continue read
-                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1 && in.readableBytes() >= lengthAtLeastForV1)
-                                || (version == RpcProtocolV2.PROTOCOL_VERSION_2 && in
-                                    .readableBytes() >= lengthAtLeastForV2)) {
+                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1 || version == RpcProtocolV2.PROTOCOL_VERSION_2)
+                                && in.readableBytes() >= frameLength) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
                                     in.readBytes(clazz);
@@ -180,19 +177,16 @@ public class RpcCommandDecoderV2 implements CommandDecoder {
                             byte[] header = null;
                             byte[] content = null;
 
-                            // decide the at-least bytes length for each version
-                            int lengthAtLeastForV1 = classLen + headerLen + contentLen;
                             boolean crcSwitchOn = ProtocolSwitch.isOn(
                                 ProtocolSwitch.CRC_SWITCH_INDEX, protocolSwitchValue);
-                            int lengthAtLeastForV2 = classLen + headerLen + contentLen;
-                            if (crcSwitchOn) {
-                                lengthAtLeastForV2 += 4;// crc int
-                            }
+                            int frameLength = RpcCommandDecoderLengthValidator
+                                .validateAndGetTotalLength(classLen, headerLen, contentLen,
+                                    version == RpcProtocolV2.PROTOCOL_VERSION_2 && crcSwitchOn ? 4
+                                        : 0);
 
                             // continue read
-                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1 && in.readableBytes() >= lengthAtLeastForV1)
-                                || (version == RpcProtocolV2.PROTOCOL_VERSION_2 && in
-                                    .readableBytes() >= lengthAtLeastForV2)) {
+                            if ((version == RpcProtocolV2.PROTOCOL_VERSION_1 || version == RpcProtocolV2.PROTOCOL_VERSION_2)
+                                && in.readableBytes() >= frameLength) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
                                     in.readBytes(clazz);

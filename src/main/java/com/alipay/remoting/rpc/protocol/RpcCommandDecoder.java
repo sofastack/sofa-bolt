@@ -100,7 +100,9 @@ public class RpcCommandDecoder implements CommandDecoder {
                             byte[] content = null;
                             Channel channel = ctx.channel();
                             ThreadLocalArriveTimeHolder.arrive(channel, requestId);
-                            if (in.readableBytes() >= classLen + headerLen + contentLen) {
+                            int frameLength = RpcCommandDecoderLengthValidator
+                                .validateAndGetTotalLength(classLen, headerLen, contentLen, 0);
+                            if (in.readableBytes() >= frameLength) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
                                     in.readBytes(clazz);
@@ -152,7 +154,9 @@ public class RpcCommandDecoder implements CommandDecoder {
                             byte[] clazz = null;
                             byte[] header = null;
                             byte[] content = null;
-                            if (in.readableBytes() >= classLen + headerLen + contentLen) {
+                            int frameLength = RpcCommandDecoderLengthValidator
+                                .validateAndGetTotalLength(classLen, headerLen, contentLen, 0);
+                            if (in.readableBytes() >= frameLength) {
                                 if (classLen > 0) {
                                     clazz = new byte[classLen];
                                     in.readBytes(clazz);
